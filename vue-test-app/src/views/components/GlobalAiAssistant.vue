@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="global-ai-fab" @click="toggleAiPanel">
-      <el-icon size="24"><Cpu /></el-icon>
+      <img class="fab-mark" src="/brand/prisdvl-nexus.png" alt="" />
     </div>
 
     <el-drawer
@@ -15,9 +15,9 @@
         <div class="drawer-header">
           <div class="header-title">
             <div class="ai-icon-wrapper">
-              <el-icon color="#E8EEF8" size="14"><Cpu /></el-icon>
+              <img class="header-mark" src="/brand/prisdvl-nexus.png" alt="" />
             </div>
-            <span>Prisdoc 全局助理</span>
+            <span>全局助手</span>
           </div>
 
           <div class="header-actions">
@@ -53,19 +53,17 @@
         <div class="chat-scroll-area">
           <div class="message-row ai" v-if="chatHistory.length === 0">
             <div class="avatar-box ai-avatar">
-              <el-icon size="16" color="#E8EEF8"><Cpu /></el-icon>
+              <img class="avatar-mark" src="/brand/prisdvl-nexus.png" alt="" />
             </div>
             <div class="bubble ai-bubble">
-              你好！我是 Prisdoc 全局助理。无论是管理云端文档、清理回收站，还是跨文件查阅资料，随时吩咐我。
+              全局指令从这里下。可以让我查文档、清理回收站，或者跨文件核对信息。
             </div>
           </div>
 
           <div v-for="(msg, i) in chatHistory" :key="i" :class="['message-row', msg.role]">
             <div class="avatar-box" :class="msg.role === 'user' ? 'user-avatar' : 'ai-avatar'">
-              <el-icon size="16" color="#E8EEF8">
-                <User v-if="msg.role === 'user'" />
-                <Cpu v-else />
-              </el-icon>
+              <el-icon v-if="msg.role === 'user'" size="16" color="#E8EEF8"><User /></el-icon>
+              <img v-else class="avatar-mark" src="/brand/prisdvl-nexus.png" alt="" />
             </div>
 
             <div class="message-content">
@@ -74,7 +72,6 @@
               </div>
 
               <div v-if="msg.actionResult" class="agent-file-card" @click="handleDownload(msg.actionResult)">
-                <el-icon size="24" color="var(--pd-primary-text)"><Document /></el-icon>
                 <div class="file-info">
                   <div class="file-name">{{ msg.actionResult.fileName || '生成的文档' }}</div>
                   <div class="file-desc">点击查看或下载</div>
@@ -85,7 +82,7 @@
 
           <div v-if="isAiThinking" class="message-row ai">
             <div class="avatar-box ai-avatar">
-              <el-icon size="16" color="#E8EEF8"><Cpu /></el-icon>
+              <img class="avatar-mark" src="/brand/prisdvl-nexus.png" alt="" />
             </div>
             <div class="bubble ai-bubble thinking">
               <el-icon class="is-loading"><Loading /></el-icon> 正在调用智能体...
@@ -468,9 +465,10 @@ const handleNewConversation = () => {
 }
 .header-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: var(--pd-text); }
 .ai-icon-wrapper {
-  width: 24px; height: 24px; background: var(--pd-grad-brand); border-radius: var(--pd-r-sm);
-  display: flex; justify-content: center; align-items: center;
+  width: 24px; height: 24px; display: flex; justify-content: center; align-items: center;
 }
+.fab-mark { display: block; height: 30px; width: auto; }
+.header-mark, .avatar-mark { display: block; height: 18px; width: auto; }
 .header-actions {
   display: flex;
   align-items: center;

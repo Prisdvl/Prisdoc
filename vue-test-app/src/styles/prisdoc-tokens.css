@@ -33,6 +33,8 @@
   --pd-primary-text: #75C8FF;
   --pd-primary-weak: color-mix(in oklab, #2457D6 18%, #101522);
   --pd-grad-brand: linear-gradient(135deg, #193FA8 0%, #2457D6 42%, #3987EC 100%);
+  /* 文字用渐变：左端更亮，短词（品牌名）在深底上也读得清 */
+  --pd-grad-text: linear-gradient(135deg, #75C8FF 0%, #3978F6 52%, #2457D6 100%);
   --pd-bg-glow: radial-gradient(ellipse at 50% 0%, rgba(36, 87, 214, 0.14) 0%, rgba(8, 11, 18, 0) 55%);
   --pd-selection: rgba(36, 87, 214, 0.28);
   --pd-ring: rgba(57, 135, 236, 0.42);

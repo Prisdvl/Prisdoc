@@ -1,8 +1,8 @@
 <template>
   <div class="agent-workbench">
     <header class="workbench-header">
-      <h2><el-icon><Cpu /></el-icon> Prisdoc Agent Workbench</h2>
-      <p>统一查看工具能力、Agent 计划执行、审批闭环、任务历史进度。</p>
+      <h2><img class="brand-mark" src="/brand/prisdvl-nexus.png" alt="" /> Prisdoc Agent 工作台</h2>
+      <p>查看可用工具、跑一次任务、处理高危操作审批、回看历史记录。</p>
     </header>
 
     <!-- 整个页面用 el-scrollbar 包裹 -->
@@ -26,7 +26,7 @@
           <el-col :span="8">
             <el-card class="box-card" shadow="hover">
               <template #header>
-                <div class="card-title">1. 工具能力 Schema ({{ toolsList.length }}个)</div>
+                <div class="card-title">1. 可用工具（{{ toolsList.length }}）</div>
               </template>
               <!-- 工具列表用 el-scrollbar -->
               <el-scrollbar max-height="400px" v-loading="loading">
@@ -46,7 +46,7 @@
 
             <el-card class="box-card mt-20" shadow="hover">
               <template #header>
-                <div class="card-title">2. 危险操作审批 (Action Required)</div>
+                <div class="card-title">2. 高危操作审批</div>
               </template>
               <el-input v-model="approvalToken" placeholder="输入 agentApprovalToken" style="margin-bottom: 10px;" />
               <el-input v-model="approvalContext" type="textarea" :rows="3" placeholder='可选 context JSON，例如 {"objectName":"a.txt"}' style="margin-bottom: 15px;" />
@@ -60,7 +60,7 @@
           <el-col :span="16">
             <el-card class="box-card" shadow="hover">
               <template #header>
-                <div class="card-title">3. 执行 Agent 任务</div>
+                <div class="card-title">3. 执行任务</div>
               </template>
               <el-input
                   v-model="agentPrompt"
@@ -71,13 +71,13 @@
               />
               <div class="execute-actions">
                 <el-button type="primary" size="large" @click="executeAgent" :loading="executing">
-                  <el-icon><VideoPlay /></el-icon> 立即执行
+                  执行任务
                 </el-button>
               </div>
 
               <!-- 执行结果用 el-scrollbar -->
               <div class="result-viewer" v-if="executionResult">
-                <h4>执行结果 / Timeline</h4>
+                <h4>执行结果</h4>
                 <el-scrollbar max-height="300px">
                   <pre class="json-code">{{ JSON.stringify(executionResult, null, 2) }}</pre>
                 </el-scrollbar>
@@ -86,7 +86,7 @@
 
             <el-card class="box-card mt-20" shadow="hover">
               <template #header>
-                <div class="card-title">4. 任务历史记录</div>
+                <div class="card-title">4. 任务记录</div>
               </template>
               <!-- 任务历史表格用 el-scrollbar -->
               <el-scrollbar max-height="400px">
@@ -251,6 +251,8 @@ onMounted(() => {
   align-items: center;
   gap: 10px;
 }
+
+.brand-mark { display: block; height: 24px; width: auto; }
 
 .workbench-header p {
   margin: 0;

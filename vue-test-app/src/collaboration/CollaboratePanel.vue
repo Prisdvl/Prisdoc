@@ -36,19 +36,15 @@
     <div class="panel-body" v-show="!collapsed">
       <div class="sync-info" v-if="isCollaborating">
         <div class="info-row">
-          <el-icon><User /></el-icon>
-          <span>{{ userName }} (我)</span>
+          <span>{{ userName }}（我）</span>
         </div>
         <div class="info-row">
-          <el-icon><Clock /></el-icon>
           <span>上次同步：{{ lastSyncText }}</span>
         </div>
         <div class="info-row">
-          <el-icon><Refresh /></el-icon>
           <span>每 2 秒自动拉取远程更新</span>
         </div>
         <div class="info-row">
-          <el-icon><Upload /></el-icon>
           <span>输入后 1.5 秒自动保存</span>
         </div>
       </div>
@@ -302,8 +298,13 @@ onUnmounted(() => {
 
 .share-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+}
+/* 侧栏很窄：授权输入框独占一行，选择器与按钮落在第二行，避免文字被截断 */
+.share-row .el-input {
+  flex: 1 1 100%;
 }
 
 .share-hint {

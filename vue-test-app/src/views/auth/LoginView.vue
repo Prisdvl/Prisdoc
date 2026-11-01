@@ -1,14 +1,14 @@
 <template>
   <div class="auth-bg">
     <el-card class="auth-card" shadow="hover">
-      <div class="logo">Prisdoc 智能平台</div>
+      <div class="logo"><img class="logo-mark" src="/brand/prisdvl-nexus.png" alt="" />Prisdoc 智能平台</div>
       <h2 class="title">欢迎回来</h2>
       <el-form :model="form" label-position="top">
         <el-form-item label="用户名">
-          <el-input v-model="form.username" placeholder="请输入用户名" size="large" prefix-icon="User" />
+          <el-input v-model="form.username" placeholder="请输入用户名" size="large" />
         </el-form-item>
         <el-form-item label="密码">
-          <el-input v-model="form.password" type="password" show-password placeholder="请输入密码" size="large" prefix-icon="Lock" @keyup.enter="handleLogin" />
+          <el-input v-model="form.password" type="password" show-password placeholder="请输入密码" size="large" @keyup.enter="handleLogin" />
         </el-form-item>
         <el-button type="primary" class="submit-btn" size="large" @click="handleLogin" :loading="loading">登录</el-button>
         <div class="footer-text">
@@ -84,11 +84,12 @@ const handleLogin = async () => {
 .logo {
   text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 10px;
   letter-spacing: 0.02em;
-  background: var(--pd-grad-brand);
+  background: var(--pd-grad-text);
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
 }
 .title { text-align: center; font-size: 18px; color: var(--pd-text); margin-bottom: 25px; font-weight: 500; }
+.logo-mark { display: inline-block; height: 26px; width: auto; vertical-align: -4px; margin-right: 8px; }
 .submit-btn { width: 100%; margin-top: 10px; font-weight: 500; letter-spacing: 0.05em; }
 .footer-text { text-align: center; margin-top: 15px; font-size: 14px; color: var(--pd-text-3); }
 .footer-text a { color: var(--pd-primary-text); text-decoration: none; transition: color var(--pd-dur-fast) var(--pd-ease); }

@@ -5,14 +5,13 @@
     <aside class="chat-sidebar">
       <div class="sidebar-top">
         <div class="brand-back" @click="$router.push('/dashboard')">
-          <el-icon><ArrowLeft /></el-icon> 返回工作台
+          返回工作台
         </div>
-        <el-button class="new-chat-btn" icon="Plus" plain @click="startNewChat">开启新话题</el-button>
+        <el-button class="new-chat-btn" plain @click="startNewChat">新建对话</el-button>
 
         <div class="history-group">
           <div class="group-title">历史会话</div>
           <div class="history-item active">
-            <el-icon><ChatLineRound /></el-icon>
             <span class="text">{{ chatTitle }}</span>
           </div>
         </div>
@@ -33,7 +32,7 @@
         <div class="header-inner">
           <span class="title">{{ chatTitle }}</span>
           <div class="header-actions">
-            <el-button icon="Share" link>分享</el-button>
+            <el-button link>分享</el-button>
             <el-button icon="MoreFilled" link></el-button>
           </div>
         </div>
@@ -44,7 +43,7 @@
         <div class="chat-content-container">
           <div v-for="(msg, i) in chatHistory" :key="i" :class="['message-row', msg.role]">
             <div class="avatar-col" v-if="msg.role === 'ai'">
-              <el-avatar :size="36" src="/prisdoc.svg" class="ai-avatar" />
+              <el-avatar :size="36" src="/brand/prisdvl-nexus.png" class="ai-avatar" />
             </div>
             <div class="message-content-col">
               <div v-if="msg.role === 'user'" class="user-bubble preserve-format">{{ msg.text }}</div>
@@ -54,12 +53,11 @@
                 <div v-if="msg.actionResult" class="agent-action-box" style="margin-top: 16px;">
                   <el-divider border-style="dashed" style="margin: 12px 0;" />
                   <div style="font-size: 13px; color: var(--pd-text-3); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-                    <el-icon><Check /></el-icon> 任务执行成功
+                    任务执行成功
                   </div>
 
                   <div v-if="msg.actionResult.type === 'document-write'" class="doc-write-card"
                        style="display: flex; align-items: center; gap: 12px; background: var(--pd-success-weak); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--pd-success) 30%, transparent); padding: 12px 16px; border-radius: var(--pd-r-md);">
-                    <el-icon size="28" color="var(--pd-success)"><Document /></el-icon>
                     <div>
                       <div style="font-weight: 600; font-size: 14px; color: var(--pd-text);">已写入当前文档</div>
                       <div style="font-size: 12px; color: var(--pd-text-3); margin-top: 4px;">{{ msg.actionResult.changeLog || 'AI 内容已应用，尚未保存' }}</div>
@@ -68,7 +66,6 @@
 
                   <div v-else class="file-card" @click="handleDownloadAgentFile(msg.actionResult)"
                        style="display: flex; align-items: center; gap: 12px; background: var(--pd-surface-muted); padding: 12px 16px; border-radius: var(--pd-r-md); cursor: pointer; transition: background var(--pd-dur-fast) var(--pd-ease);">
-                    <el-icon size="28" color="var(--pd-primary-text)"><Document /></el-icon>
                     <div>
                       <div style="font-weight: 600; font-size: 14px; color: var(--pd-text);">
                         {{ msg.actionResult.fileName || '生成的文档' }}
@@ -84,7 +81,7 @@
 
           <!-- 思考中状态 -->
           <div v-if="isAiThinking" class="message-row ai">
-            <div class="avatar-col"><el-avatar :size="36" src="/prisdoc.svg" /></div>
+            <div class="avatar-col"><el-avatar :size="36" src="/brand/prisdvl-nexus.png" /></div>
             <div class="message-content-col">
               <div class="ai-structured-card thinking">
                 <el-icon class="is-loading"><Loading /></el-icon> 正在执行：搜索知识库并生成分析...
@@ -104,23 +101,21 @@
             </el-icon>
           </el-tooltip>
 
-          <el-icon class="plus-icon"><Plus /></el-icon>
           <input
               v-model="userMsg"
               class="chat-input"
-              placeholder="问问我关于工作的任何指令..."
+              placeholder="输入问题或指令，Enter 发送"
               @keyup.enter="handleSend"
               @focus="isInputFocused = true"
               @blur="isInputFocused = false"
           />
           <div class="input-right">
-            <el-icon class="mic-icon"><Microphone /></el-icon>
             <div class="send-btn-circle" :class="{ 'active': userMsg.length > 0 }" @click="handleSend">
               <el-icon size="20"><Top /></el-icon>
             </div>
           </div>
         </div>
-        <div class="ai-hint">AI 可能生成错误内容，仅供参考</div>
+        <div class="ai-hint">内容由模型生成，请核对后使用</div>
       </div>
     </main>
   </div>
@@ -136,9 +131,9 @@
         <el-button circle icon="Clock" size="small" style="margin-left:10px;" @click="openHistoryDrawer"></el-button>
       </div>
       <div class="header-right">
-        <el-button type="primary" size="small" round icon="Check" @click="handleManualSave" :loading="isSaving">手动保存</el-button>
-        <el-button size="small" round icon="Download" @click="handleDownload">下载最新版</el-button>
-        <el-button type="primary" size="small" round icon="Share">协作</el-button>
+        <el-button type="primary" size="small" round @click="handleManualSave" :loading="isSaving">保存</el-button>
+        <el-button size="small" round @click="handleDownload">导出 Word</el-button>
+        <el-button type="primary" size="small" round>协作</el-button>
         <el-avatar :size="30" style="background-color: var(--pd-primary); font-weight: bold; color: #E8EEF8; margin-left:10px;">{{ currentUserName.charAt(0).toUpperCase() }}</el-avatar>
       </div>
     </header>
@@ -146,7 +141,7 @@
     <div class="workspace">
       <aside class="left-sidebar">
         <div class="sidebar-section" v-if="textStats">
-          <div class="section-title"><el-icon><DataLine /></el-icon> 文本分析</div>
+          <div class="section-title">文本分析</div>
           <div class="stats-grid">
             <div class="stat-item"><span class="num">{{ textStats.totalCharacters || 0 }}</span><span class="desc">字数</span></div>
             <div class="stat-item"><span class="num">{{ textStats.lines || 0 }}</span><span class="desc">段落</span></div>
@@ -156,7 +151,7 @@
         </div>
 
         <div class="sidebar-section" v-if="aiSummary">
-          <div class="section-title"><el-icon><Document /></el-icon> ✨ 智能摘要</div>
+          <div class="section-title">摘要</div>
           <div class="summary-text preserve-format">{{ aiSummary }}</div>
           <div class="keywords-area" v-loading="keywordsLoading">
             <el-tag
@@ -183,9 +178,9 @@
         <transition name="el-zoom-in-center">
           <div v-if="showAiBall" class="ai-float-ball" :style="ballStyle">
             <div class="ball-inner">
-              <div class="menu-opt" @click.stop="askAiWithContext('润色')"><el-icon><MagicStick /></el-icon> 润色</div>
+              <div class="menu-opt" @click.stop="askAiWithContext('润色')">润色</div>
               <el-divider direction="vertical" />
-              <div class="menu-opt" @click.stop="askAiWithContext('纠错')"><el-icon><Aim /></el-icon> 纠错</div>
+              <div class="menu-opt" @click.stop="askAiWithContext('纠错')">纠错</div>
               <div class="ball-arrow"></div>
             </div>
           </div>
@@ -196,7 +191,7 @@
         <div class="ai-sidebar-top">
           <div class="ai-header">
             <span style="display: flex; align-items: center; gap: 6px;">
-              <el-icon color="var(--pd-primary-text)" size="18"><MagicStick /></el-icon> Prisdoc 灵感助理
+              <img class="ai-brand-mark" src="/brand/prisdvl-nexus.png" alt="" /> 文档助手
             </span>
             <el-select v-model="currentModel" size="small" placeholder="切换模型" style="width: 130px;" @change="handleModelChange">
               <el-option v-for="m in modelOptions" :key="m.code" :label="m.name" :value="m.code" />
@@ -211,11 +206,10 @@
             <div v-if="msg.actionResult" class="agent-action-box" style="margin-top: 10px;">
               <el-divider border-style="dashed" style="margin: 8px 0;" />
               <div style="font-size: 12px; color: var(--pd-text-3); margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
-                <el-icon><Check /></el-icon> 执行结果
+                执行结果
               </div>
               <div v-if="msg.actionResult.type === 'document-write'" class="doc-write-card"
                    style="display: flex; align-items: center; gap: 10px; background: var(--pd-success-weak); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--pd-success) 30%, transparent); padding: 10px; border-radius: var(--pd-r-sm);">
-                <el-icon size="24" color="var(--pd-success)"><Document /></el-icon>
                 <div>
                   <div style="font-weight: bold; font-size: 13px; color: var(--pd-text);">已写入当前文档</div>
                   <div style="font-size: 12px; color: var(--pd-text-3); margin-top: 2px;">{{ msg.actionResult.changeLog || 'AI 内容已应用，尚未保存' }}</div>
@@ -223,7 +217,6 @@
               </div>
               <div v-else class="file-card" @click="handleDownloadAgentFile(msg.actionResult)"
                    style="display: flex; align-items: center; gap: 10px; background: var(--pd-surface-muted); padding: 10px; border-radius: var(--pd-r-sm); cursor: pointer;">
-                <el-icon size="24" color="var(--pd-primary-text)"><Document /></el-icon>
                 <div>
                   <div style="font-weight: bold; font-size: 13px; color: var(--pd-text);">{{ msg.actionResult.fileName || '生成的文档' }}</div>
                   <div style="font-size: 12px; color: var(--pd-text-3); margin-top: 2px;">点击下载</div>
@@ -240,10 +233,10 @@
           <div class="selected-context" v-if="selectedText">已选：{{ selectedText.substring(0, 15) }}...</div>
           <div class="input-actions" style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
             <el-switch v-model="isRagMode" active-text="全局 RAG" size="small" />
-            <el-button link size="small" type="primary" icon="Setting" @click="openRagSettings">知识分段</el-button>
+            <el-button link size="small" type="primary" @click="openRagSettings">知识分段</el-button>
           </div>
-          <el-input v-model="userMsg" type="textarea" :rows="3" placeholder="下达任意指令，如生成PPT、润色、总结..." @keyup.enter.native="handleSend" resize="none" />
-          <el-button type="primary" class="send-btn" :loading="isAiThinking" @click="handleSend" icon="Position">发送给 AI</el-button>
+          <el-input v-model="userMsg" type="textarea" :rows="3" placeholder="告诉我要做什么，例如「润色这一段」" @keyup.enter.native="handleSend" resize="none" />
+          <el-button type="primary" class="send-btn" :loading="isAiThinking" @click="handleSend">发送</el-button>
         </div>
       </aside>
 
@@ -262,7 +255,7 @@
   </div>
 
   <!-- RAG 高级分段管理抽屉 -->
-  <el-drawer v-model="ragDrawerVisible" title="🧠 RAG 知识切片管理" size="400px">
+  <el-drawer v-model="ragDrawerVisible" title="知识切片" size="400px">
     <!-- 重新索引操作区 -->
     <div style="margin-bottom: 20px;">
       <h4 style="margin-bottom: 10px;">重新构建向量索引</h4>
@@ -360,11 +353,11 @@ const loadDocData = async () => {
     if (task) {
       chatTitle.value = task.length > 10 ? task.substring(0, 10) + '...' : task
       userMsg.value = task; sessionStorage.removeItem('global_ai_task'); setTimeout(() => handleSend(), 500)
-    } else { chatHistory.value.push({ role: 'ai', text: 'Hi！我是 Prisdoc 智能伙伴，今天需要我帮你完成什么工作？' }) }
+    } else { chatHistory.value.push({ role: 'ai', text: 'Hi，我是 Prisdoc 文档助手。可以直接让我总结全文、提炼行动项，或起草下一段。' }) }
     return
   }
 
-  chatHistory.value.push({ role: 'ai', text: '你好！我是接入了大语言模型的助手。你可以向我提问，或选中文本进行润色。' })
+  chatHistory.value.push({ role: 'ai', text: '选中正文里的段落，可以直接润色或纠错；也可以在下面提问，例如「把第二节改写成三条制度」。' })
   docLoading.value = true
   try {
     const docRes = await docApi.getDocDetail(docId)
@@ -1161,10 +1154,10 @@ const scrollToBottom = () => { nextTick(() => {
 .chat-input { flex: 1; border: none; outline: none; font-size: 16px; color: var(--pd-text); background: transparent; }
 .chat-input::placeholder { color: var(--pd-text-3); }
 /* 输入框左侧两个内联图标：用比 placeholder 更亮的一档，明确它们是控件而不是提示文字 */
-.mode-icon { color: var(--pd-text-2); cursor: pointer; transition: color var(--pd-dur-fast) var(--pd-ease); }
+.mode-icon { color: var(--pd-text-2); cursor: pointer; margin-right: 8px; transition: color var(--pd-dur-fast) var(--pd-ease); }
 .mode-icon:hover { color: var(--pd-primary-text); }
 .input-wrapper-inner.rag-active .mode-icon { color: var(--pd-primary-text); }
-.plus-icon { color: var(--pd-text-3); }
+.ai-brand-mark { display: block; height: 18px; width: auto; }
 .input-right { display: flex; align-items: center; gap: 15px; }
 .send-btn-circle {
   width: 44px; height: 44px; border-radius: 50%; background: var(--pd-surface-muted); color: var(--pd-text-3);
@@ -1179,7 +1172,7 @@ const scrollToBottom = () => { nextTick(() => {
 .editor-page { height: 100vh; display: flex; flex-direction: column; background: var(--pd-bg); }
 .toolbar { height: 56px; background: var(--pd-surface); border-bottom: 1px solid var(--pd-border); display: flex; align-items: center; padding: 0 24px; justify-content: space-between; flex-shrink: 0;}
 .doc-title { color: var(--pd-text); font-weight: 500; }
-.save-status { color: var(--pd-text-3); }
+.save-status { color: var(--pd-text-3); margin-left: 10px; }
 .workspace { flex: 1; display: flex; overflow: hidden; position: relative; }
 .editor-main { flex: 1; overflow-y: auto; display: flex; justify-content: center; padding: 50px 0; background: var(--pd-bg); position: relative; }
 .paper-container { position: relative; }

@@ -1,7 +1,7 @@
 <template>
   <div class="auth-bg">
     <el-card class="auth-card" shadow="hover">
-      <div class="logo">Prisdoc 智能平台</div>
+      <div class="logo"><img class="logo-mark" src="/brand/prisdvl-nexus.png" alt="" />Prisdoc 智能平台</div>
       <h2 class="title">创建新账号</h2>
 
       <el-form :model="form" :rules="rules" ref="formRef" label-position="top">
@@ -140,11 +140,12 @@ const handleRegister = () => {
 .logo {
   text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 10px;
   letter-spacing: 0.02em;
-  background: var(--pd-grad-brand);
+  background: var(--pd-grad-text);
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
 }
 .title { text-align: center; font-size: 16px; color: var(--pd-text-2); margin-bottom: 30px; }
+.logo-mark { display: inline-block; height: 26px; width: auto; vertical-align: -4px; margin-right: 8px; }
 
 /* 密码清单样式 */
 .password-checklist {

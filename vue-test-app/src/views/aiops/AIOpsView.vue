@@ -2,15 +2,14 @@
   <div class="aiops-container">
     <div class="aiops-header">
       <h1>
-        <el-icon :size="28"><Monitor /></el-icon>
-        AI Ops 智能运维中心
+        运维中心
       </h1>
       <div class="header-actions">
         <el-button type="primary" @click="refreshAll" :loading="loading">
-          <el-icon><Refresh /></el-icon> 刷新数据
+          刷新数据
         </el-button>
         <el-button type="warning" @click="handleResetMetrics">
-          <el-icon><Delete /></el-icon> 重置指标
+          重置指标
         </el-button>
       </div>
     </div>
@@ -49,7 +48,7 @@
         <el-card shadow="hover" class="section-card">
           <template #header>
             <div class="card-header">
-              <span><el-icon><DataLine /></el-icon> 监控指标详情</span>
+              <span>监控指标详情</span>
             </div>
           </template>
           <el-table :data="metricsTableData" stripe size="small" empty-text="暂无监控数据">
@@ -63,9 +62,9 @@
         <el-card shadow="hover" class="section-card">
           <template #header>
             <div class="card-header">
-              <span><el-icon><WarningFilled /></el-icon> 故障列表</span>
+              <span>故障列表</span>
               <el-button type="primary" size="small" text @click="detectFaults">
-                <el-icon><Search /></el-icon> 检测故障
+                检测故障
               </el-button>
             </div>
           </template>

@@ -559,7 +559,7 @@ export function buildPptHtml({ title = 'Prisdoc 项目', theme = 'tokyo-night', 
 <head>
 <meta charset="utf-8">
 <title>${escapeHtmlText(title)}</title>
-<link rel="icon" type="image/svg+xml" href="/prisdoc.svg">
+<link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="dist/reveal.css">
 <style>
   :root { color-scheme: dark; }

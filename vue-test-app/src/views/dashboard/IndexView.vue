@@ -6,14 +6,14 @@
       <el-aside width="240px" class="feishu-aside">
         <div class="aside-top">
           <div class="brand">
-            <div class="logo-box"><el-icon><Cpu /></el-icon></div>
+            <div class="logo-box"><img class="brand-mark" src="/brand/prisdvl-nexus.png" alt="" /></div>
             <span class="brand-text">Prisdoc</span></div>
           <div class="nav-menu">
-            <div class="nav-item active"><el-icon><Monitor /></el-icon> 我的工作台</div>
-            <div class="nav-item"><el-icon><FolderOpened /></el-icon> 云端文档库</div>
-            <div class="nav-item"><el-icon><MagicStick /></el-icon> AI 技能发现</div>
+            <div class="nav-item active">我的工作台</div>
+            <div class="nav-item">云端文档库</div>
+            <div class="nav-item">能力中心</div>
             <div v-if="isAdminUser" class="nav-item aiops-nav" @click="goToAIOps">
-              <el-icon><Cpu /></el-icon> AI Ops 运维中心
+              运维中心
             </div>
           </div>
         </div>
@@ -30,7 +30,7 @@
             </div>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="logout" icon="SwitchButton" style="color: var(--pd-danger)">退出系统</el-dropdown-item>
+                <el-dropdown-item command="logout" style="color: var(--pd-danger)">退出系统</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -46,7 +46,7 @@
             <el-avatar :size="64" style="background-color: var(--pd-primary); font-size: 28px; font-weight: bold; margin-bottom: 24px; color: #E8EEF8;">
               {{ currentUserName.charAt(0).toUpperCase() }}
             </el-avatar>
-            <h1 class="hero-title">Hi {{ currentUserName }}，今天需要我帮你分析什么？</h1>
+            <h1 class="hero-title">Hi {{ currentUserName }}，今天想先处理哪份文档？</h1>
 
             <!-- 飞书级交互：巨大输入框 + 气泡弹出菜单 -->
             <el-popover
@@ -58,14 +58,12 @@
             >
               <template #reference>
                 <div class="hero-search">
-                  <el-icon class="prefix-icon"><Plus /></el-icon>
                   <input
                       v-model="aiTask"
                       class="hero-input"
-                      placeholder="总结我的上周工作，或者让我帮你写一份大纲..."
+                      placeholder="描述你要做的事，例如「把这份制度改写成三条要点」"
                       @keyup.enter="handleAiTask"
                   />
-                  <el-icon class="mic-icon"><Microphone /></el-icon>
                   <div class="send-action-btn" @click.stop="handleAiTask">
                     <el-icon size="18"><Top /></el-icon>
                   </div>
@@ -77,19 +75,19 @@
                 <div class="menu-list">
                   <input type="file" ref="fileInputRef" style="display: none;" @change="onFileSelected" />
                   <div class="menu-item" @click="triggerUpload">
-                    <el-icon><Paperclip /></el-icon> 上传文件并由 AI 解析
+                    上传文件并解析内容
                   </div>
-                  <div class="menu-item" @click="mockSkill('写会议纪要')"><el-icon><Document /></el-icon> 编写会议纪要</div>
-                  <div class="menu-item" @click="mockSkill('分析文档')"><el-icon><DataLine /></el-icon> 提取核心数据</div>
+                  <div class="menu-item" @click="mockSkill('写会议纪要')">起草会议纪要</div>
+                  <div class="menu-item" @click="mockSkill('分析文档')">提取关键数据</div>
                 </div>
               </div>
             </el-popover>
 
             <!-- 快捷胶囊按钮 -->
             <div class="quick-prompts">
-              <div class="prompt-pill" @click="triggerUpload"><el-icon><Upload /></el-icon> 上传文档</div>
-              <div class="prompt-pill" @click="pptDialogVisible = true"><el-icon><Monitor /></el-icon> 一键生成 PPT</div>
-              <div class="prompt-pill" @click="mockSkill('对话')"><el-icon><ChatLineSquare /></el-icon> 开启对话</div>
+              <div class="prompt-pill" @click="triggerUpload">上传文档</div>
+              <div class="prompt-pill" @click="pptDialogVisible = true">生成演示文稿</div>
+              <div class="prompt-pill" @click="mockSkill('对话')">开始对话</div>
             </div>
           </div>
 
@@ -98,13 +96,12 @@
             <div class="section-header">
               <span class="section-title">我的云端文档 <span class="count">({{ docList.length }})</span></span>
               <div class="header-actions">
-                <el-button type="danger" size="small" plain icon="Delete" @click="clearDirtyData">一键清理文档</el-button>
+                <el-button type="danger" size="small" plain @click="clearDirtyData">清理文档</el-button>
                 <el-input
                     v-model="search"
-                    placeholder="输入关键词并按回车搜索..."
+                    placeholder="搜索文档标题，回车检索"
                     size="small"
                     style="width: 220px"
-                    prefix-icon="Search"
                     clearable
                     @keyup.enter="handleSearch"
                     @clear="fetchFiles"
@@ -118,7 +115,6 @@
 
                 <!-- 卡片上半部分渐变封面 -->
                 <div class="card-cover" :class="doc.color" @click="goToEditor(doc.id, doc.name)">
-                  <el-icon :size="48" color="rgba(255,255,255,0.9)"><Document /></el-icon>
                 </div>
 
                 <!-- 卡片下半部分 -->
@@ -132,8 +128,8 @@
                       <template #dropdown>
                         <el-dropdown-menu>
                           <!-- 下载、删除选项 -->
-                          <el-dropdown-item command="download" icon="Download">下载到本地</el-dropdown-item>
-                          <el-dropdown-item command="delete" icon="Delete" style="color: var(--pd-danger)">删除文档</el-dropdown-item>
+                          <el-dropdown-item command="download">下载到本地</el-dropdown-item>
+                          <el-dropdown-item command="delete" style="color: var(--pd-danger)">删除文档</el-dropdown-item>
                         </el-dropdown-menu>
                       </template>
                     </el-dropdown>
@@ -141,14 +137,14 @@
                   <div class="doc-meta">
                     <span>{{ doc.time }}</span>
                     <el-tag size="small" :type="doc.analyzed ? 'success' : 'info'" round effect="light">
-                      {{ doc.analyzed ? 'AI已就绪' : '待处理' }}
+                      {{ doc.analyzed ? '已解析' : '待解析' }}
                     </el-tag>
                   </div>
                 </div>
               </div>
             </div>
 
-            <el-empty v-else description="暂无文档，点击上方对话框上传" />
+            <el-empty v-else description="还没有文档。上传一份，或用上方输入框描述你的需求。" />
           </div>
 
         </div>
@@ -528,7 +524,8 @@ const goToAIOps = () => {
 .feishu-aside { background: var(--pd-surface); border-right: 1px solid var(--pd-border); display: flex; flex-direction: column; justify-content: space-between; }
 .aside-top { padding: 24px 16px; }
 .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-weight: bold; font-size: 18px; padding: 0 8px; }
-.logo-box { width: 32px; height: 32px; background: var(--pd-grad-brand); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #E8EEF8; font-size: 20px;}
+.logo-box { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+.brand-mark { display: block; height: 30px; width: auto; }
 .nav-item { padding: 12px 16px; border-radius: var(--pd-r-md); cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; margin-bottom: 4px; color: var(--pd-text-2); transition: background var(--pd-dur-fast) var(--pd-ease), color var(--pd-dur-fast) var(--pd-ease); }
 .nav-item:hover { background: var(--pd-hover); color: var(--pd-text); }
 .nav-item.active { background: var(--pd-primary-weak); color: var(--pd-primary-text); font-weight: 500; }
@@ -578,6 +575,27 @@ const goToAIOps = () => {
 .doc-card { background: var(--pd-surface); border-radius: var(--pd-r-lg); border: 1px solid var(--pd-border); overflow: hidden; box-shadow: var(--pd-shadow-sm); transition: transform var(--pd-dur) var(--pd-ease), box-shadow var(--pd-dur) var(--pd-ease), border-color var(--pd-dur) var(--pd-ease); }
 .doc-card:hover { transform: translateY(-4px); box-shadow: var(--pd-shadow-md); border-color: var(--pd-border-strong); }
 .card-cover { height: 130px; display: flex; align-items: center; justify-content: center; position: relative; }
+/* 无图标的封面：靠一层柔光 + 一条左侧书脊线做出"封面"的层次 */
+.card-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 44px;
+  height: 56px;
+  border-radius: 5px;
+  border: 1px solid rgba(232, 238, 248, 0.22);
+  background: rgba(232, 238, 248, 0.06);
+  box-shadow: 6px 6px 0 -1px rgba(232, 238, 248, 0.05), 12px 12px 0 -2px rgba(232, 238, 248, 0.03);
+}
+.card-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(100% 120% at 18% -20%, rgba(117, 200, 255, 0.12), transparent 62%);
+  box-shadow: inset 2px 0 0 rgba(232, 238, 248, 0.08);
+}
 .card-info { padding: 12px 16px; }
 .info-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .doc-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--pd-text); cursor: pointer; flex: 1; }
