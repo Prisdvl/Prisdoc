@@ -1,0 +1,34 @@
+/* 清除浏览器默认的内外边距 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 让 html, body 和 Vue 的根节点占满全屏 */
+html, body, #app {
+  width: 100%;
+  height: 100%;
+  /* Prisdoc：深色基座 + Space Grotesk（拉丁/数字）与系统中文字体栈 */
+  font-family: var(--pd-font);
+  background-color: var(--pd-bg);
+  color: var(--pd-text);
+  background-image: var(--pd-bg-glow);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  /* 隐藏超出屏幕的部分，防止出现难看的滚动条 */
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 移除 Element Plus 中超链接的默认下划线 */
+a {
+  text-decoration: none;
+  color: var(--pd-primary-text);
+  transition: color var(--pd-dur-fast) var(--pd-ease);
+}
+
+a:hover {
+  color: var(--pd-primary-hover);
+}
