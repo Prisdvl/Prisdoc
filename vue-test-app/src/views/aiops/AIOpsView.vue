@@ -1,9 +1,16 @@
 <template>
   <div class="aiops-container">
     <div class="aiops-header">
-      <h1>
-        运维中心
-      </h1>
+      <div class="header-col">
+        <div class="crumb">
+          <span class="crumb-link" @click="$router.push('/dashboard')">工作台</span>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-now">运维中心</span>
+        </div>
+        <h1>
+          运维中心
+        </h1>
+      </div>
       <div class="header-actions">
         <el-button type="primary" @click="refreshAll" :loading="loading">
           刷新数据
@@ -223,6 +230,12 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 28px;
 }
+
+.header-col { display: flex; flex-direction: column; gap: 6px; }
+.crumb { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--pd-text-3); }
+.crumb-link { color: var(--pd-text-2); cursor: pointer; transition: color var(--pd-dur-fast) var(--pd-ease); }
+.crumb-link:hover { color: var(--pd-primary-text); }
+.crumb-sep { color: var(--pd-border-strong); }
 
 .aiops-header h1 {
   display: flex;

@@ -2,7 +2,7 @@
 
 Prisdoc 智能文档平台的前端，Vue 3 + Vite + Element Plus + Vue Router。
 
-- 工作台 / 文档编辑器 / Agent 工作台 / AI Ops 看板 / 沉浸式 AI 对话 / HTML PPT 生成
+- 工作台 / 能力中心（技能与模板）/ 文档编辑器 / Agent 工作台 / 运维看板 / 沉浸式 AI 对话 / HTML PPT 生成
 - 后端为 Spring Cloud 微服务（gateway 8080、user 8081、file 8082、ai 8083、document 8084）
 
 ## 启动
@@ -50,13 +50,15 @@ mock/
 src/
 ├─ api/            # 各业务模块接口封装
 ├─ collaboration/  # 协同编辑（轮询同步 + 协作者授权）
+├─ constants/      # 全局常量；capabilities.js 是能力中心的技能与模板目录
 ├─ styles/         # 设计令牌 + Element Plus 暗色映射
 ├─ views/
 │  ├─ auth/        # 登录、注册
+│  ├─ capabilities/ # 能力中心（技能 / 模板）
 │  ├─ dashboard/   # 工作台、PPT 运行时
 │  ├─ editor/      # 文档编辑器 / 沉浸式对话
 │  ├─ agent/       # Agent 工作台
-│  └─ aiops/       # AI Ops 运维看板
+│  └─ aiops/       # 运维看板
 ├─ utils/          # request 封装、JWT、全局 AI 状态
 └─ router/
 ```

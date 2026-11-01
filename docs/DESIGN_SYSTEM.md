@@ -41,6 +41,8 @@
 | Tag | `--pd-*-weak` 底 + `--pd-*` 字与边；形状沿用原有（pill 或 6px） |
 | 弹窗 / 抽屉 | `--pd-surface` 底 + `--pd-border` 边 + `--pd-r-xl` + `--pd-shadow-lg`，遮罩 `rgba(8,11,18,.72)` |
 | 侧边栏 | `--pd-surface` 底 + 右边框；选中 `--pd-primary-weak` + `--pd-primary-text`（原设计无指示条，故不加） |
+| 卡片网格 | `repeat(auto-fill, minmax(300px, 1fr))` + 16–24px gap；卡片 `--pd-r-lg` + 1px `--pd-border`，hover 边框 `--pd-border-strong` + `--pd-shadow-md` + 上浮 2px |
+| 时间轴 / 动态列表 | 6px 状态点（成功 / 警告）+ 13.5px 主文 + 12px 次文；整行可点，hover 底 `--pd-hover`，动作文案（`打开 →`）只在 hover 出现 |
 | 代码 / JSON | `#0A0E16` 底 + `#C7D3E6` 字 + `--pd-font-mono` + `--pd-r-md` |
 | 图标 | 常态 `--pd-text-2`，激活 `--pd-primary-text`；除语义色外不做彩色图标 |
 

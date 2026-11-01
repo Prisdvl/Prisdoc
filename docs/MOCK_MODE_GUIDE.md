@@ -71,11 +71,13 @@ Mock 只在**开发服务器**生效（`apply: 'serve'`），`npm run build` 的
 
 - 顶部是「问 AI」的大输入框，回车后带着问题跳到 `/editor/chat-mode`；
 - 三个胶囊按钮分别对应 **上传文档 / 生成演示文稿 / 开始对话**；
+- 中间是 **最近编辑**（按 `updateTime` 倒序的 5 条，带 `2 天前 / 20 天前` 相对时间与解析状态）和 **本周概览**（文档总数 / 7 天内更新 / 已解析占比）；
 - 下方是云端文档卡片，数据来自 `GET /api/documents/user/1`。
 
 **建议动手点**：
-1. 点「上传文档」，随便选一个本地文件 → 走 `POST /api/files/upload` → `POST /api/documents`，列表里会立刻多出一张卡片（Mock 会就地新建文档）。
+1. 点「上传文档」，随便选一个本地文件 → 走 `POST /api/files/upload` → `POST /api/documents`，列表里会立刻多出一张卡片（Mock 会就地新建文档），「最近编辑」也会把它排到第一位。
 2. 搜索框输入「周报」回车 → `GET /api/documents/search`，只剩一条。
+3. 点侧栏「能力中心」→ 进技能与模板页（见本指南第 9 节）。
 
 ### 3. 文档编辑器（核心页面）
 ![编辑器](screenshots/03-editor.png)
@@ -132,6 +134,18 @@ Mock 只在**开发服务器**生效（`apply: 'serve'`），`npm run build` 的
 ![PPT 预览](screenshots/08-ppt-preview.png)
 
 生成物是**纯 HTML**，不依赖 Office：双击就能放映，也可以塞进 iframe 当汇报页。
+
+### 9. 能力中心（技能 / 模板）
+![能力中心](screenshots/09-capabilities.png)
+
+`/capabilities` 把「常做的文档任务」做成两条入口，都走真实链路：
+
+| 页签 | 内容 | 点下去发生什么 |
+| --- | --- | --- |
+| 技能 | 8 条（摘要、润色、纠错、结构重组、数据提取、合规自查、生成演示文稿、跨文档检索），可按分类筛选 | 把写好的指令放进 `sessionStorage.global_ai_task`，跳到 `/editor/chat-mode`，Agent 直接开始执行 |
+| 模板 | 6 份骨架（会议纪要、立项书、周报、制度、需求说明、复盘） | 调 `POST /api/documents` 真建一份文档，再打开 `/editor/{id}`，正文骨架已在 |
+
+技能与模板都定义在 `src/constants/capabilities.js`，增删只改这一个文件，不需要动页面代码。
 
 ---
 

@@ -396,3 +396,10 @@ html.dark .el-form-item__label { color: var(--pd-text-2); }
 html.dark .el-form-item__error { color: var(--pd-danger); }
 html.dark .el-checkbox__label,
 html.dark .el-radio__label { color: var(--pd-text-2); }
+
+/* ---------- 标签页（能力中心等） ---------- */
+html.dark .el-tabs__item { color: var(--pd-text-2); font-weight: 500; }
+html.dark .el-tabs__item:hover { color: var(--pd-text); }
+html.dark .el-tabs__item.is-active { color: var(--pd-text); }
+html.dark .el-tabs__active-bar { background-color: var(--pd-primary); }
+html.dark .el-tabs__nav-wrap::after { background-color: var(--pd-border); }

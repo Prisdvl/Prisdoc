@@ -11,7 +11,7 @@
           <div class="nav-menu">
             <div class="nav-item active">我的工作台</div>
             <div class="nav-item">云端文档库</div>
-            <div class="nav-item">能力中心</div>
+            <div class="nav-item" @click="goToCapabilities">能力中心</div>
             <div v-if="isAdminUser" class="nav-item aiops-nav" @click="goToAIOps">
               运维中心
             </div>
@@ -88,6 +88,51 @@
               <div class="prompt-pill" @click="triggerUpload">上传文档</div>
               <div class="prompt-pill" @click="pptDialogVisible = true">生成演示文稿</div>
               <div class="prompt-pill" @click="mockSkill('对话')">开始对话</div>
+            </div>
+          </div>
+
+          <!-- 最近编辑 + 本周概览：先看发生了什么，再进文档列表 -->
+          <div class="insight-row" v-if="docList.length">
+            <div class="insight-panel">
+              <div class="panel-head">
+                <span class="panel-title">最近编辑</span>
+                <span class="panel-hint">按更新时间排序</span>
+              </div>
+              <ul class="timeline">
+                <li
+                    class="timeline-item"
+                    v-for="doc in recentDocs"
+                    :key="doc.id"
+                    @click="goToEditor(doc.id, doc.name)"
+                >
+                  <span class="timeline-dot" :class="doc.analyzed ? 'ok' : 'pending'"></span>
+                  <div class="timeline-main">
+                    <div class="timeline-name">{{ doc.name }}</div>
+                    <div class="timeline-meta">{{ relativeTime(doc.updated) }} · {{ doc.analyzed ? '已解析' : '待解析' }}</div>
+                  </div>
+                  <span class="timeline-go">打开 →</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="insight-panel">
+              <div class="panel-head">
+                <span class="panel-title">本周概览</span>
+              </div>
+              <div class="insight-stats">
+                <div class="insight-stat">
+                  <span class="num">{{ docList.length }}</span>
+                  <span class="label">文档总数</span>
+                </div>
+                <div class="insight-stat">
+                  <span class="num">{{ weekStats.updated }}</span>
+                  <span class="label">7 天内更新</span>
+                </div>
+                <div class="insight-stat">
+                  <span class="num">{{ weekStats.analyzedRatio }}%</span>
+                  <span class="label">已解析占比</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -276,6 +321,7 @@ const fetchFiles = async () => {
         name: item.title || '未命名文档',
         time: item.createTime ? new Date(item.createTime).toLocaleDateString() : '未知',
         analyzed: !!item.summary,
+        updated: item.updateTime || item.createTime,
         color: ['bg-blue', 'bg-orange', 'bg-green', 'bg-purple'][Math.floor(Math.random() * 4)]
       }))
     }
@@ -326,6 +372,8 @@ const handleSearch = async () => {
         fileId: item.fileId,
         name: item.title,
         time: new Date(item.createTime).toLocaleDateString(),
+        analyzed: !!item.summary,
+        updated: item.updateTime || item.createTime,
         color: ['bg-blue', 'bg-orange', 'bg-green', 'bg-purple'][Math.floor(Math.random() * 4)]
       }))
     }
@@ -513,6 +561,42 @@ const handleUserCommand = (cmd) => {
 const goToAIOps = () => {
   router.push('/aiops')
 }
+
+const goToCapabilities = () => {
+  router.push('/capabilities')
+}
+
+// 最近编辑：按 updateTime 倒序取前 5 条
+const recentDocs = computed(() => [...docList.value]
+    .sort((a, b) => new Date(b.updated || 0) - new Date(a.updated || 0))
+    .slice(0, 5))
+
+// 本周概览：7 天内更新数 + 已解析占比
+const weekStats = computed(() => {
+  const week = 7 * 24 * 60 * 60 * 1000
+  const now = Date.now()
+  const updated = docList.value.filter((d) => {
+    const t = d.updated ? new Date(d.updated).getTime() : NaN
+    return !Number.isNaN(t) && now - t <= week
+  }).length
+  const analyzed = docList.value.filter((d) => d.analyzed).length
+  const total = docList.value.length || 1
+  return { updated, analyzedRatio: Math.round((analyzed / total) * 100) }
+})
+
+const relativeTime = (iso) => {
+  if (!iso) return '未知'
+  const t = new Date(iso).getTime()
+  if (Number.isNaN(t)) return '未知'
+  const minutes = Math.round((Date.now() - t) / 60000)
+  if (minutes < 1) return '刚刚'
+  if (minutes < 60) return `${minutes} 分钟前`
+  const hours = Math.round(minutes / 60)
+  if (hours < 24) return `${hours} 小时前`
+  const days = Math.round(hours / 24)
+  if (days < 30) return `${days} 天前`
+  return new Date(iso).toLocaleDateString('zh-CN')
+}
 </script>
 
 <style scoped>
@@ -602,6 +686,53 @@ const goToAIOps = () => {
 .doc-meta { color: var(--pd-text-3); }
 .more-btn { color: var(--pd-text-3); cursor: pointer; font-size: 18px; transition: color var(--pd-dur-fast) var(--pd-ease); }
 .more-btn:hover { color: var(--pd-text); }
+
+/* 最近编辑 + 本周概览 */
+.insight-row {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  margin-top: 40px;
+}
+.insight-panel {
+  background: var(--pd-surface);
+  border: 1px solid var(--pd-border);
+  border-radius: var(--pd-r-lg);
+  box-shadow: var(--pd-shadow-sm);
+  padding: 18px 20px;
+}
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+.panel-title { font-size: 15px; font-weight: 600; color: var(--pd-text); }
+.panel-hint { font-size: 12px; color: var(--pd-text-3); }
+
+.timeline { list-style: none; margin: 0; padding: 0; }
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-radius: var(--pd-r-md);
+  cursor: pointer;
+  transition: background var(--pd-dur-fast) var(--pd-ease);
+}
+.timeline-item:hover { background: var(--pd-hover); }
+.timeline-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: var(--pd-text-3); }
+.timeline-dot.ok { background: var(--pd-success); }
+.timeline-dot.pending { background: var(--pd-warning); }
+.timeline-main { flex: 1; min-width: 0; }
+.timeline-name { font-size: 13.5px; color: var(--pd-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.timeline-meta { font-size: 12px; color: var(--pd-text-3); margin-top: 3px; }
+.timeline-go { font-size: 12px; color: var(--pd-primary-text); opacity: 0; transition: opacity var(--pd-dur-fast) var(--pd-ease); }
+.timeline-item:hover .timeline-go { opacity: 1; }
+
+.insight-stats { display: flex; flex-direction: column; gap: 14px; }
+.insight-stat { display: flex; align-items: baseline; justify-content: space-between; }
+.insight-stat .num { font-family: var(--pd-font-mono); font-size: 22px; font-weight: 600; color: var(--pd-text); }
+.insight-stat .label { font-size: 12.5px; color: var(--pd-text-3); }
+
+@media (max-width: 1120px) {
+  .insight-row { grid-template-columns: 1fr; }
+}
 
 /* 封面：统一为一套深蓝梯度（去掉糖果色），图标仍是白色 90% 透明 */
 .bg-blue { background: linear-gradient(135deg, #0B1730, #12294F); }

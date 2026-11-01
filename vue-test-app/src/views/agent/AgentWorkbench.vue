@@ -1,6 +1,7 @@
 <template>
   <div class="agent-workbench">
     <header class="workbench-header">
+      <div class="workbench-crumb" @click="$router.push('/dashboard')">返回工作台</div>
       <h2><img class="brand-mark" src="/brand/prisdvl-nexus.png" alt="" /> Prisdoc Agent 工作台</h2>
       <p>查看可用工具、跑一次任务、处理高危操作审批、回看历史记录。</p>
     </header>
@@ -253,6 +254,16 @@ onMounted(() => {
 }
 
 .brand-mark { display: block; height: 24px; width: auto; }
+
+.workbench-crumb {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  color: rgba(232, 238, 248, 0.72);
+  cursor: pointer;
+  transition: color var(--pd-dur-fast) var(--pd-ease);
+}
+.workbench-crumb:hover { color: #E8EEF8; }
 
 .workbench-header p {
   margin: 0;
