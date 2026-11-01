@@ -16,6 +16,9 @@ const showAiAssistant = computed(() => {
   // 如果路由还没加载好，先不显示
   if (!route.path) return false
 
+  // 落地页与登录注册页不出现全局助手
+  if (route.path === '/') return false
+
   // 定义不需要显示 AI 的黑名单路径
   const hiddenPaths = ['/login', '/register', '/auth', '/editor']
 

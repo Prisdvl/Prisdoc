@@ -218,6 +218,8 @@ onMounted(() => {
 
 <style scoped>
 .aiops-container {
+  height: 100vh;
+  overflow-y: auto;
   padding: 24px 32px;
   max-width: 1400px;
   margin: 0 auto;

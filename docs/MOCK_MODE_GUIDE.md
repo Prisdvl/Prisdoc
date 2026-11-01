@@ -57,6 +57,12 @@ Mock 只在**开发服务器**生效（`apply: 'serve'`），`npm run build` 的
 
 ## 三、页面走查流程（按这个顺序点一遍就熟了）
 
+### 0. 落地页
+![落地页](screenshots/00-landing.png)
+
+`/` 是未登录也能看的落地页：顶部悬浮胶囊导航（产品 / 流程 / 实现 / 问题 + 主题切换 + 登录），
+中间一句「把资料变成可检索的知识」，下面依次是产品、流程、实现、常见问题四段。已登录时按钮会变成「进入工作台」。
+
 ### 1. 登录页
 ![登录页](screenshots/01-login.png)
 
@@ -244,3 +250,16 @@ Mock 插件在服务启动时加载，改完需要重启 `npm run dev:mock`（�
 
 **Q：能在手机或别的电脑上看吗？**
 `npm run dev:mock -- --host`，然后用局域网 IP 访问。
+
+---
+
+## 九、主题（浅色 / 深色 / 自动）
+
+三个入口都能切：落地页胶囊导航、登录/注册页右上角、工作台侧栏底部（三段式胶囊：浅色 / 深色 / 自动）。
+选择存在 `localStorage.prisdoc-theme`，刷新后保留；选「自动」时跟随系统 `prefers-color-scheme`，系统切换会实时生效。
+
+颜色全部来自 `src/styles/prisdoc-tokens.css` 里的 `--pd-*` 令牌，组件代码里没有一行判断主题；
+`src/utils/theme.js` 只负责在 `<html>` 上写 `data-theme`（深色时额外挂 `html.dark`，让 Element Plus 的暗色变量表生效）。
+首屏由 `index.html` 里的内联脚本先把主题定好，避免亮色用户看到一闪而过的深色底。
+
+亮色截图见 `screenshots/12-login-light.png`、`13-landing-light.png`、`10-dashboard-light.png`、`11-editor-light.png`。

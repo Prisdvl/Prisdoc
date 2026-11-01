@@ -1,5 +1,6 @@
 <template>
   <div class="auth-bg">
+    <div class="auth-theme"><ThemeToggle size="sm" /></div>
     <el-card class="auth-card" shadow="hover">
       <div class="logo"><img class="logo-mark" src="/brand/prisdvl-nexus.png" alt="" />Prisdoc 智能平台</div>
       <h2 class="title">欢迎回来</h2>
@@ -24,6 +25,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { userApi } from '../../api/user'
+import ThemeToggle from '../../components/ThemeToggle.vue'
 import { STORAGE_KEYS } from '../../constants'
 
 const router = useRouter()
@@ -70,11 +72,14 @@ const handleLogin = async () => {
 <style scoped>
 /* 沉浸式深色背景：只有深底 + 顶部一抹品牌光晕，不做玻璃拟态/粒子动画 */
 .auth-bg {
+  position: relative;
   height: 100vh; display: flex; justify-content: center; align-items: center;
   background: var(--pd-bg);
   background-image: var(--pd-bg-glow);
   background-repeat: no-repeat;
 }
+.auth-theme { position: absolute; top: 24px; right: 24px; }
+
 .auth-card {
   width: 400px; padding: 20px 30px; border-radius: var(--pd-r-xl);
   background: var(--pd-surface);

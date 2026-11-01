@@ -5,8 +5,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { STORAGE_KEYS } from '../constants'
 
 const routes = [
-    { path: '/', redirect: '/login' },
-    { path: '/index.html', redirect: '/login' },
+    { path: '/', component: () => import('../views/landing/LandingView.vue') },
+    { path: '/index.html', redirect: '/' },
     { path: '/login', component: () => import('../views/auth/LoginView.vue') },
     { path: '/register', component: () => import('../views/auth/RegisterView.vue') },
     { path: '/dashboard', component: () => import('../views/dashboard/IndexView.vue') },
@@ -23,9 +23,11 @@ const router = createRouter({
 })
 
 // 路由守卫
+const PUBLIC_PATHS = ['/', '/login', '/register']
+
 router.beforeEach((to, from, next) => {
     const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
-    if (to.path !== '/login' && to.path !== '/register' && !token) {
+    if (!PUBLIC_PATHS.includes(to.path) && !token) {
         next('/login')
     } else {
         next()

@@ -107,7 +107,7 @@ const useTemplate = async (tpl) => {
 
 <style scoped>
 .cap-page {
-  min-height: 100vh;
+  height: 100vh;
   background: var(--pd-bg);
   overflow-y: auto;
 }

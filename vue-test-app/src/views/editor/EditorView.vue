@@ -1177,7 +1177,8 @@ const scrollToBottom = () => { nextTick(() => {
 .editor-main { flex: 1; overflow-y: auto; display: flex; justify-content: center; padding: 50px 0; background: var(--pd-bg); position: relative; }
 .paper-container { position: relative; }
 /* A4 纸必须保持浅色：深色 UI + 浅色纸是这套设计的核心对比，也是打印/导出的前提 */
-.paper { width: 780px; min-height: 1100px; background: #F7F8FA; padding: 80px 100px; border-radius: var(--pd-r-sm); box-shadow: var(--pd-shadow-lg); outline: none; line-height: 1.8; font-size: 16px; color: #1F2329; }
+/* 浅色主题下纸面与页面底色接近，用 1px 内描边（不占布局）保住边界 */
+.paper { width: 780px; min-height: 1100px; background: #F7F8FA; padding: 80px 100px; border-radius: var(--pd-r-sm); box-shadow: var(--pd-shadow-lg), inset 0 0 0 1px color-mix(in oklab, #1F2329 8%, transparent); outline: none; line-height: 1.8; font-size: 16px; color: #1F2329; }
 
 .ai-sidebar { width: 360px; background: var(--pd-surface); border-left: 1px solid var(--pd-border); display: flex; flex-direction: column; height: 100%; flex-shrink: 0;}
 .ai-sidebar-top { flex-shrink: 0; }

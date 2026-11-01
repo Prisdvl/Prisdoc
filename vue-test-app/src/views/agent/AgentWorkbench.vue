@@ -374,7 +374,7 @@ onMounted(() => {
 
 .result-viewer {
   margin-top: 20px;
-  background: #0A0E16;
+  background: var(--pd-input);
   border: 1px solid var(--pd-border);
   border-radius: var(--pd-r-md);
   padding: 15px;
@@ -388,7 +388,7 @@ onMounted(() => {
 
 .json-code {
   margin: 0;
-  color: #C7D3E6;
+  color: var(--pd-text-2);
   font-family: var(--pd-font-mono);
   white-space: pre-wrap;
   word-break: break-all;

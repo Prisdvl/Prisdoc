@@ -36,12 +36,13 @@ mock/
 
 ## 设计体系
 
-深海军蓝底 + 深钴蓝主色的单主题（dark）界面，令牌集中在 `src/styles/prisdoc-tokens.css`：
+深海军蓝 + 深钴蓝的品牌视觉，同时支持 **浅色 / 深色 / 自动** 切换，令牌集中在 `src/styles/prisdoc-tokens.css`：
 
 - `--pd-bg / --pd-surface / --pd-border` 等背景与边界令牌，`--pd-primary*` 品牌色，`--pd-r-*` 圆角，`--pd-shadow-*` 双层阴影；
-- Element Plus 通过 `element-plus/theme-chalk/dark/css-vars.css` + `html.dark{}` 变量覆盖接入，弹层样式写在全局（teleport 到 body）；
+- 主题由 `src/utils/theme.js` 写到 `<html data-theme>`（深色时加 `html.dark`）；开关在落地页导航、登录/注册页右上角、工作台侧栏底部；
+- Element Plus 通过 `element-plus/theme-chalk/dark/css-vars.css` + `html.dark{}` / `html[data-theme="light"]{}` 两套变量接入；组件级覆盖写成 `html .el-*`（不带 `.dark`），弹层样式放在全局（teleport 到 body）；
 - 字体用 `@fontsource/space-grotesk` 自托管（400/500/600/700），中文回退 PingFang SC / 微软雅黑，不引外链；
-- 唯一刻意的例外：编辑器的 A4 纸保持浅色（`#F7F8FA`），它是深色 UI 成立的前提。
+- 两个例外：A4 纸在两套主题下都保持浅色；文档封面用深蓝梯度（相当于封面图）。
 - 完整规范（令牌表、组件规则、禁止项）见 [`../docs/DESIGN_SYSTEM.md`](../docs/DESIGN_SYSTEM.md)。
 
 ## 目录结构

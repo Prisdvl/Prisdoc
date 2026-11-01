@@ -11,12 +11,11 @@ import '@fontsource/space-grotesk/600.css'
 import '@fontsource/space-grotesk/700.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import './style.css'
-// 设计令牌 + Element Plus 暗色映射（必须排在 Element Plus 样式之后）
+// 设计令牌 + Element Plus 主题映射（必须排在 Element Plus 样式之后）
 import './styles/prisdoc-tokens.css'
+// 主题（亮 / 暗 / 跟随系统）：导入即按本地偏好应用到 <html>
+import './utils/theme'
 import './collaboration/autoInit'
-
-// Prisdoc 只有深色一套主题：根节点常驻 dark
-document.documentElement.classList.add('dark')
 
 const app = createApp(App)
 
