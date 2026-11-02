@@ -2,12 +2,14 @@
   <router-view />
 
   <GlobalAiAssistant v-if="showAiAssistant" />
+  <SettingsDialog />
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import GlobalAiAssistant from './views/components/GlobalAiAssistant.vue'
+import SettingsDialog from './components/SettingsDialog.vue'
 
 const route = useRoute()
 

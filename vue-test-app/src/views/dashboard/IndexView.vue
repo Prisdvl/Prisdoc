@@ -20,7 +20,7 @@
 
         <!-- 底部：主题切换 + 用户信息 (头像取首字母) -->
         <div class="aside-bottom">
-          <div class="theme-row"><ThemeToggle size="sm" /></div>
+          <div class="settings-row" @click="openSettings">设置</div>
           <el-dropdown trigger="click" placement="top-start" @command="handleUserCommand">
             <div class="user-profile">
               <el-avatar :size="32" style="background-color: var(--pd-primary); font-weight: bold; color: #E8EEF8;">
@@ -265,7 +265,7 @@ import { docApi } from '../../api/document'
 import { aiApi } from '../../api/ai'
 import { STORAGE_KEYS } from '../../constants'
 import { isAdmin } from '../../utils/jwt'
-import ThemeToggle from '../../components/ThemeToggle.vue'
+import { openSettings } from '../../utils/settingsUi'
 
 const router = useRouter()
 const loading = ref(false)
@@ -620,7 +620,17 @@ const relativeTime = (iso) => {
 .nav-item.aiops-nav:hover { background: var(--pd-warning-weak); color: var(--pd-warning); }
 
 .aside-bottom { padding: 16px; border-top: 1px solid var(--pd-border); }
-.theme-row { display: flex; justify-content: center; margin-bottom: 12px; }
+/* 侧栏底部的「设置」入口（主题在这里，不在导航里） */
+.settings-row {
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: var(--pd-r-md);
+  font-size: 13px;
+  color: var(--pd-text-2);
+  cursor: pointer;
+  transition: background var(--pd-dur-fast) var(--pd-ease), color var(--pd-dur-fast) var(--pd-ease);
+}
+.settings-row:hover { background: var(--pd-hover); color: var(--pd-text); }
 .user-profile { display: flex; align-items: center; gap: 10px; padding: 8px; cursor: pointer; border-radius: var(--pd-r-md); transition: background var(--pd-dur-fast) var(--pd-ease); }
 .user-profile:hover { background: var(--pd-hover); }
 .username { font-size: 14px; font-weight: 500; color: var(--pd-text);}

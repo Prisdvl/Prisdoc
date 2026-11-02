@@ -255,11 +255,11 @@ Mock 插件在服务启动时加载，改完需要重启 `npm run dev:mock`（�
 
 ## 九、主题（浅色 / 深色 / 自动）
 
-三个入口都能切：落地页胶囊导航、登录/注册页右上角、工作台侧栏底部（三段式胶囊：浅色 / 深色 / 自动）。
+入口按 Prisma 的做法放在两处（**导航栏里没有**）：登录后是侧栏底部「设置」→ 设置对话框的「外观」；登录前是页面**左下角**的小控件（点开是「外观」面板）。三段式胶囊：浅色 / 深色 / 自动。
 选择存在 `localStorage.prisdoc-theme`，刷新后保留；选「自动」时跟随系统 `prefers-color-scheme`，系统切换会实时生效。
 
 颜色全部来自 `src/styles/prisdoc-tokens.css` 里的 `--pd-*` 令牌，组件代码里没有一行判断主题；
 `src/utils/theme.js` 只负责在 `<html>` 上写 `data-theme`（深色时额外挂 `html.dark`，让 Element Plus 的暗色变量表生效）。
 首屏由 `index.html` 里的内联脚本先把主题定好，避免亮色用户看到一闪而过的深色底。
 
-亮色截图见 `screenshots/12-login-light.png`、`13-landing-light.png`、`10-dashboard-light.png`、`11-editor-light.png`。
+截图：`14-settings.png`（设置 → 外观）、`15-corner-popover.png`（左下角控件）、`12-login-light.png`、`13-landing-light.png`、`10-dashboard-light.png`、`11-editor-light.png`。

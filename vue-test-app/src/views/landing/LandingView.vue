@@ -14,7 +14,6 @@
           <a href="#faq">问题</a>
         </nav>
         <div class="lp-actions">
-          <ThemeToggle size="sm" />
           <button class="lp-login" type="button" @click="enter">{{ signedIn ? '进入工作台' : '登录' }}</button>
         </div>
       </div>
@@ -152,6 +151,8 @@
       </div>
     </section>
 
+    <ThemeCorner />
+
     <footer class="lp-foot">
       <div class="lp-foot-brand">
         <img class="lp-brand-mark" src="/brand/prisdvl-nexus.png" alt="" />
@@ -171,7 +172,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import ThemeToggle from '../../components/ThemeToggle.vue'
+import ThemeCorner from '../../components/ThemeCorner.vue'
 import { STORAGE_KEYS } from '../../constants'
 
 const router = useRouter()
