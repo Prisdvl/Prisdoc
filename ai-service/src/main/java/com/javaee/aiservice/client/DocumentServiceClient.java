@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Thin internal client for document-service.
+ * document-service 的内部调用客户端，透传当前请求的鉴权头并解包统一响应体。
  */
 @Component
 public class DocumentServiceClient {
@@ -29,6 +29,12 @@ public class DocumentServiceClient {
     @Value("${document.service.url:http://document:8084}")
     private String documentServiceUrl;
 
+    /**
+     * 查询文档元数据与正文。
+     *
+     * @param documentId 文档 ID
+     * @return 文档数据
+     */
     public Map<String, Object> getDocument(String documentId) {
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 documentUrl(documentId),
@@ -39,6 +45,13 @@ public class DocumentServiceClient {
         return extractData(response);
     }
 
+    /**
+     * 更新文档内容或元数据。
+     *
+     * @param documentId 文档 ID
+     * @param payload 待更新的字段
+     * @return 更新后的文档数据
+     */
     public Map<String, Object> updateDocument(String documentId, Map<String, Object> payload) {
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 documentUrl(documentId),
@@ -49,6 +62,12 @@ public class DocumentServiceClient {
         return extractData(response);
     }
 
+    /**
+     * 查询文档的存储信息。
+     *
+     * @param documentId 文档 ID
+     * @return 存储信息，如存储路径与大小
+     */
     public Map<String, Object> getDocumentStorage(String documentId) {
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 documentUrl(documentId) + "/storage",
@@ -59,6 +78,11 @@ public class DocumentServiceClient {
         return extractData(response);
     }
 
+    /**
+     * 删除文档。
+     *
+     * @param documentId 文档 ID
+     */
     public void deleteDocument(String documentId) {
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 documentUrl(documentId),

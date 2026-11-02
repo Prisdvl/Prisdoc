@@ -14,7 +14,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Stores async job state and publishes model requests to RabbitMQ.
+ * 异步 AI 任务服务，负责维护任务状态并把模型请求投递到 RabbitMQ。
+ *
+ * <p>任务状态存放在 Redis，过期时间由 {@code ai.async.job-expiry-hours} 配置；
+ * 结果由消费者回写。</p>
  */
 @Service
 public class AsyncAIJobService {
@@ -32,6 +35,15 @@ public class AsyncAIJobService {
     @Value("${ai.async.job-expiry-hours:24}")
     private long jobExpiryHours;
 
+    /**
+     * 创建异步任务并投递到消息队列。
+     *
+     * @param type 任务类型
+     * @param payload 任务载荷，可为 null
+     * @param model 目标模型编码
+     * @param userId 提交任务的用户 ID
+     * @return 新建任务的状态快照，状态为 queued
+     */
     public AsyncAIJobVO submit(String type, Object payload, String model, String userId) {
         String jobId = UUID.randomUUID().toString();
         long now = System.currentTimeMillis();
@@ -62,6 +74,14 @@ public class AsyncAIJobService {
         return job;
     }
 
+    /**
+     * 查询任务状态，非管理员只能查看自己的任务。
+     *
+     * @param jobId 任务 ID
+     * @param userId 请求者用户 ID
+     * @param admin 是否管理员：true-可跨用户查询
+     * @return 任务状态快照
+     */
     public AsyncAIJobVO getJob(String jobId, String userId, boolean admin) {
         AsyncAIJobVO job = load(jobId);
         if (job == null) {
@@ -73,6 +93,11 @@ public class AsyncAIJobService {
         return job;
     }
 
+    /**
+     * 把任务标记为运行中并记录开始时间。
+     *
+     * @param jobId 任务 ID
+     */
     public void markRunning(String jobId) {
         AsyncAIJobVO job = requireJob(jobId);
         job.setStatus("running");
@@ -80,6 +105,12 @@ public class AsyncAIJobService {
         save(job);
     }
 
+    /**
+     * 把任务标记为成功并写入结果。
+     *
+     * @param jobId 任务 ID
+     * @param result 任务结果
+     */
     public void markSuccess(String jobId, Object result) {
         AsyncAIJobVO job = requireJob(jobId);
         job.setStatus("success");
@@ -88,6 +119,12 @@ public class AsyncAIJobService {
         save(job);
     }
 
+    /**
+     * 把任务标记为失败并记录错误信息。
+     *
+     * @param jobId 任务 ID
+     * @param error 错误描述
+     */
     public void markFailed(String jobId, String error) {
         AsyncAIJobVO job = requireJob(jobId);
         job.setStatus("failed");

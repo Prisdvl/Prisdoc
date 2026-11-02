@@ -256,6 +256,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 工作台首页：展示文档列表，并提供新建文档、AI 任务与 PPT 生成入口。
+ */
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'

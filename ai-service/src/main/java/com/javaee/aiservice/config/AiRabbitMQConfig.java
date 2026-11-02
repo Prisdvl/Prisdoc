@@ -12,7 +12,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * AI 服务统一 RabbitMQ 配置。
- * 当前只启用异步模型任务队列；后续 Agent 任务、AIOps 告警也应复用该 TopicExchange。
+ *
+ * <p>当前只声明异步模型任务队列；后续 Agent 任务与 AIOps 告警复用同一个 TopicExchange。</p>
  */
 @Configuration
 public class AiRabbitMQConfig {

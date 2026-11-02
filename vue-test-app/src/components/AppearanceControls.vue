@@ -11,6 +11,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 外观设置控件：在设置弹窗中提供主题选择。
+ */
 import ThemeToggle from './ThemeToggle.vue'
 </script>
 

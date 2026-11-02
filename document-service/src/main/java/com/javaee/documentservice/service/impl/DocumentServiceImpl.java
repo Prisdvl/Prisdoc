@@ -30,9 +30,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 文档服务实现类
- * 实现文档的CRUD操作和版本控制功能
- * 文档内容存储到MinIO，MySQL只存储元数据和引用
+ * 文档服务实现，完成文档增删改查、协作者授权与版本管理。
+ *
+ * <p>正文存放在 MinIO，MySQL 只保存元数据与对象引用；创建时可通过 fileId
+ * 拉取源文件并交由 {@code DocumentParserUtil} 解析出正文，解析失败则仅保留元数据。</p>
  */
 @Service
 public class DocumentServiceImpl implements DocumentService {
@@ -58,12 +59,14 @@ public class DocumentServiceImpl implements DocumentService {
     private ObjectMapper objectMapper;
 
     /**
-     * 创建文档
-     * 创建新文档并保存初始版本
-     * 通过fileId从file-service获取文件内容，使用Apache POI解析
+     * 创建文档并保存初始版本。
+     *
+     * <p>若入参带 fileId，则调用 file-service 下载源文件并解析出正文写入 MinIO；
+     * 解析或写入失败只记录日志，不影响文档元数据创建。</p>
+     *
      * @param dto 创建文档请求参数
-     * @param userId 创建用户ID
-     * @return 文档VO
+     * @param userId 创建用户 ID
+     * @return 新建文档信息，含解析出的正文
      */
     @Override
     @Transactional
@@ -134,12 +137,12 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
-     * 更新文档
-     * 更新文档内容前先保存当前版本作为历史版本
-     * @param id 文档ID
+     * 更新文档元数据与正文，更新前先把当前内容存为历史版本。
+     *
+     * @param id 文档 ID
      * @param dto 更新文档请求参数
-     * @param userId 更新用户ID
-     * @return 更新后的文档VO
+     * @param userId 更新用户 ID，需具备写权限
+     * @return 更新后的文档信息
      */
     @Override
     @Transactional
@@ -185,10 +188,10 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
-     * 删除文档（软删除）
-     * 将文档状态标记为已删除，不物理删除
-     * @param id 文档ID
-     * @param userId 删除用户ID
+     * 软删除文档，并清理 MinIO 中的正文对象。
+     *
+     * @param id 文档 ID
+     * @param userId 删除用户 ID，需具备写权限
      */
     @Override
     @Transactional
@@ -221,10 +224,11 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
-     * 根据ID获取文档详情
-     * 从MySQL获取元数据，从MinIO获取内容
-     * @param id 文档ID
-     * @return 文档VO
+     * 按 ID 获取文档详情，正文从 MinIO 读取。
+     *
+     * @param id 文档 ID
+     * @param userId 当前用户 ID，需具备读权限
+     * @return 文档详情，含正文
      */
     @Override
     public DocumentVO getById(String id, Long userId) {
@@ -253,9 +257,10 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
-     * 获取用户的文档列表
-     * @param userId 用户ID
-     * @return 文档VO列表（不包含内容，如需内容需单独调用getById）
+     * 获取用户的文档列表，含本人创建与被授权协作的文档。
+     *
+     * @param userId 用户 ID
+     * @return 文档列表，不含正文，需要正文时另行调用 {@code getById}
      */
     @Override
     public List<DocumentVO> getByUserId(Long userId) {
@@ -264,10 +269,13 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
-     * 搜索文档
-     * 支持按关键词搜索（标题、分类）或按分类搜索
-     * @param dto 查询参数
-     * @return 文档VO列表（不包含内容，如需内容需单独调用getById）
+     * 在用户可访问的文档中按关键词或分类检索。
+     *
+     * <p>关键词匹配标题与关键词字段；仅当关键词为空时才按分类精确筛选。</p>
+     *
+     * @param dto 查询参数，含关键词与分类
+     * @param userId 当前用户 ID，用于限定可访问范围
+     * @return 命中的文档列表，不含正文
      */
     @Override
     public List<DocumentVO> search(DocumentQueryDTO dto, Long userId) {
@@ -276,9 +284,11 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
-     * 获取文档的所有版本
-     * @param documentId 文档ID
-     * @return 文档版本列表（按版本号降序）
+     * 获取文档的所有历史版本。
+     *
+     * @param documentId 文档 ID
+     * @param userId 当前用户 ID，需具备读权限
+     * @return 版本列表，按版本号降序排列
      */
     @Override
     public List<DocumentVersion> getVersions(String documentId, Long userId) {
@@ -291,12 +301,12 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
-     * 恢复文档到指定版本
-     * 先保存当前版本作为历史版本，再恢复到指定版本的内容
-     * @param documentId 文档ID
-     * @param versionNumber 版本号
-     * @param userId 操作用户ID
-     * @return 恢复后的文档VO
+     * 把文档恢复到指定版本，恢复前先把当前正文存为历史版本。
+     *
+     * @param documentId 文档 ID
+     * @param versionNumber 目标版本号
+     * @param userId 操作用户 ID，需具备写权限
+     * @return 恢复后的文档信息
      */
     @Override
     @Transactional

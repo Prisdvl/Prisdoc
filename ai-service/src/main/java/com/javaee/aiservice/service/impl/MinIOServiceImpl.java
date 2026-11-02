@@ -19,8 +19,10 @@ import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 /**
- * MinIO服务实现类
- * 功能说明：提供文件上传、下载、删除等操作
+ * MinIO 服务实现，基于 MinIO 客户端完成文件上传、下载、删除与存储桶操作。
+ *
+ * <p>客户端在初始化阶段按配置的 endpoint 与密钥创建；上传前自动检查并创建存储桶，
+ * 文件访问 URL 通过预签名方式生成。</p>
  */
 @Service
 public class MinIOServiceImpl implements MinIOService {
@@ -89,7 +91,7 @@ public class MinIOServiceImpl implements MinIOService {
                 .build()
         );
         
-        // 返回文件访问URL
+        // 返回文件访问 URL
         return getFileUrl(bucketName, objectName, urlExpiry);
     }
 
@@ -123,7 +125,7 @@ public class MinIOServiceImpl implements MinIOService {
                 .build()
         );
         
-        // 返回文件访问URL
+        // 返回文件访问 URL
         return getFileUrl(bucketName, objectName, urlExpiry);
     }
 

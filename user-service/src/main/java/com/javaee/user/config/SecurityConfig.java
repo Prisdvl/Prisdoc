@@ -11,24 +11,29 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
+ * 用户服务安全配置，声明密码加密器与请求放行规则。
+ *
+ * <p>基础过滤链继承自 {@link BaseSecurityConfig}，本类补充公开端点白名单。</p>
+ *
  * @author qxk
- * @description: 用户服务安全配置
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends BaseSecurityConfig {
 
     /**
-     * 构造函数注入JWT认证过滤器
-     * @param jwtAuthenticationFilter JWT认证过滤器
+     * 注入 JWT 认证过滤器。
+     *
+     * @param jwtAuthenticationFilter JWT 认证过滤器
      */
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         super(jwtAuthenticationFilter);
     }
 
     /**
-     * 密码加密器
-     * @return BCryptPasswordEncoder
+     * 提供 BCrypt 密码加密器。
+     *
+     * @return BCrypt 密码加密器
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,8 +41,9 @@ public class SecurityConfig extends BaseSecurityConfig {
     }
 
     /**
-     * BCryptPasswordEncoder实例（用于依赖注入）
-     * @return BCryptPasswordEncoder
+     * 暴露 BCryptPasswordEncoder，供按具体类型注入的组件使用。
+     *
+     * @return BCrypt 密码加密器
      */
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -45,10 +51,11 @@ public class SecurityConfig extends BaseSecurityConfig {
     }
 
     /**
-     * 配置SecurityFilterChain
-     * @param http HttpSecurity
-     * @return SecurityFilterChain
-     * @throws Exception 异常
+     * 配置安全过滤链，放行登录、注册、文档与健康检查端点。
+     *
+     * @param http HttpSecurity 配置对象
+     * @return 构建完成的安全过滤链
+     * @throws Exception 构建过滤链失败时抛出
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

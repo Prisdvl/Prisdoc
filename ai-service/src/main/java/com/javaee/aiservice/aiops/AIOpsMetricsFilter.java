@@ -14,6 +14,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * AIOps 指标采集过滤器，统计 AI 接口的请求量、耗时与错误数。
+ *
+ * <p>仅拦截 {@code /api/ai/**} 且排除 {@code /api/ai/aiops/**} 自身的请求，避免监控接口递归统计。</p>
+ */
 @Component
 @Order(1)
 public class AIOpsMetricsFilter extends OncePerRequestFilter {

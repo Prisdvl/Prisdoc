@@ -1,7 +1,7 @@
 package com.javaee.fileservice.enums;
 
 /**
- * 存储类型枚举
+ * 存储类型枚举，定义支持的存储后端编码与中文描述。
  */
 public enum StorageTypeEnum {
 

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 文件元数据查询接口控制器
+ * 文件元数据查询接口控制器，提供元数据详情、列表、搜索与目录结构查询。
  */
 @RestController
 @RequestMapping("/api/files")
@@ -24,7 +24,10 @@ public class FileMetadataController {
     private FileMetadataService fileMetadataService;
 
     /**
-     * 获取文件元数据
+     * 根据文件 ID 查询文件元数据。
+     *
+     * @param fileId 文件 ID
+     * @return 文件元数据；不存在时返回 404，查询异常时返回 500 与错误文本
      */
     @GetMapping("/metadata/{fileId}")
     @Operation(summary = "获取文件元数据", description = "根据文件ID获取文件详细信息")
@@ -41,7 +44,13 @@ public class FileMetadataController {
     }
 
     /**
-     * 获取文件列表
+     * 分页查询文件元数据，支持按字段排序。
+     *
+     * @param page 页码，从 1 开始
+     * @param size 每页条数
+     * @param sortBy 排序字段，驼峰命名会被转换为数据库列名
+     * @param direction 排序方向，asc 为升序，其余取值按降序
+     * @return 当前页的文件元数据列表；查询异常时返回 500 与错误文本
      */
     @GetMapping("/list")
     @Operation(summary = "获取文件列表", description = "获取文件列表，支持分页和排序")
@@ -58,7 +67,12 @@ public class FileMetadataController {
     }
 
     /**
-     * 搜索文件
+     * 按关键词分页搜索文件，匹配文件名与原始文件名。
+     *
+     * @param keyword 搜索关键词
+     * @param page 页码，从 1 开始
+     * @param size 每页条数
+     * @return 匹配的文件元数据列表；查询异常时返回 500 与错误文本
      */
     @GetMapping("/search")
     @Operation(summary = "搜索文件", description = "根据关键词搜索文件")
@@ -74,7 +88,10 @@ public class FileMetadataController {
     }
 
     /**
-     * 获取目录结构
+     * 查询指定路径下的目录结构。
+     *
+     * @param path 目录路径，默认为根路径
+     * @return 目录结构，包含子目录、文件与当前路径；查询异常时返回 500 与错误文本
      */
     @GetMapping("/directory")
     @Operation(summary = "获取目录结构", description = "获取文件系统目录结构")
@@ -88,7 +105,10 @@ public class FileMetadataController {
     }
 
     /**
-     * 获取文件名
+     * 根据文件 ID 查询文件名。
+     *
+     * @param fileId 文件 ID
+     * @return 文件名；元数据不存在时返回 404，查询异常时返回 500 与错误文本
      */
     @GetMapping("/metadata/{fileId}/name")
     @Operation(summary = "获取文件名", description = "根据文件ID获取文件名")
@@ -105,7 +125,10 @@ public class FileMetadataController {
     }
 
     /**
-     * 获取文件类型
+     * 根据文件 ID 查询文件类型。
+     *
+     * @param fileId 文件 ID
+     * @return 文件的内容类型；元数据不存在时返回 404，查询异常时返回 500 与错误文本
      */
     @GetMapping("/metadata/{fileId}/type")
     @Operation(summary = "获取文件类型", description = "根据文件ID获取文件类型")

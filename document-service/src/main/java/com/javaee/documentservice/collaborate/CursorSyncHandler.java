@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 协同光标同步处理器，负责光标位置的写入、读取与移除。
+ *
+ * <p>光标按文档存放在 Redis Hash 中，字段为「用户名:起点:终点:时间戳」，
+ * 5 分钟过期，避免离线用户的光标长期残留。</p>
+ */
 @Component
 public class CursorSyncHandler {
 
@@ -22,6 +28,11 @@ public class CursorSyncHandler {
     @Autowired
     private RedisUtils redisUtils;
 
+    /**
+     * 写入或覆盖指定用户在该文档中的光标位置。
+     *
+     * @param cursor 待同步的光标位置
+     */
     public void updateCursor(CursorPosition cursor) {
         String cursorKey = REDIS_CURSOR_PREFIX + cursor.getDocumentId();
         String fieldKey = cursor.getUserId();
@@ -34,6 +45,12 @@ public class CursorSyncHandler {
                 cursor.getUserId(), cursor.getDocumentId(), cursor.getFrom(), cursor.getTo());
     }
 
+    /**
+     * 读取文档下所有在线用户的光标位置。
+     *
+     * @param documentId 文档 ID
+     * @return 光标位置列表；无光标时返回空列表
+     */
     public List<CursorPosition> getDocumentCursors(String documentId) {
         String cursorKey = REDIS_CURSOR_PREFIX + documentId;
         Map<Object, Object> cursorMap = redisUtils.hGetAll(cursorKey);
@@ -59,6 +76,12 @@ public class CursorSyncHandler {
         return cursors;
     }
 
+    /**
+     * 移除指定用户在文档中的光标，用于用户离开时清理。
+     *
+     * @param documentId 文档 ID
+     * @param userId 用户 ID
+     */
     public void removeCursor(String documentId, String userId) {
         String cursorKey = REDIS_CURSOR_PREFIX + documentId;
         redisUtils.hDelete(cursorKey, userId);

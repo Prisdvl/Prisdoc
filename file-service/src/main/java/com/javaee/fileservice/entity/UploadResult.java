@@ -3,7 +3,7 @@ package com.javaee.fileservice.entity;
 import lombok.Data;
 
 /**
- * 上传结果封装类
+ * 上传结果封装类。
  */
 @Data
 public class UploadResult {

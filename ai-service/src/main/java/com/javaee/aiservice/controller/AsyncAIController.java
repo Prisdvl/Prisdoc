@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Asynchronous AI endpoints backed by RabbitMQ.
+ * 异步 AI 接口控制器，基于 RabbitMQ 提交任务。
+ *
+ * <p>提交类接口立即返回任务 ID，结果由后台消费者写回；查询接口按当前用户校验任务归属。</p>
  */
 @RestController
 @RequestMapping("/api/ai/async")

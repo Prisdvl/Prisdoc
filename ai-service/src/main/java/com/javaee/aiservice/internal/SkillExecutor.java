@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 技能执行器
- * 执行各种技能操作
- * 作为InternalService的技能调用层
+ * 技能执行器，作为 InternalService 的技能调用层。
+ *
+ * <p>按技能名分发到具体实现，统一包装成功与失败结果并写审计日志。</p>
  */
 @Component
 public class SkillExecutor {
@@ -34,10 +34,11 @@ public class SkillExecutor {
     private FileDownloadService fileDownloadService;
 
     /**
-     * 执行技能
+     * 执行指定技能。
+     *
      * @param skillName 技能名称
-     * @param params 参数
-     * @return 执行结果
+     * @param params 技能参数
+     * @return 执行结果，含 status 与业务字段；异常时返回错误说明
      */
     public Map<String, Object> execute(String skillName, Map<String, Object> params) {
         log.info("执行技能: skillName={}, params={}", skillName, params);
@@ -117,8 +118,9 @@ public class SkillExecutor {
     }
 
     /**
-     * 获取所有可用技能
-     * @return 技能列表
+     * 获取所有可用技能的定义。
+     *
+     * @return 技能名到技能描述的映射
      */
     public Map<String, Map<String, Object>> listSkills() {
         Map<String, Map<String, Object>> skills = new HashMap<>();

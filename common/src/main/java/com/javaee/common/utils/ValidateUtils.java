@@ -9,8 +9,11 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
+ * 参数校验工具，提供非空、格式与区间校验，校验失败抛出业务异常。
+ *
+ * <p>邮箱、手机号与密码格式取自 {@link CommonConstant} 中的正则常量。</p>
+ *
  * @author qxk
- * @description: 参数校验工具（非空/格式）
  */
 public class ValidateUtils {
 
@@ -19,9 +22,10 @@ public class ValidateUtils {
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(CommonConstant.PASSWORD_REGEX);
 
     /**
-     * 校验字符串非空
+     * 校验字符串非空。
+     *
      * @param str 待校验字符串
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void notEmpty(String str, String message) {
         if (StringUtils.isEmpty(str)) {
@@ -30,7 +34,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验字符串非空
+     * 校验字符串非空，使用默认提示语。
+     *
      * @param str 待校验字符串
      */
     public static void notEmpty(String str) {
@@ -38,9 +43,10 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验对象非空
+     * 校验对象非空。
+     *
      * @param obj 待校验对象
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void notNull(Object obj, String message) {
         if (obj == null) {
@@ -49,7 +55,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验对象非空
+     * 校验对象非空，使用默认提示语。
+     *
      * @param obj 待校验对象
      */
     public static void notNull(Object obj) {
@@ -57,9 +64,10 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验集合非空
+     * 校验集合非空。
+     *
      * @param collection 待校验集合
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void notEmpty(Collection<?> collection, String message) {
         if (collection == null || collection.isEmpty()) {
@@ -68,7 +76,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验集合非空
+     * 校验集合非空，使用默认提示语。
+     *
      * @param collection 待校验集合
      */
     public static void notEmpty(Collection<?> collection) {
@@ -76,9 +85,10 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验Map非空
-     * @param map 待校验Map
-     * @param message 错误消息
+     * 校验 Map 非空。
+     *
+     * @param map 待校验 Map
+     * @param message 校验失败时抛出的提示语
      */
     public static void notEmpty(Map<?, ?> map, String message) {
         if (map == null || map.isEmpty()) {
@@ -87,17 +97,19 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验Map非空
-     * @param map 待校验Map
+     * 校验 Map 非空，使用默认提示语。
+     *
+     * @param map 待校验 Map
      */
     public static void notEmpty(Map<?, ?> map) {
         notEmpty(map, "Map不能为空");
     }
 
     /**
-     * 校验数组非空
+     * 校验数组非空。
+     *
      * @param array 待校验数组
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void notEmpty(Object[] array, String message) {
         if (array == null || array.length == 0) {
@@ -106,7 +118,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验数组非空
+     * 校验数组非空，使用默认提示语。
+     *
      * @param array 待校验数组
      */
     public static void notEmpty(Object[] array) {
@@ -114,9 +127,10 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验邮箱格式
+     * 校验邮箱非空且符合邮箱格式。
+     *
      * @param email 待校验邮箱
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void email(String email, String message) {
         notEmpty(email, message);
@@ -126,7 +140,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验邮箱格式
+     * 校验邮箱非空且符合邮箱格式，使用默认提示语。
+     *
      * @param email 待校验邮箱
      */
     public static void email(String email) {
@@ -134,9 +149,10 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验手机号格式
+     * 校验手机号非空且符合中国大陆手机号格式。
+     *
      * @param phone 待校验手机号
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void phone(String phone, String message) {
         notEmpty(phone, message);
@@ -146,7 +162,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验手机号格式
+     * 校验手机号非空且格式正确，使用默认提示语。
+     *
      * @param phone 待校验手机号
      */
     public static void phone(String phone) {
@@ -154,9 +171,10 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验密码格式
+     * 校验密码非空且符合复杂度要求。
+     *
      * @param password 待校验密码
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void password(String password, String message) {
         notEmpty(password, message);
@@ -166,7 +184,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验密码格式
+     * 校验密码非空且符合复杂度要求，使用默认提示语。
+     *
      * @param password 待校验密码
      */
     public static void password(String password) {
@@ -174,11 +193,12 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验字符串长度
+     * 校验字符串长度在指定区间内。
+     *
      * @param str 待校验字符串
      * @param min 最小长度
      * @param max 最大长度
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void length(String str, int min, int max, String message) {
         notEmpty(str, message);
@@ -188,7 +208,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验字符串长度
+     * 校验字符串长度在指定区间内，使用默认提示语。
+     *
      * @param str 待校验字符串
      * @param min 最小长度
      * @param max 最大长度
@@ -198,11 +219,12 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验数字范围
+     * 校验整数在指定区间内。
+     *
      * @param num 待校验数字
      * @param min 最小值
      * @param max 最大值
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void range(Integer num, int min, int max, String message) {
         notNull(num, message);
@@ -212,7 +234,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验数字范围
+     * 校验整数在指定区间内，使用默认提示语。
+     *
      * @param num 待校验数字
      * @param min 最小值
      * @param max 最大值
@@ -222,9 +245,10 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验布尔表达式
+     * 校验布尔表达式为 true。
+     *
      * @param condition 布尔表达式
-     * @param message 错误消息
+     * @param message 校验失败时抛出的提示语
      */
     public static void isTrue(boolean condition, String message) {
         if (!condition) {
@@ -233,7 +257,8 @@ public class ValidateUtils {
     }
 
     /**
-     * 校验布尔表达式
+     * 校验布尔表达式为 true，使用默认提示语。
+     *
      * @param condition 布尔表达式
      */
     public static void isTrue(boolean condition) {

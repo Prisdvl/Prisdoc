@@ -11,6 +11,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 基于 OpenAI 兼容 HTTP 接口的模型调用实现。
+ *
+ * <p>通过 {@code /chat/completions} 端点发起单轮对话请求，响应体按 JSON 解析；
+ * 网络异常与解析异常统一转换为 {@link RuntimeException}。</p>
+ */
 public class OpenAIAIService implements AIService {
 
     private static final Logger log = LoggerFactory.getLogger(OpenAIAIService.class);

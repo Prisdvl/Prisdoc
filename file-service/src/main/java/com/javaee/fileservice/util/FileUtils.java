@@ -7,12 +7,15 @@ import java.io.IOException;
 import java.util.UUID;
 
 /**
- * 文件处理工具类
+ * 文件处理工具类，提供唯一文件名生成、类型识别与字节流转换等静态方法。
  */
 public class FileUtils {
 
     /**
-     * 生成唯一文件名
+     * 用随机 UUID 与原始扩展名生成唯一文件名。
+     *
+     * @param originalFileName 原始文件名，用于提取扩展名
+     * @return 唯一文件名，原始文件无扩展名时只返回 UUID
      */
     public static String generateUniqueFileName(String originalFileName) {
         String extension = getFileExtension(originalFileName);
@@ -24,7 +27,10 @@ public class FileUtils {
     }
 
     /**
-     * 获取文件扩展名
+     * 取文件名最后一个点之后的扩展名。
+     *
+     * @param fileName 文件名
+     * @return 小写扩展名；文件名为空或不含点时返回 null
      */
     public static String getFileExtension(String fileName) {
         if (fileName == null || fileName.lastIndexOf('.') == -1) {
@@ -34,7 +40,10 @@ public class FileUtils {
     }
 
     /**
-     * 获取文件类型
+     * 按扩展名把文件归入图片、文档、视频等大类。
+     *
+     * @param fileName 文件名
+     * @return 文件大类编码：image、document、video、audio、archive 或 other
      */
     public static String getFileType(String fileName) {
         String extension = getFileExtension(fileName);
@@ -86,7 +95,12 @@ public class FileUtils {
     }
 
     /**
-     * 保存上传的文件到本地
+     * 把上传文件保存到本地，父目录不存在时自动创建。
+     *
+     * @param file 待保存的上传文件
+     * @param filePath 目标文件的完整路径
+     * @return 保存后的目标文件
+     * @throws IOException 写入目标文件失败时抛出
      */
     public static File saveMultipartFile(MultipartFile file, String filePath) throws IOException {
         File destFile = new File(filePath);
@@ -99,7 +113,10 @@ public class FileUtils {
     }
 
     /**
-     * 删除文件
+     * 删除本地文件，文件不存在时视为删除失败。
+     *
+     * @param filePath 待删除文件的路径
+     * @return 文件存在且删除成功返回 true，否则返回 false
      */
     public static boolean deleteFile(String filePath) {
         File file = new File(filePath);
@@ -107,21 +124,32 @@ public class FileUtils {
     }
 
     /**
-     * 检查文件大小是否超限
+     * 检查文件大小是否超过上限。
+     *
+     * @param file 待检查的上传文件
+     * @param maxSize 大小上限，单位为 MB
+     * @return 未超过上限返回 true，否则返回 false
      */
     public static boolean checkFileSize(MultipartFile file, long maxSize) {
         return file.getSize() <= maxSize * 1024 * 1024;
     }
 
     /**
-     * 将字节数组转换为输入流
+     * 把字节数组包装为字节数组输入流。
+     *
+     * @param bytes 字节数组
+     * @return 对应的字节数组输入流
      */
     public static java.io.InputStream toInputStream(byte[] bytes) {
         return new java.io.ByteArrayInputStream(bytes);
     }
 
     /**
-     * 将输入流转换为字节数组
+     * 读取输入流中的全部字节，调用方负责关闭输入流。
+     *
+     * @param inputStream 待读取的输入流
+     * @return 输入流中的全部字节
+     * @throws java.io.IOException 读取输入流失败时抛出
      */
     public static byte[] toByteArray(java.io.InputStream inputStream) throws java.io.IOException {
         java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
@@ -134,7 +162,10 @@ public class FileUtils {
     }
 
     /**
-     * 根据文件名获取内容类型
+     * 按文件名推断 MIME 类型。
+     *
+     * @param fileName 文件名
+     * @return 对应的 MIME 类型；无法识别时返回 application/octet-stream
      */
     public static String getContentType(String fileName) {
         String extension = getFileExtension(fileName);
@@ -142,7 +173,7 @@ public class FileUtils {
             return "application/octet-stream";
         }
 
-        // 常见文件类型的MIME类型映射
+        // 常见文件类型的 MIME 类型映射
         java.util.Map<String, String> mimeTypes = new java.util.HashMap<>();
         mimeTypes.put("jpg", "image/jpeg");
         mimeTypes.put("jpeg", "image/jpeg");

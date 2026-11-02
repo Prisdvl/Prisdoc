@@ -17,6 +17,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doAnswer;
 
+/**
+ * 异步任务消费者单元测试，校验任务分发与安全上下文透传。
+ */
 class AsyncAIJobListenerTest {
 
     @Test

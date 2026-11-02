@@ -6,24 +6,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Structured reflection emitted after each Agent execution round.
+ * 每轮 Agent 执行后产出的结构化反思结果。
+ *
+ * <p>督导模型判定是否已完成、是否继续执行、是否需要重规划，并给出质量分与建议动作；
+ * 模型不可用时由启发式规则生成。</p>
  */
 public class AgentReflection {
 
+    /** 当前推理轮次。 */
     private int iteration;
+    /** 任务是否已完成：true-已完成。 */
     private boolean complete;
+    /** 是否继续执行后续轮次：true-继续。 */
     private boolean continueExecution;
+    /** 是否需要重新规划：true-需要。 */
     private boolean requiresReplan;
+    /** 是否需要向用户追问：true-需要。 */
     private boolean shouldAskUser;
+    /** 质量评分，满分 100。 */
     private int qualityScore = 100;
+    /** 结论置信度，取值 0 到 1。 */
     private double confidence = 1.0d;
+    /** 反思结论说明。 */
     private String reason;
+    /** 发现的问题列表。 */
     private List<String> issues = new ArrayList<>();
+    /** 缺失的信息列表。 */
     private List<String> missingInfo = new ArrayList<>();
+    /** 建议的后续动作列表。 */
     private List<String> recommendedActions = new ArrayList<>();
+    /** 修订后的执行计划，可为空。 */
     private List<AgentPlanStep> revisedPlan = new ArrayList<>();
+    /** 反思来源：model-模型生成，heuristic-启发式生成。 */
     private String source = "model";
+    /** 是否因模型调用失败而降级：true-已降级。 */
     private boolean fallback;
+    /** 反思生成时间戳，单位毫秒。 */
     private long createdAt = System.currentTimeMillis();
 
     public int getIteration() {

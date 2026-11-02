@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Central catalog for every tool the Agent planner is allowed to use.
+ * Agent 工具总目录，集中登记规划器允许调用的全部工具及其参数模式。
  */
 @Component
 public class AgentToolRegistry {
@@ -89,14 +89,31 @@ public class AgentToolRegistry {
                 Set.of("content"), false, "file", false);
     }
 
+    /**
+     * 按工具名查询工具定义。
+     *
+     * @param name 工具名
+     * @return 工具定义；未注册时返回 null
+     */
     public AgentToolDefinition get(String name) {
         return tools.get(name);
     }
 
+    /**
+     * 列出全部已注册工具，顺序与注册顺序一致。
+     *
+     * @return 工具定义列表
+     */
     public List<AgentToolDefinition> list() {
         return new ArrayList<>(tools.values());
     }
 
+    /**
+     * 判断工具是否已注册。
+     *
+     * @param name 工具名
+     * @return 是否存在该工具
+     */
     public boolean contains(String name) {
         return tools.containsKey(name);
     }

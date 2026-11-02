@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 文档评论控制器，提供评论及其回复的创建、查询与删除接口。
+ */
 @RestController
 @RequestMapping("/api/documents/{documentId}/comments")
 @Tag(name = "文档评论", description = "文档评论管理接口")

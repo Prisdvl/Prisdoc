@@ -12,6 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * AIOps 告警投递服务，按故障指纹做冷却去重后调用内部服务发送告警。
+ *
+ * <p>同一指纹在冷却窗口内只发送一次，冷却时长由 {@code ai.aiops.alert.cooldown-ms} 配置。</p>
+ */
 @Component
 public class AlertService {
 
@@ -25,6 +30,12 @@ public class AlertService {
 
     private final ConcurrentHashMap<String, Long> lastSentAt = new ConcurrentHashMap<>();
 
+    /**
+     * 在冷却窗口允许时发送告警。
+     *
+     * @param record 故障记录，其指纹用于冷却判定
+     * @return 是否实际发送：true-已发送，false-处于冷却期被跳过
+     */
     public boolean sendIfAllowed(FaultRecord record) {
         long now = System.currentTimeMillis();
         Long previous = lastSentAt.get(record.getFingerprint());
@@ -47,10 +58,18 @@ public class AlertService {
         return true;
     }
 
+    /**
+     * 清除指定故障指纹的冷却记录，使其可立即再次发送。
+     *
+     * @param fingerprint 故障指纹
+     */
     public void clearCooldown(String fingerprint) {
         lastSentAt.remove(fingerprint);
     }
 
+    /**
+     * 清空全部冷却记录。
+     */
     public void reset() {
         lastSentAt.clear();
     }

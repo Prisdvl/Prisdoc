@@ -10,6 +10,11 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 技能注册表，按名称维护当前可用的技能。
+ *
+ * <p>构造时注册文件上传、文件下载与 HTML PPT 三个技能，技能名称即查找键。</p>
+ */
 @Component
 public class SkillRegistry {
 

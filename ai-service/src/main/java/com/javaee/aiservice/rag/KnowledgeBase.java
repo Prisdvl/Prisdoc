@@ -11,6 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * 知识库，负责文档与分段的写入、检索、更新和统计。
+ *
+ * <p>文档正文与分段内容保存在 Redis，向量由 VectorStore 持久化并建立 HNSW 索引；
+ * 检索支持纯向量、BM25 混合与重排序三种方式，写入或检索失败时抛出运行时异常。</p>
+ */
 @Component
 public class KnowledgeBase {
 

@@ -3,9 +3,9 @@ package com.javaee.aiservice.config;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * AI配置类
- * 配置Spring AI组件和客户端
- * Spring AI通过自动配置完成，此类保留用于自定义配置
+ * AI 配置占位类，预留自定义 Spring AI 组件入口。
+ *
+ * <p>ChatClient 与 EmbeddingModel 依赖 Spring AI 自动配置，当前无需额外声明 Bean。</p>
  */
 @Configuration
 public class AiConfig {

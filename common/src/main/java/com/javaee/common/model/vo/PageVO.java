@@ -4,8 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * 分页响应 VO，封装数据列表、总记录数与分页导航信息。
+ *
  * @author qxk
- * @description: 分页响应VO（统一）
  */
 public class PageVO<T> implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -136,13 +137,14 @@ public class PageVO<T> implements Serializable {
 
     // 静态方法
     /**
-     * 构建分页响应
-     * @param list 数据列表
+     * 构建分页响应对象，自动计算总页数与上下页标记。
+     *
+     * @param list 当前页数据列表
      * @param total 总记录数
-     * @param pageNum 页码
+     * @param pageNum 当前页码
      * @param pageSize 每页大小
      * @param <T> 数据类型
-     * @return PageVO
+     * @return 分页响应对象
      */
     public static <T> PageVO<T> build(List<T> list, Long total, Integer pageNum, Integer pageSize) {
         return new PageVO<>(list, total, pageNum, pageSize);

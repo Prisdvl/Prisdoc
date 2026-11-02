@@ -1,3 +1,8 @@
+/**
+ * Vite 构建与开发服务器配置。
+ *
+ * 开发期 /api 代理到网关、/api/ai 直连 ai-service；mock 模式下改由本地中间件响应。
+ */
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { prisdocMockPlugin } from './mock/index.js'
@@ -40,7 +45,8 @@ export default defineConfig(({ mode }) => {
               proxyReq.setHeader('Connection', 'keep-alive')
             })
             proxy.on('error', (err) => {
-              console.log('[proxy error]', err.message)
+              // 代理失败只影响开发期联调，记录后交给 Vite 继续处理
+              console.error('[proxy error]', err.message)
             })
           }
         }

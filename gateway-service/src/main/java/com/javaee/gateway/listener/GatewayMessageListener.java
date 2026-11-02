@@ -9,14 +9,16 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
- * 网关服务消息监听器
+ * 网关消息监听器，消费网关日志与告警队列并输出关键字段。
  */
 @Slf4j
 @Component
 public class GatewayMessageListener {
 
     /**
-     * 处理网关日志消息
+     * 处理网关日志消息。
+     *
+     * @param message 日志消息，包含路径、请求方法与用户 ID
      */
     @RabbitListener(queues = RabbitMQConfig.GATEWAY_LOG_QUEUE)
     public void handleGatewayLogMessage(Map<String, Object> message) {
@@ -34,7 +36,9 @@ public class GatewayMessageListener {
     }
 
     /**
-     * 处理网关告警消息
+     * 处理网关告警消息。
+     *
+     * @param message 告警消息，包含告警类型与描述
      */
     @RabbitListener(queues = RabbitMQConfig.GATEWAY_ALERT_QUEUE)
     public void handleGatewayAlertMessage(Map<String, Object> message) {

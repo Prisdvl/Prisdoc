@@ -14,6 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
+/**
+ * 基于阿里云 DashScope SDK 的模型调用实现。
+ *
+ * <p>仅支持单轮用户消息；模型被禁用时调用直接抛异常。SDK 异常统一转换为
+ * {@link RuntimeException} 向上抛出。</p>
+ */
 public class DashScopeAIService implements AIService {
     
     private static final Logger log = LoggerFactory.getLogger(DashScopeAIService.class);

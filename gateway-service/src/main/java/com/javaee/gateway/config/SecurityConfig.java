@@ -7,7 +7,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /**
- * 安全配置
+ * 网关安全配置，声明安全过滤链与公开端点。
  */
 @Configuration
 @EnableWebFluxSecurity
@@ -22,7 +22,7 @@ public class SecurityConfig {
             .authorizeExchange(exchanges -> exchanges
                 // 公开接口
                 .pathMatchers("/api/users/register", "/api/users/login").permitAll()
-                // 其他接口需要认证
+                // 其余请求放行，认证由 AuthGlobalFilter 统一处理
                 .anyExchange().permitAll()
             );
         return http.build();

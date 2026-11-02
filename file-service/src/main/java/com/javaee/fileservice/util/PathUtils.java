@@ -3,12 +3,15 @@ package com.javaee.fileservice.util;
 import java.io.File;
 
 /**
- * 路径拼接和校验工具类
+ * 路径拼接与校验工具类，提供路径拼接、标准化、安全校验与相对路径计算。
  */
 public class PathUtils {
 
     /**
-     * 拼接路径
+     * 用系统分隔符拼接多个路径片段。
+     *
+     * @param paths 待拼接的路径片段，空片段会被跳过
+     * @return 拼接后的路径；入参为空时返回空字符串
      */
     public static String joinPath(String... paths) {
         if (paths == null || paths.length == 0) {
@@ -37,7 +40,10 @@ public class PathUtils {
     }
 
     /**
-     * 标准化路径
+     * 统一路径分隔符并压缩多余的斜杠。
+     *
+     * @param path 原始路径
+     * @return 统一使用正斜杠、去掉重复斜杠与末尾斜杠的路径；入参为 null 时返回空字符串
      */
     public static String normalizePath(String path) {
         if (path == null) {
@@ -61,7 +67,10 @@ public class PathUtils {
     }
 
     /**
-     * 检查路径是否安全（防止目录遍历攻击）
+     * 检查路径是否安全（防止目录遍历攻击）。
+     *
+     * @param path 待校验的相对路径
+     * @return 不含 ..、不是绝对路径且不含 Windows 驱动器号时返回 true
      */
     public static boolean isSafePath(String path) {
         if (path == null) {
@@ -87,7 +96,11 @@ public class PathUtils {
     }
 
     /**
-     * 获取相对路径
+     * 计算完整路径相对基准目录的部分。
+     *
+     * @param basePath 基准目录
+     * @param fullPath 完整路径
+     * @return 相对基准目录的路径；fullPath 不在 basePath 下时原样返回 fullPath
      */
     public static String getRelativePath(String basePath, String fullPath) {
         if (basePath == null || fullPath == null) {

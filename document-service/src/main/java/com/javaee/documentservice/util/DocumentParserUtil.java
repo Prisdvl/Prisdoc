@@ -27,8 +27,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 文档解析工具类
- * 支持多种文档格式：Word、PDF、HTML、Markdown、图片OCR等
+ * 文档文本解析工具，按扩展名把上传文件转换为纯文本。
+ *
+ * <p>支持 Word、PDF、HTML、Markdown、XML、纯文本与图片 OCR；解析异常时回退为
+ * UTF-8 文本，仍失败则返回空串，不向上抛异常。</p>
  */
 public class DocumentParserUtil {
 
@@ -46,10 +48,11 @@ public class DocumentParserUtil {
     );
 
     /**
-     * 解析文档内容
+     * 按文件扩展名解析文档内容。
+     *
      * @param fileContent 文件内容字节数组
-     * @param fileName 文件名（用于判断格式）
-     * @return 解析后的文本内容
+     * @param fileName 文件名，用于判断格式
+     * @return 解析出的纯文本；内容为空或无法识别时返回空串
      */
     public static String parseDocument(byte[] fileContent, String fileName) {
         if (fileContent == null || fileContent.length == 0) {
@@ -96,7 +99,10 @@ public class DocumentParserUtil {
     }
 
     /**
-     * 判断文件是否为支持的图片格式
+     * 判断文件是否为支持的图片格式。
+     *
+     * @param fileName 文件名，可为空
+     * @return 扩展名属于图片格式时返回 {@code true}
      */
     public static boolean isImageFile(String fileName) {
         String extension = getFileExtension(fileName);
@@ -104,7 +110,10 @@ public class DocumentParserUtil {
     }
 
     /**
-     * 判断文件是否为支持的文档格式
+     * 判断文件是否为可解析的文档格式。
+     *
+     * @param fileName 文件名，可为空
+     * @return 扩展名在白名单内时返回 {@code true}
      */
     public static boolean isSupportedDocument(String fileName) {
         String extension = getFileExtension(fileName);
@@ -225,9 +234,6 @@ public class DocumentParserUtil {
             }
             
             ITesseract tesseract = new Tesseract();
-            // 设置Tesseract数据路径（可选，如果Tesseract已安装到系统路径可以不设置）
-            // tesseract.setDatapath("path/to/tessdata");
-            
             // 设置识别语言（英文+简体中文）
             tesseract.setLanguage("eng+chi_sim");
             
@@ -242,7 +248,10 @@ public class DocumentParserUtil {
     }
 
     /**
-     * 清理解析后的文本（去除多余空白）
+     * 清理解析后的文本，压缩连续空白与换行。
+     *
+     * @param text 原始文本，可为 {@code null}
+     * @return 清理后的文本；入参为 {@code null} 时返回空串
      */
     public static String cleanText(String text) {
         if (text == null) {
@@ -255,7 +264,11 @@ public class DocumentParserUtil {
     }
 
     /**
-     * 获取文档摘要
+     * 截取文档摘要，超长时追加省略号。
+     *
+     * @param text 原始文本，可为 {@code null}
+     * @param maxLength 摘要最大字符数
+     * @return 摘要文本；入参为空时返回空串
      */
     public static String getSummary(String text, int maxLength) {
         if (text == null || text.isEmpty()) {

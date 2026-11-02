@@ -24,7 +24,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * 文件核心接口控制器
+ * 文件核心接口控制器，提供上传、下载、预览、删除、重命名、移动与复制接口。
+ *
+ * <p>上传、下载与删除成功后向 RabbitMQ 投递事件，投递失败只记录告警，不影响接口返回。</p>
  */
 @Slf4j
 @RestController
@@ -42,7 +44,11 @@ public class FileController {
     private RabbitMQUtil rabbitMQUtil;
 
     /**
-     * 单文件上传
+     * 上传单个文件，保存成功后投递上传事件。
+     *
+     * @param file 待上传的文件，提供原始文件名与内容
+     * @param userId 发起上传的用户 ID，来自 X-User-Id 请求头，可为空
+     * @return 统一响应结果，成功时携带文件 ID 与提示消息
      */
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "单文件上传", description = "上传单个文件到服务器")
@@ -78,7 +84,10 @@ public class FileController {
     }
 
     /**
-     * 多文件上传
+     * 逐个上传多个文件，任一文件失败则整体失败。
+     *
+     * @param files 待上传的文件数组
+     * @return 统一响应结果，成功时携带文件 ID 数组与上传数量
      */
     @PostMapping(value = "/upload-multiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "多文件上传", description = "上传多个文件到服务器")
@@ -98,7 +107,13 @@ public class FileController {
     }
 
     /**
-     * 分片上传
+     * 保存大文件的一个分片，供后续合并。
+     *
+     * @param chunk 当前分片文件
+     * @param fileId 分片所属文件的唯一标识，由客户端生成并在合并时复用
+     * @param chunkIndex 分片序号，从 0 开始
+     * @param totalChunks 分片总数
+     * @return 成功时返回 200 与分片序号，失败时返回 500 与错误信息
      */
     @PostMapping(value = "/upload-chunk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "分片上传", description = "大文件分片上传")
@@ -116,7 +131,11 @@ public class FileController {
     }
 
     /**
-     * 分片合并
+     * 合并已上传的分片，生成完整文件。
+     *
+     * @param fileId 分片所属文件的唯一标识
+     * @param fileName 合并后的原始文件名，用于推断扩展名与内容类型
+     * @return 成功时返回 200 与合并后的文件 ID，失败时返回 500 与错误信息
      */
     @PostMapping("/merge-chunk")
     @Operation(summary = "分片合并", description = "合并文件分片")
@@ -132,7 +151,11 @@ public class FileController {
     }
 
     /**
-     * 文件下载
+     * 以附件形式下载文件，并投递下载事件。
+     *
+     * @param fileId 文件 ID
+     * @param userId 发起下载的用户 ID，来自 X-User-Id 请求头，可为空
+     * @return 文件字节流；失败时返回 500 与错误文本
      */
     @GetMapping("/download/{fileId}")
     @Operation(summary = "文件下载", description = "下载指定文件")
@@ -168,7 +191,10 @@ public class FileController {
     }
 
     /**
-     * 文件预览
+     * 以内联方式返回文件字节流，供浏览器预览。
+     *
+     * @param fileId 文件 ID
+     * @return 文件字节流；失败时返回 500 与错误文本
      */
     @GetMapping("/preview/{fileId}")
     @Operation(summary = "文件预览", description = "预览指定文件")
@@ -188,6 +214,9 @@ public class FileController {
 
     /**
      * 获取文件原始名称，供文档服务解析时使用。
+     *
+     * @param fileId 文件 ID
+     * @return 原始文件名；元数据缺失或查询异常时降级返回文件 ID
      */
     @GetMapping("/info/{fileId}/name")
     @Operation(summary = "获取文件名", description = "根据文件ID获取原始文件名")
@@ -207,6 +236,9 @@ public class FileController {
 
     /**
      * 获取文件类型，供文档服务解析时使用。
+     *
+     * @param fileId 文件 ID
+     * @return 文件的内容类型；元数据缺失或查询异常时返回 application/octet-stream
      */
     @GetMapping("/info/{fileId}/type")
     @Operation(summary = "获取文件类型", description = "根据文件ID获取文件Content-Type")
@@ -223,7 +255,11 @@ public class FileController {
     }
 
     /**
-     * 文件删除
+     * 删除文件，并投递删除事件。
+     *
+     * @param fileId 文件 ID
+     * @param userId 发起删除的用户 ID，来自 X-User-Id 请求头，可为空
+     * @return 成功时返回 200 与提示消息，失败时返回 500 与错误信息
      */
     @DeleteMapping("/{fileId}")
     @Operation(summary = "文件删除", description = "删除指定文件")
@@ -254,7 +290,11 @@ public class FileController {
     }
 
     /**
-     * 文件重命名
+     * 重命名指定文件。
+     *
+     * @param fileId 文件 ID
+     * @param newName 新的文件名，含扩展名
+     * @return 成功时返回 200 与提示消息，失败时返回 500 与错误信息
      */
     @PutMapping("/{fileId}/rename")
     @Operation(summary = "文件重命名", description = "重命名指定文件")
@@ -270,7 +310,11 @@ public class FileController {
     }
 
     /**
-     * 文件移动
+     * 将文件移动到指定目录。
+     *
+     * @param fileId 文件 ID
+     * @param targetPath 目标目录
+     * @return 成功时返回 200 与提示消息，失败时返回 500 与错误信息
      */
     @PutMapping("/{fileId}/move")
     @Operation(summary = "文件移动", description = "移动文件到指定目录")
@@ -286,7 +330,11 @@ public class FileController {
     }
 
     /**
-     * 文件复制
+     * 复制文件到指定目录，并生成新的文件 ID。
+     *
+     * @param fileId 源文件 ID
+     * @param targetPath 目标目录
+     * @return 成功时返回 200 与新文件 ID，失败时返回 500 与错误信息
      */
     @PutMapping("/{fileId}/copy")
     @Operation(summary = "文件复制", description = "复制文件到指定目录")

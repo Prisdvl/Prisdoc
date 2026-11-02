@@ -6,6 +6,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * AI 调用服务，把提示词透传给 ChatService 并返回模型输出。
+ *
+ * <p>底层模型调用异常统一包装为运行时异常抛出，并保留原始异常信息。</p>
+ */
 @Service
 public class VolcanoAIService {
 

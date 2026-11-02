@@ -19,7 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Reflects on each execution round and produces structured next-step decisions.
+ * 反思服务，对每轮执行结果做评审并产出下一步决策。
+ *
+ * <p>优先调用模型生成结构化反思；调用失败或解析失败时回退到启发式规则，
+ * 保证执行链不因反思环节中断。</p>
  */
 @Service
 public class AgentReflectionService {
@@ -34,6 +37,17 @@ public class AgentReflectionService {
     @Autowired
     private AgentToolRegistry toolRegistry;
 
+    /**
+     * 对本轮执行结果进行反思。
+     *
+     * @param request 执行请求，提供任务与模型信息
+     * @param plan 当前执行计划
+     * @param results 本轮工具执行结果
+     * @param context 执行上下文
+     * @param iteration 当前轮次
+     * @param maxIterations 最大轮次
+     * @return 结构化反思结果；无工具结果或模型异常时返回启发式结论
+     */
     public AgentReflection reflect(AgentExecutionRequest request,
                                    List<AgentPlanStep> plan,
                                    List<AgentToolResult> results,

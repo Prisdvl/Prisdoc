@@ -9,8 +9,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
+ * 日期时间工具，提供格式化、解析与日期时间转换能力。
+ *
+ * <p>统一使用 java.time 与系统默认时区；入参为空时返回空串、null 或 0，
+ * 不抛出空指针异常。</p>
+ *
  * @author qxk
- * @description: 日期时间工具（格式化/转换）
  */
 public class DateUtils {
 
@@ -20,41 +24,46 @@ public class DateUtils {
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern(CommonConstant.TIMESTAMP_FORMAT);
 
     /**
-     * 获取当前日期
-     * @return 当前日期
+     * 获取当前日期。
+     *
+     * @return 当前系统日期
      */
     public static LocalDate nowDate() {
         return LocalDate.now();
     }
 
     /**
-     * 获取当前时间
-     * @return 当前时间
+     * 获取当前时间。
+     *
+     * @return 当前系统时间
      */
     public static LocalTime nowTime() {
         return LocalTime.now();
     }
 
     /**
-     * 获取当前日期时间
-     * @return 当前日期时间
+     * 获取当前日期时间。
+     *
+     * @return 当前系统日期时间
      */
     public static LocalDateTime nowDateTime() {
         return LocalDateTime.now();
     }
 
     /**
-     * 获取当前时间戳
-     * @return 当前时间戳
+     * 获取当前时间戳。
+     *
+     * @return 当前毫秒级时间戳
      */
     public static long nowTimestamp() {
         return System.currentTimeMillis();
     }
 
     /**
-     * 格式化日期
-     * @param date 日期
-     * @return 格式化后的字符串
+     * 按 yyyy-MM-dd 格式化日期。
+     *
+     * @param date 待格式化的日期
+     * @return 格式化后的字符串；入参为空时返回空串
      */
     public static String formatDate(LocalDate date) {
         if (date == null) {
@@ -64,9 +73,10 @@ public class DateUtils {
     }
 
     /**
-     * 格式化时间
-     * @param time 时间
-     * @return 格式化后的字符串
+     * 按 HH:mm:ss 格式化时间。
+     *
+     * @param time 待格式化的时间
+     * @return 格式化后的字符串；入参为空时返回空串
      */
     public static String formatTime(LocalTime time) {
         if (time == null) {
@@ -76,9 +86,10 @@ public class DateUtils {
     }
 
     /**
-     * 格式化日期时间
-     * @param dateTime 日期时间
-     * @return 格式化后的字符串
+     * 按 yyyy-MM-dd HH:mm:ss 格式化日期时间。
+     *
+     * @param dateTime 待格式化的日期时间
+     * @return 格式化后的字符串；入参为空时返回空串
      */
     public static String formatDateTime(LocalDateTime dateTime) {
         if (dateTime == null) {
@@ -88,9 +99,10 @@ public class DateUtils {
     }
 
     /**
-     * 格式化日期时间（带毫秒）
-     * @param dateTime 日期时间
-     * @return 格式化后的字符串
+     * 按 yyyy-MM-dd HH:mm:ss.SSS 格式化日期时间。
+     *
+     * @param dateTime 待格式化的日期时间
+     * @return 带毫秒的格式化字符串；入参为空时返回空串
      */
     public static String formatTimestamp(LocalDateTime dateTime) {
         if (dateTime == null) {
@@ -100,9 +112,10 @@ public class DateUtils {
     }
 
     /**
-     * 格式化日期
-     * @param date 日期
-     * @return 格式化后的字符串
+     * 按 yyyy-MM-dd 格式化日期。
+     *
+     * @param date 待格式化的日期
+     * @return 格式化后的字符串；入参为空时返回空串
      */
     public static String formatDate(Date date) {
         if (date == null) {
@@ -113,9 +126,10 @@ public class DateUtils {
     }
 
     /**
-     * 格式化日期时间
-     * @param date 日期
-     * @return 格式化后的字符串
+     * 按 yyyy-MM-dd HH:mm:ss 格式化 Date。
+     *
+     * @param date 待格式化的日期
+     * @return 格式化后的字符串；入参为空时返回空串
      */
     public static String formatDateTime(Date date) {
         if (date == null) {
@@ -126,9 +140,10 @@ public class DateUtils {
     }
 
     /**
-     * 解析日期
+     * 按 yyyy-MM-dd 解析日期字符串。
+     *
      * @param dateStr 日期字符串
-     * @return 日期
+     * @return 解析结果；入参为空时返回 null
      */
     public static LocalDate parseDate(String dateStr) {
         if (dateStr == null || dateStr.isEmpty()) {
@@ -138,9 +153,10 @@ public class DateUtils {
     }
 
     /**
-     * 解析日期时间
+     * 按 yyyy-MM-dd HH:mm:ss 解析日期时间字符串。
+     *
      * @param dateTimeStr 日期时间字符串
-     * @return 日期时间
+     * @return 解析结果；入参为空时返回 null
      */
     public static LocalDateTime parseDateTime(String dateTimeStr) {
         if (dateTimeStr == null || dateTimeStr.isEmpty()) {
@@ -150,9 +166,10 @@ public class DateUtils {
     }
 
     /**
-     * 解析日期
+     * 按 yyyy-MM-dd 解析日期字符串。
+     *
      * @param dateStr 日期字符串
-     * @return 日期
+     * @return 解析结果；入参为空时返回 null
      */
     public static Date parseDateToDate(String dateStr) {
         if (dateStr == null || dateStr.isEmpty()) {
@@ -167,9 +184,10 @@ public class DateUtils {
     }
 
     /**
-     * 解析日期时间
+     * 按 yyyy-MM-dd HH:mm:ss 把字符串解析为 Date。
+     *
      * @param dateTimeStr 日期时间字符串
-     * @return 日期
+     * @return 解析结果；入参为空或格式非法时返回 null
      */
     public static Date parseDateTimeToDate(String dateTimeStr) {
         if (dateTimeStr == null || dateTimeStr.isEmpty()) {
@@ -184,9 +202,10 @@ public class DateUtils {
     }
 
     /**
-     * LocalDate转Date
-     * @param localDate LocalDate
-     * @return Date
+     * 将 LocalDate 转换为 Date，时间取当天零点。
+     *
+     * @param localDate 待转换的日期
+     * @return 转换后的 Date；入参为空时返回 null
      */
     public static Date toDate(LocalDate localDate) {
         if (localDate == null) {
@@ -196,9 +215,10 @@ public class DateUtils {
     }
 
     /**
-     * LocalDateTime转Date
-     * @param localDateTime LocalDateTime
-     * @return Date
+     * 将 LocalDateTime 转换为 Date。
+     *
+     * @param localDateTime 待转换的日期时间
+     * @return 转换后的 Date；入参为空时返回 null
      */
     public static Date toDate(LocalDateTime localDateTime) {
         if (localDateTime == null) {
@@ -208,9 +228,10 @@ public class DateUtils {
     }
 
     /**
-     * Date转LocalDate
-     * @param date Date
-     * @return LocalDate
+     * 将 Date 转换为 LocalDate。
+     *
+     * @param date 待转换的日期
+     * @return 转换后的 LocalDate；入参为空时返回 null
      */
     public static LocalDate toLocalDate(Date date) {
         if (date == null) {
@@ -220,9 +241,10 @@ public class DateUtils {
     }
 
     /**
-     * Date转LocalDateTime
-     * @param date Date
-     * @return LocalDateTime
+     * 将 Date 转换为 LocalDateTime。
+     *
+     * @param date 待转换的日期
+     * @return 转换后的 LocalDateTime；入参为空时返回 null
      */
     public static LocalDateTime toLocalDateTime(Date date) {
         if (date == null) {
@@ -232,18 +254,20 @@ public class DateUtils {
     }
 
     /**
-     * 时间戳转LocalDateTime
-     * @param timestamp 时间戳
-     * @return LocalDateTime
+     * 将毫秒时间戳转换为 LocalDateTime。
+     *
+     * @param timestamp 毫秒时间戳
+     * @return 转换后的日期时间
      */
     public static LocalDateTime timestampToDateTime(long timestamp) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
     }
 
     /**
-     * LocalDateTime转时间戳
+     * 将 LocalDateTime 转换为毫秒时间戳。
+     *
      * @param dateTime 日期时间
-     * @return 时间戳
+     * @return 毫秒时间戳；入参为空时返回 0
      */
     public static long dateTimeToTimestamp(LocalDateTime dateTime) {
         if (dateTime == null) {
@@ -253,10 +277,11 @@ public class DateUtils {
     }
 
     /**
-     * 计算两个日期之间的天数差
+     * 计算两个日期之间的天数差。
+     *
      * @param startDate 开始日期
      * @param endDate 结束日期
-     * @return 天数差
+     * @return 天数差；任一入参为空时返回 0
      */
     public static long daysBetween(LocalDate startDate, LocalDate endDate) {
         if (startDate == null || endDate == null) {
@@ -266,10 +291,11 @@ public class DateUtils {
     }
 
     /**
-     * 计算两个日期时间之间的小时差
+     * 计算两个日期时间之间的小时差。
+     *
      * @param startDateTime 开始日期时间
      * @param endDateTime 结束日期时间
-     * @return 小时差
+     * @return 小时差；任一入参为空时返回 0
      */
     public static long hoursBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         if (startDateTime == null || endDateTime == null) {
@@ -279,10 +305,11 @@ public class DateUtils {
     }
 
     /**
-     * 计算两个日期时间之间的分钟差
+     * 计算两个日期时间之间的分钟差。
+     *
      * @param startDateTime 开始日期时间
      * @param endDateTime 结束日期时间
-     * @return 分钟差
+     * @return 分钟差；任一入参为空时返回 0
      */
     public static long minutesBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         if (startDateTime == null || endDateTime == null) {
@@ -292,10 +319,11 @@ public class DateUtils {
     }
 
     /**
-     * 计算两个日期时间之间的秒差
+     * 计算两个日期时间之间的秒差。
+     *
      * @param startDateTime 开始日期时间
      * @param endDateTime 结束日期时间
-     * @return 秒差
+     * @return 秒差；任一入参为空时返回 0
      */
     public static long secondsBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         if (startDateTime == null || endDateTime == null) {
@@ -305,10 +333,11 @@ public class DateUtils {
     }
 
     /**
-     * 日期加天数
-     * @param date 日期
-     * @param days 天数
-     * @return 新日期
+     * 在日期上增加指定天数。
+     *
+     * @param date 基准日期
+     * @param days 增加的天数，可为负数
+     * @return 新日期；入参为空时返回 null
      */
     public static LocalDate plusDays(LocalDate date, long days) {
         if (date == null) {
@@ -318,10 +347,11 @@ public class DateUtils {
     }
 
     /**
-     * 日期时间加天数
-     * @param dateTime 日期时间
-     * @param days 天数
-     * @return 新日期时间
+     * 在日期时间上增加指定天数。
+     *
+     * @param dateTime 基准日期时间
+     * @param days 增加的天数，可为负数
+     * @return 新日期时间；入参为空时返回 null
      */
     public static LocalDateTime plusDays(LocalDateTime dateTime, long days) {
         if (dateTime == null) {
@@ -331,10 +361,11 @@ public class DateUtils {
     }
 
     /**
-     * 日期时间加小时
-     * @param dateTime 日期时间
-     * @param hours 小时数
-     * @return 新日期时间
+     * 在日期时间上增加指定小时数。
+     *
+     * @param dateTime 基准日期时间
+     * @param hours 增加的小时数，可为负数
+     * @return 新日期时间；入参为空时返回 null
      */
     public static LocalDateTime plusHours(LocalDateTime dateTime, long hours) {
         if (dateTime == null) {
@@ -344,10 +375,11 @@ public class DateUtils {
     }
 
     /**
-     * 日期时间加分钟
-     * @param dateTime 日期时间
-     * @param minutes 分钟数
-     * @return 新日期时间
+     * 在日期时间上增加指定分钟数。
+     *
+     * @param dateTime 基准日期时间
+     * @param minutes 增加的分钟数，可为负数
+     * @return 新日期时间；入参为空时返回 null
      */
     public static LocalDateTime plusMinutes(LocalDateTime dateTime, long minutes) {
         if (dateTime == null) {
@@ -357,10 +389,11 @@ public class DateUtils {
     }
 
     /**
-     * 判断是否为同一天
-     * @param dateTime1 日期时间1
-     * @param dateTime2 日期时间2
-     * @return 是否为同一天
+     * 判断两个日期时间是否为同一天。
+     *
+     * @param dateTime1 第一个日期时间
+     * @param dateTime2 第二个日期时间
+     * @return true-同一天；任一入参为空时返回 false
      */
     public static boolean isSameDay(LocalDateTime dateTime1, LocalDateTime dateTime2) {
         if (dateTime1 == null || dateTime2 == null) {
@@ -370,9 +403,10 @@ public class DateUtils {
     }
 
     /**
-     * 判断是否为今天
-     * @param dateTime 日期时间
-     * @return 是否为今天
+     * 判断日期时间是否为今天。
+     *
+     * @param dateTime 待判断的日期时间
+     * @return true-今天；入参为空时返回 false
      */
     public static boolean isToday(LocalDateTime dateTime) {
         if (dateTime == null) {
@@ -382,9 +416,10 @@ public class DateUtils {
     }
 
     /**
-     * 获取当天的开始时间
+     * 获取指定日期的开始时间。
+     *
      * @param date 日期
-     * @return 开始时间
+     * @return 当天零点；入参为空时返回 null
      */
     public static LocalDateTime startOfDay(LocalDate date) {
         if (date == null) {
@@ -394,9 +429,10 @@ public class DateUtils {
     }
 
     /**
-     * 获取当天的结束时间
+     * 获取指定日期的结束时间。
+     *
      * @param date 日期
-     * @return 结束时间
+     * @return 当天最后一刻；入参为空时返回 null
      */
     public static LocalDateTime endOfDay(LocalDate date) {
         if (date == null) {

@@ -22,6 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 文件删除与恢复服务，负责删除确认、永久删除以及回收站恢复。
+ *
+ * <p>文档级删除委托给文档服务，对象级删除写入 MinIO；除带 {@code agent-approved:} 前缀的
+ * 删除者外，直接删除需先申请并校验确认令牌，存储桶访问权限按当前用户校验。</p>
+ */
 @Service
 public class FileDeleteService {
 
@@ -49,6 +55,9 @@ public class FileDeleteService {
     @org.springframework.beans.factory.annotation.Value("${minio.delete.confirmation-timeout:300}")
     private int confirmationTimeout;
 
+    /**
+     * 待确认的删除请求，记录目标文件、删除者与确认令牌的过期时间。
+     */
     public static class DeleteRequest implements Serializable {
         private static final long serialVersionUID = 1L;
         String documentId;
@@ -60,6 +69,9 @@ public class FileDeleteService {
         long expiryTime;
     }
 
+    /**
+     * 删除目标，标识本次删除作用于文档还是具体对象。
+     */
     private record DeleteTarget(String documentId, String bucketName, String objectName, boolean documentScoped) {
     }
 

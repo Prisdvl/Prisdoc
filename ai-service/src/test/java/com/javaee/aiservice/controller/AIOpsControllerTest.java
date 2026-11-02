@@ -20,6 +20,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * AIOpsController 的 MVC 单元测试，覆盖指标读写放行与重置接口的管理员权限校验。
+ */
 class AIOpsControllerTest {
 
     private MockMvc mockMvc;

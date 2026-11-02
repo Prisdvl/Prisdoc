@@ -5,8 +5,11 @@ import com.javaee.common.constant.CommonConstant;
 import java.io.Serializable;
 
 /**
+ * 分页请求 DTO，统一页码、每页大小与排序参数。
+ *
+ * <p>页码与每页大小非法时回落到默认值，每页大小超过上限时按上限截断。</p>
+ *
  * @author qxk
- * @description: 分页请求DTO（统一）
  */
 public class PageDTO implements Serializable {
     private static final long serialVersionUID = 1L;

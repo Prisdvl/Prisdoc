@@ -2,6 +2,9 @@ package com.javaee.aiservice.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * HTML PPT 生成请求参数。
+ */
 @Schema(description = "HTML PPT生成请求")
 public class HtmlPptRequest {
     

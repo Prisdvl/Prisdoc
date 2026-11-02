@@ -15,8 +15,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 文档内容服务实现类
- * 将文档内容存储到MinIO
+ * 文档内容服务实现，基于 MinIO 读写文档正文。
+ *
+ * <p>正文对象名固定为 {@code document-content/{documentId}.txt}，内容按 UTF-8 文本存取；
+ * 读取失败返回 {@code null}，删除时对象缺失视为成功以保证幂等。</p>
  */
 @Service
 public class DocumentContentServiceImpl implements DocumentContentService {
@@ -30,7 +32,10 @@ public class DocumentContentServiceImpl implements DocumentContentService {
     private BucketPermissionService bucketPermissionService;
 
     /**
-     * 获取文档内容在MinIO中的存储键
+     * 计算文档正文在 MinIO 中的对象名。
+     *
+     * @param documentId 文档 ID
+     * @return 形如 {@code document-content/{documentId}.txt} 的对象名
      */
     @Override
     public String getObjectName(String documentId) {

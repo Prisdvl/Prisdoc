@@ -22,7 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * JWT鉴权全局过滤器
+ * JWT 鉴权全局过滤器，校验请求令牌并向下游透传用户信息。
+ *
+ * <p>白名单路径直接放行；令牌有效时把用户 ID、用户名与角色写入请求头，
+ * 令牌缺失或无效时返回 401，并通过 RabbitMQ 投递告警消息。</p>
  */
 @Slf4j
 @Component
@@ -101,7 +104,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * 发送网关日志消息
+     * 发送网关日志消息。
      */
     private void sendGatewayLog(String path, String method, String userId) {
         Map<String, Object> message = new HashMap<>();
@@ -120,7 +123,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * 发送网关告警消息
+     * 发送网关告警消息。
      */
     private void sendGatewayAlert(String alertType, String description) {
         Map<String, Object> message = new HashMap<>();
@@ -144,7 +147,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * 检查路径是否在白名单中
+     * 检查路径是否在白名单中。
      */
     private boolean isWhiteList(String path) {
         for (String whitePath : WHITE_LIST) {
@@ -165,7 +168,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * 返回未授权响应
+     * 返回未授权响应。
      */
     private Mono<Void> unauthorized(ServerWebExchange exchange) {
         ServerHttpResponse response = exchange.getResponse();

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
- * 网关服务启动类
+ * 网关服务启动类，开启服务发现并承载统一入口。
  */
 @SpringBootApplication
 @EnableDiscoveryClient

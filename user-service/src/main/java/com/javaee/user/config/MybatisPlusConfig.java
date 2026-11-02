@@ -13,15 +13,18 @@ import org.springframework.context.annotation.Configuration;
 import org.mybatis.spring.annotation.MapperScan;
 
 /**
+ * MyBatis-Plus 配置，注册分页、乐观锁插件与自动填充处理器。
+ *
  * @author qxk
- * @description: MyBatis-Plus配置
  */
 @Configuration
 @MapperScan("com.javaee.user.mapper")
 public class MybatisPlusConfig {
 
     /**
-     * 配置MyBatis-Plus拦截器
+     * 配置 MyBatis-Plus 插件链，启用分页与乐观锁。
+     *
+     * @return 已装配分页与乐观锁插件的拦截器
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
@@ -34,7 +37,9 @@ public class MybatisPlusConfig {
     }
 
     /**
-     * 配置自动填充
+     * 配置创建时间与更新时间的自动填充。
+     *
+     * @return 元对象填充处理器
      */
     @Bean
     public MetaObjectHandler metaObjectHandler() {

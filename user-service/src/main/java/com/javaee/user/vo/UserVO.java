@@ -4,8 +4,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
+ * 用户响应对象，向前端输出用户资料与账号状态。
+ *
  * @author qxk
- * @description: 用户响应VO
  */
 @Data
 public class UserVO {

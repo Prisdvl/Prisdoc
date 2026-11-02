@@ -23,6 +23,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * 文档服务实现的单元测试，用 Mock 替代 Mapper 与内容服务。
+ *
+ * <p>覆盖创建时选择用户桶并授权所有者、协作者按文档桶读取正文、
+ * 授权需校验所有者身份，以及空正文更新不覆盖元数据等场景。</p>
+ */
 class DocumentServiceImplTest {
 
     private DocumentMapper documentMapper;

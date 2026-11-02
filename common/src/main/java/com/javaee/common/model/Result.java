@@ -5,8 +5,9 @@ import com.javaee.common.constant.ErrorCodeEnum;
 import java.io.Serializable;
 
 /**
+ * 全局统一返回结果，封装状态码、提示语、业务数据与时间戳。
+ *
  * @author qxk
- * @description: 全局统一返回结果（核心）
  */
 public class Result<T> implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -37,72 +38,79 @@ public class Result<T> implements Serializable {
 
     // 静态方法
     /**
-     * 成功
-     * @param data 数据
+     * 构造携带业务数据的成功响应。
+     *
+     * @param data 业务数据
      * @param <T> 数据类型
-     * @return Result
+     * @return 成功响应
      */
     public static <T> Result<T> success(T data) {
         return new Result<>(ErrorCodeEnum.SUCCESS.getCode(), ErrorCodeEnum.SUCCESS.getMessage(), data);
     }
 
     /**
-     * 成功
+     * 构造不含业务数据的成功响应。
+     *
      * @param <T> 数据类型
-     * @return Result
+     * @return 成功响应，数据为空
      */
     public static <T> Result<T> success() {
         return success(null);
     }
 
     /**
-     * 成功
-     * @param message 消息
-     * @param data 数据
+     * 构造携带自定义提示语与业务数据的成功响应。
+     *
+     * @param message 自定义提示语
+     * @param data 业务数据
      * @param <T> 数据类型
-     * @return Result
+     * @return 成功响应
      */
     public static <T> Result<T> success(String message, T data) {
         return new Result<>(ErrorCodeEnum.SUCCESS.getCode(), message, data);
     }
 
     /**
-     * 失败
+     * 构造指定状态码与提示语的失败响应。
+     *
      * @param code 状态码
-     * @param message 消息
+     * @param message 提示语
      * @param <T> 数据类型
-     * @return Result
+     * @return 失败响应，数据为空
      */
     public static <T> Result<T> fail(Integer code, String message) {
         return new Result<>(code, message, null);
     }
 
     /**
-     * 失败
+     * 按错误码枚举构造失败响应。
+     *
      * @param errorCode 错误码枚举
      * @param <T> 数据类型
-     * @return Result
+     * @return 失败响应，状态码与提示语取自错误码枚举
      */
     public static <T> Result<T> fail(ErrorCodeEnum errorCode) {
         return new Result<>(errorCode.getCode(), errorCode.getMessage(), null);
     }
 
     /**
-     * 失败
-     * @param errorCode 错误码枚举
-     * @param message 消息
+     * 按错误码枚举与自定义提示语构造失败响应。
+     *
+     * @param errorCode 错误码枚举，提供状态码
+     * @param message 自定义提示语
      * @param <T> 数据类型
-     * @return Result
+     * @return 失败响应
      */
     public static <T> Result<T> fail(ErrorCodeEnum errorCode, String message) {
         return new Result<>(errorCode.getCode(), message, null);
     }
 
     /**
-     * 失败
-     * @param message 消息
+     * 按通用业务错误码构造失败响应。
+     *
+     * @param message 提示语
      * @param <T> 数据类型
-     * @return Result
+     * @return 失败响应
      */
     public static <T> Result<T> fail(String message) {
         return new Result<>(ErrorCodeEnum.BUSINESS_ERROR.getCode(), message, null);

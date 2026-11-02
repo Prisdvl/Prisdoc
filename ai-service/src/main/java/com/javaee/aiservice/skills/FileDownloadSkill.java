@@ -7,6 +7,11 @@ import com.javaee.common.utils.UserBucketUtils;
 
 import java.io.InputStream;
 
+/**
+ * 文件下载技能，从 MinIO 读取文件流与元数据。
+ *
+ * <p>执行结果依次返回输入流、内容类型、对象名、桶提示信息与实际桶名；桶不存在或无权访问时抛出异常。</p>
+ */
 public class FileDownloadSkill implements Skill {
 
     private final MinIOService minIOService;

@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * RAG控制器
- * 提供知识库相关的REST API接口
- * 支持基础检索、混合检索和重排序功能
+ * RAG 控制器，提供知识库索引、检索、问答与文档管理接口。
+ *
+ * <p>索引元数据按当前登录用户隔离，文档读写前会校验归属，管理员可跨用户访问。</p>
  */
 @RestController
 @RequestMapping("/api/ai/rag")
@@ -45,7 +45,12 @@ public class RagController {
     private RequestUserContext requestUserContext;
 
     /**
-     * 文档索引
+     * 将文档加入知识库索引。
+     *
+     * @param documentId 文档 ID
+     * @param knowledgeBaseId 知识库 ID
+     * @param content 文档正文
+     * @return 成功时不含数据
      */
     @PostMapping("/index")
     @Operation(summary = "文档索引", description = "将文档添加到知识库")
@@ -58,7 +63,13 @@ public class RagController {
     }
 
     /**
-     * 文档索引（指定分段策略）
+     * 将文档加入知识库索引并指定分段策略。
+     *
+     * @param documentId 文档 ID
+     * @param content 文档正文
+     * @param knowledgeBaseId 知识库 ID
+     * @param strategy 分段策略名称，取值非法时返回失败提示
+     * @return 成功时不含数据
      */
     @PostMapping("/index/segment")
     @Operation(summary = "文档索引（指定分段策略）", description = "将文档添加到知识库并指定分段策略")
@@ -81,7 +92,12 @@ public class RagController {
     }
 
     /**
-     * 基础向量检索
+     * 使用向量相似度检索知识库。
+     *
+     * @param query 查询词
+     * @param topK 返回条数，实际限制在 1 到 20 之间
+     * @param knowledgeBaseId 知识库 ID
+     * @return 命中的文档分段列表
      */
     @GetMapping("/search")
     @Operation(summary = "基础检索", description = "使用向量相似度搜索知识库")
@@ -95,7 +111,12 @@ public class RagController {
     }
 
     /**
-     * 混合检索（向量检索 + BM25）
+     * 使用向量检索与 BM25 混合检索知识库。
+     *
+     * @param query 查询词
+     * @param topK 返回条数，实际限制在 1 到 20 之间
+     * @param knowledgeBaseId 知识库 ID
+     * @return 命中的文档分段列表
      */
     @GetMapping("/search/hybrid")
     @Operation(summary = "混合检索", description = "使用向量检索和BM25检索的混合方式搜索")
@@ -109,7 +130,13 @@ public class RagController {
     }
 
     /**
-     * 混合检索加重排序
+     * 混合检索后按指定策略重排序。
+     *
+     * @param query 查询词
+     * @param topK 返回条数，实际限制在 1 到 20 之间
+     * @param strategy 重排序策略名称，取值非法时返回失败提示
+     * @param knowledgeBaseId 知识库 ID
+     * @return 重排序后的文档分段列表
      */
     @GetMapping("/search/hybrid/rerank")
     @Operation(summary = "混合检索加重排序", description = "混合检索后使用指定策略进行重排序")
@@ -133,7 +160,9 @@ public class RagController {
     }
 
     /**
-     * 获取支持的重排序策略
+     * 获取支持的重排序策略。
+     *
+     * @return 重排序策略名称列表
      */
     @GetMapping("/rerank/strategies")
     @Operation(summary = "获取重排序策略", description = "获取所有支持的重排序策略")
@@ -143,7 +172,12 @@ public class RagController {
     }
 
     /**
-     * 知识库问答（使用混合检索加重排序）
+     * 基于知识库解答问题，默认使用混合检索加重排序。
+     *
+     * @param question 用户问题
+     * @param strategy 重排序策略名称，取值非法时返回失败提示
+     * @param knowledgeBaseId 知识库 ID
+     * @return 问答结果，含答案、引用片段与来源文档 ID
      */
     @PostMapping("/query")
     @Operation(summary = "知识库问答", description = "基于知识库进行问答，默认使用混合检索加重排序")
@@ -182,7 +216,10 @@ public class RagController {
     }
 
     /**
-     * 获取文档内容
+     * 获取文档正文。
+     *
+     * @param documentId 文档 ID
+     * @return 文档正文
      */
     @GetMapping("/document/{documentId}")
     @Operation(summary = "获取文档内容", description = "获取知识库中的文档内容")
@@ -194,7 +231,10 @@ public class RagController {
     }
 
     /**
-     * 删除文档
+     * 从知识库删除文档。
+     *
+     * @param documentId 文档 ID
+     * @return 成功时不含数据
      */
     @DeleteMapping("/document/{documentId}")
     @Operation(summary = "删除文档", description = "从知识库删除文档")
@@ -206,7 +246,9 @@ public class RagController {
     }
 
     /**
-     * 获取所有文档ID
+     * 获取当前用户在默认知识库中的全部文档 ID。
+     *
+     * @return 文档 ID 列表
      */
     @GetMapping("/documents")
     @Operation(summary = "获取文档列表", description = "获取知识库中的所有文档ID")
@@ -216,7 +258,10 @@ public class RagController {
     }
 
     /**
-     * 获取文档元数据
+     * 获取文档元数据。
+     *
+     * @param documentId 文档 ID
+     * @return 文档元数据，含归属用户与知识库 ID
      */
     @GetMapping("/document/{documentId}/metadata")
     @Operation(summary = "获取文档元数据", description = "获取文档的元数据信息")
@@ -228,7 +273,10 @@ public class RagController {
     }
 
     /**
-     * 获取文档分段列表
+     * 获取文档的分段列表。
+     *
+     * @param documentId 文档 ID
+     * @return 文档分段列表
      */
     @GetMapping("/document/{documentId}/segments")
     @Operation(summary = "获取文档分段", description = "获取文档的分段列表")
@@ -240,7 +288,10 @@ public class RagController {
     }
 
     /**
-     * 获取知识库统计信息
+     * 获取知识库统计信息。
+     *
+     * @param knowledgeBaseId 知识库 ID
+     * @return 统计信息，含文档数与分段数等指标
      */
     @GetMapping("/statistics")
     @Operation(summary = "获取知识库统计", description = "获取知识库的统计信息")
@@ -251,7 +302,9 @@ public class RagController {
     }
 
     /**
-     * 获取支持的分段策略
+     * 获取支持的分段策略。
+     *
+     * @return 分段策略名称与说明的映射
      */
     @GetMapping("/segment/strategies")
     @Operation(summary = "获取分段策略", description = "获取所有支持的分段策略")

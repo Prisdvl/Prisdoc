@@ -14,9 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 文档向量化器
- * 负责将文档内容转换为向量表示
- * 适配阿里云百炼dashscope的Embedding API
+ * 文档向量化器，调用阿里云百炼 DashScope 的 Embedding 接口把文本转换为向量。
+ *
+ * <p>模型、维度与 API Key 均由配置注入；单条文本与批量文本共用同一套调用逻辑。</p>
  */
 @Component
 public class DocumentVectorizer {
@@ -33,9 +33,10 @@ public class DocumentVectorizer {
     private int dimension;
 
     /**
-     * 将文本向量化
-     * @param text 文本内容
-     * @return 向量表示
+     * 将单条文本向量化。
+     *
+     * @param text 待向量化的文本内容
+     * @return 文本对应的向量表示
      */
     public float[] vectorize(String text) {
         log.debug("开始向量化文本，长度={}", text.length());
@@ -81,9 +82,10 @@ public class DocumentVectorizer {
     }
 
     /**
-     * 批量向量化
-     * @param texts 文本列表
-     * @return 向量列表
+     * 批量向量化文本数组。
+     *
+     * @param texts 待向量化的文本列表
+     * @return 与输入顺序一致的向量列表
      */
     public float[][] vectorizeBatch(String[] texts) {
         log.info("批量向量化，数量={}", texts.length);
@@ -102,8 +104,9 @@ public class DocumentVectorizer {
     }
 
     /**
-     * 获取向量维度
-     * @return 向量维度
+     * 获取当前配置下的向量维度。
+     *
+     * @return 向量维度；探测失败时返回配置的默认维度
      */
     public int getVectorDimension() {
         try {

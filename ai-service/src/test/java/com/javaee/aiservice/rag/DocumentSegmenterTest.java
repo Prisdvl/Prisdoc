@@ -7,6 +7,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * DocumentSegmenter 的单元测试，覆盖混合分段与自动策略选择。
+ */
 class DocumentSegmenterTest {
 
     @Test
@@ -56,6 +59,9 @@ class DocumentSegmenterTest {
         return new SegmentStrategy.Segment(documentId + "_chapter_" + index, documentId, content, index, title);
     }
 
+    /**
+     * 固定长度分段策略的测试替身，直接返回预设分段。
+     */
     private static class StubFixedLengthSegmentStrategy extends FixedLengthSegmentStrategy {
         private final List<Segment> segments;
 
@@ -69,6 +75,9 @@ class DocumentSegmenterTest {
         }
     }
 
+    /**
+     * 章节分段策略的测试替身，直接返回预设章节。
+     */
     private static class StubChapterSegmentStrategy extends ChapterSegmentStrategy {
         private final List<Segment> segments;
 
@@ -82,6 +91,9 @@ class DocumentSegmenterTest {
         }
     }
 
+    /**
+     * 语义分段策略的测试替身，为输入内容追加语义标记。
+     */
     private static class StubSemanticSegmentStrategy extends SemanticSegmentStrategy {
         @Override
         public List<Segment> segment(String documentId, String content) {

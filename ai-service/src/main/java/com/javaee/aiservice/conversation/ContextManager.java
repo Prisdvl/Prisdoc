@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 上下文管理器
- * 管理对话上下文和状态
- * 支持上下文的保存、更新和清理
+ * 对话上下文管理器，基于 Redis 保存、读取、合并与清理对话上下文。
+ *
+ * <p>上下文以 Redis Hash 存储并按对话 ID 隔离，读写异常直接向上抛出，由调用方处理。</p>
  */
 @Component
 public class ContextManager {
@@ -25,9 +25,10 @@ public class ContextManager {
     private RedisTemplate<String, Object> redisTemplate;
 
     /**
-     * 获取对话上下文
-     * @param conversationId 对话ID
-     * @return 上下文信息
+     * 获取指定对话的全部上下文。
+     *
+     * @param conversationId 对话 ID
+     * @return 上下文键值对，不存在时返回空 Map
      */
     public Map<String, Object> getContext(String conversationId) {
         String key = CONTEXT_PREFIX + conversationId;
@@ -43,9 +44,10 @@ public class ContextManager {
     }
 
     /**
-     * 更新对话上下文
-     * @param conversationId 对话ID
-     * @param updates 更新内容
+     * 批量更新对话上下文，更新内容为空时直接返回。
+     *
+     * @param conversationId 对话 ID
+     * @param updates 待写入的上下文字段
      */
     public void updateContext(String conversationId, Map<String, Object> updates) {
         if (updates == null || updates.isEmpty()) {
@@ -59,8 +61,9 @@ public class ContextManager {
     }
 
     /**
-     * 设置上下文字段
-     * @param conversationId 对话ID
+     * 设置单个上下文字段。
+     *
+     * @param conversationId 对话 ID
      * @param key 字段名
      * @param value 字段值
      */
@@ -72,10 +75,11 @@ public class ContextManager {
     }
 
     /**
-     * 获取上下文字段
-     * @param conversationId 对话ID
+     * 获取单个上下文字段的值。
+     *
+     * @param conversationId 对话 ID
      * @param key 字段名
-     * @return 字段值
+     * @return 字段值，不存在时返回 null
      */
     public Object getContextValue(String conversationId, String key) {
         String contextKey = CONTEXT_PREFIX + conversationId;
@@ -83,8 +87,9 @@ public class ContextManager {
     }
 
     /**
-     * 清理对话上下文
-     * @param conversationId 对话ID
+     * 清理指定对话的全部上下文。
+     *
+     * @param conversationId 对话 ID
      */
     public void clearContext(String conversationId) {
         String key = CONTEXT_PREFIX + conversationId;
@@ -94,9 +99,10 @@ public class ContextManager {
     }
 
     /**
-     * 合并上下文
-     * @param conversationId 对话ID
-     * @param newContext 新上下文
+     * 把新上下文合并进已有上下文，同名键以新值为准。
+     *
+     * @param conversationId 对话 ID
+     * @param newContext 待合并的上下文字段
      */
     public void mergeContext(String conversationId, Map<String, Object> newContext) {
         if (newContext == null || newContext.isEmpty()) {

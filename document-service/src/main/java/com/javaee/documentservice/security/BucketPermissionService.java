@@ -15,7 +15,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Checks whether the current user's permission groups can access a MinIO bucket.
+ * 存储桶访问控制服务，校验当前用户的权限组能否访问指定 MinIO 桶。
+ *
+ * <p>管理员与用户本人的桶直接放行；其余按 {@code minio.bucket-permissions}
+ * 配置的「桶=权限组」映射判定，未配置时取 {@code minio.bucket-permission-default-allow}
+ * 的默认策略，校验不通过抛出 {@link SecurityException}。</p>
  */
 @Service
 public class BucketPermissionService {
@@ -26,6 +30,11 @@ public class BucketPermissionService {
     @Value("${minio.bucket-permission-default-allow:false}")
     private boolean defaultAllow;
 
+    /**
+     * 校验当前用户对指定存储桶的访问权限，无权访问时抛出安全异常。
+     *
+     * @param bucketName 待访问的存储桶名
+     */
     public void assertCanAccess(String bucketName) {
         if (isAdmin()) {
             return;

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * RabbitMQ配置类
+ * RabbitMQ 配置，声明网关日志与告警的队列、交换机、绑定及消息转换组件。
  */
 @Configuration
 public class RabbitMQConfig {
@@ -28,7 +28,9 @@ public class RabbitMQConfig {
     public static final String GATEWAY_ALERT_ROUTING_KEY = "gateway.alert";
 
     /**
-     * 声明交换机
+     * 声明网关主题交换机。
+     *
+     * @return 持久化的主题交换机
      */
     @Bean
     public TopicExchange gatewayExchange() {
@@ -36,7 +38,9 @@ public class RabbitMQConfig {
     }
 
     /**
-     * 声明网关日志队列
+     * 声明网关日志队列。
+     *
+     * @return 持久化的日志队列
      */
     @Bean
     public Queue gatewayLogQueue() {
@@ -44,7 +48,9 @@ public class RabbitMQConfig {
     }
 
     /**
-     * 声明网关告警队列
+     * 声明网关告警队列。
+     *
+     * @return 持久化的告警队列
      */
     @Bean
     public Queue gatewayAlertQueue() {
@@ -52,7 +58,9 @@ public class RabbitMQConfig {
     }
 
     /**
-     * 绑定网关日志队列到交换机
+     * 将网关日志队列绑定到主题交换机。
+     *
+     * @return 日志队列的绑定关系
      */
     @Bean
     public Binding bindingGatewayLogQueue() {
@@ -60,7 +68,9 @@ public class RabbitMQConfig {
     }
 
     /**
-     * 绑定网关告警队列到交换机
+     * 将网关告警队列绑定到主题交换机。
+     *
+     * @return 告警队列的绑定关系
      */
     @Bean
     public Binding bindingGatewayAlertQueue() {

@@ -19,6 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 评论服务实现，完成文档评论与回复的创建、查询与软删除。
+ *
+ * <p>顶层评论查询时会一并装配其回复；只有评论作者本人可以删除自己的评论。</p>
+ */
 @Service
 public class CommentServiceImpl implements CommentService {
 

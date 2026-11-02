@@ -26,6 +26,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * AgentController 的 MVC 单元测试，覆盖任务、知识索引任务与工作台概览接口及越权拦截。
+ */
 class AgentControllerTest {
 
     private MockMvc mockMvc;

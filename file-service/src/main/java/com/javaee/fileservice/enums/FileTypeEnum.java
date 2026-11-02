@@ -1,7 +1,7 @@
 package com.javaee.fileservice.enums;
 
 /**
- * 文件类型枚举
+ * 文件类型枚举，定义文件大类编码与中文描述。
  */
 public enum FileTypeEnum {
 

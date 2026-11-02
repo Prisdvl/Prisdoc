@@ -15,8 +15,10 @@ import java.time.Duration;
 import java.util.*;
 
 /**
- * 重排序器
- * 支持多种重排序策略：BM25融合、Cross-Encoder、自定义规则等
+ * 重排序器，对检索候选按 BM25 融合、Cross-Encoder 或混合策略重新打分排序。
+ *
+ * <p>Cross-Encoder 优先调用 DashScope 重排接口，未配置密钥、调用失败或功能被禁用时
+ * 自动降级为本地词面匹配打分，保证检索链路不中断。</p>
  */
 @Component
 public class Reranker {
@@ -45,16 +47,16 @@ public class Reranker {
             .build();
 
     /**
-     * 重排序策略枚举
+     * 重排序策略枚举，定义 BM25 融合、Cross-Encoder 与混合三种重排方式。
      */
     public enum RerankStrategy {
-        BM25_FUSION,      // BM25与向量相似度融合
-        CROSS_ENCODER,    // Cross-Encoder重排序
+        BM25_FUSION,      // BM25 与向量相似度融合
+        CROSS_ENCODER,    // Cross-Encoder 重排序
         HYBRID            // 混合策略
     }
 
     /**
-     * 重排序结果
+     * 重排序结果，记录文档 ID、原始序号与重排前后的分数。
      */
     public static class RerankResult {
         private String documentId;
@@ -78,6 +80,9 @@ public class Reranker {
         public float getFinalScore() { return finalScore; }
     }
 
+    /**
+     * Cross-Encoder 打分结果，保存各候选的分数及实际使用的提供方。
+     */
     private static class CrossEncoderScores {
         private final List<Float> scores;
         private final String provider;
@@ -89,12 +94,13 @@ public class Reranker {
     }
 
     /**
-     * 对检索结果进行重排序
+     * 对检索候选执行重排序，返回得分最高的若干条结果。
+     *
      * @param query 查询词
-     * @param candidates 候选结果列表（包含id, similarity, content）
-     * @param strategy 重排序策略
-     * @param topK 返回数量
-     * @return 重排序后的结果
+     * @param candidates 候选结果列表，需包含 id、similarity 与 content 字段
+     * @param strategy 重排序策略，为空时按混合策略处理
+     * @param topK 返回数量，非正数时返回空列表
+     * @return 重排序后的结果，按最终分数降序排列
      */
     public List<Map<String, Object>> rerank(String query, List<Map<String, Object>> candidates, 
                                             RerankStrategy strategy, int topK) {
@@ -163,7 +169,7 @@ public class Reranker {
     }
 
     /**
-     * 计算BM25分数（简化实现）
+     * 计算 BM25 分数（简化实现）。
      */
     private float computeBM25(String query, String document) {
         if (query == null || document == null) {
@@ -321,12 +327,13 @@ public class Reranker {
     }
 
     /**
-     * 融合两个分数
-     * @param score1 分数1
-     * @param score2 分数2
-     * @param weight1 分数1权重
-     * @param weight2 分数2权重
-     * @return 融合后的分数
+     * 按权重融合原始分数与重排分数。
+     *
+     * @param score1 第一个分数
+     * @param score2 第二个分数
+     * @param weight1 第一个分数的权重
+     * @param weight2 第二个分数的权重
+     * @return 加权融合后的分数
      */
     private float fuseScores(float score1, float score2, float weight1, float weight2) {
         return score1 * weight1 + score2 * weight2;
@@ -383,7 +390,9 @@ public class Reranker {
     }
 
     /**
-     * 获取所有支持的重排序策略
+     * 获取所有支持的重排序策略名称。
+     *
+     * @return 策略名称列表，顺序与枚举声明一致
      */
     public List<String> getSupportedStrategies() {
         List<String> strategies = new ArrayList<>();

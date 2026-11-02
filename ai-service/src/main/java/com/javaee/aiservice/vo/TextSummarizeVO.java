@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 文档摘要结果，包含摘要正文与压缩情况。
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

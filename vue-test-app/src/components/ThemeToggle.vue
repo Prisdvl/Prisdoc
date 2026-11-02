@@ -13,6 +13,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 主题切换按钮，支持 md / sm 两种尺寸。
+ */
 import { THEME_OPTIONS, setTheme, useTheme } from '../utils/theme'
 
 defineProps({

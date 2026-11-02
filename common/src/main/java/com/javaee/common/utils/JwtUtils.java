@@ -14,8 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * JWT 工具，负责访问令牌与刷新令牌的签发、解析与校验。
+ *
+ * <p>令牌使用 HS256 密钥签名，访问令牌有效期 30 分钟，刷新令牌有效期 7 天；
+ * 解析失败统一抛出令牌异常。</p>
+ *
  * @author qxk
- * @description: JWT工具（生成/解析/验证）
  */
 public class JwtUtils {
 
@@ -25,10 +29,11 @@ public class JwtUtils {
     private static final long REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
     /**
-     * 生成访问令牌
-     * @param userId 用户ID
+     * 生成包含用户 ID 与用户名的访问令牌。
+     *
+     * @param userId 用户 ID
      * @param username 用户名
-     * @return 令牌
+     * @return 签名后的访问令牌
      */
     public static String generateToken(Long userId, String username) {
         Map<String, Object> claims = new HashMap<>();
@@ -38,11 +43,12 @@ public class JwtUtils {
     }
 
     /**
-     * 生成访问令牌
-     * @param userId 用户ID
+     * 生成包含用户 ID、用户名与角色的访问令牌。
+     *
+     * @param userId 用户 ID
      * @param username 用户名
-     * @param role 角色
-     * @return 令牌
+     * @param role 用户角色
+     * @return 签名后的访问令牌
      */
     public static String generateToken(Long userId, String username, String role) {
         Map<String, Object> claims = new HashMap<>();
@@ -53,9 +59,10 @@ public class JwtUtils {
     }
 
     /**
-     * 生成刷新令牌
-     * @param userId 用户ID
-     * @return 刷新令牌
+     * 生成刷新令牌。
+     *
+     * @param userId 用户 ID
+     * @return 有效期 7 天的刷新令牌
      */
     public static String generateRefreshToken(Long userId) {
         Map<String, Object> claims = new HashMap<>();
@@ -64,10 +71,11 @@ public class JwtUtils {
     }
 
     /**
-     * 生成令牌
-     * @param claims 声明
-     * @param expiration 过期时间
-     * @return 令牌
+     * 按声明与有效期签发令牌。
+     *
+     * @param claims 令牌声明
+     * @param expiration 有效期，单位毫秒
+     * @return 签名后的令牌
      */
     private static String generateToken(Map<String, Object> claims, long expiration) {
         Date now = new Date();
@@ -81,9 +89,11 @@ public class JwtUtils {
     }
 
     /**
-     * 解析令牌
-     * @param token 令牌
-     * @return 声明
+     * 解析并校验令牌，返回其中的声明。
+     *
+     * @param token 待解析的令牌
+     * @return 令牌声明
+     * @throws TokenException 令牌非法、签名错误或已过期
      */
     public static Claims parseToken(String token) {
         try {
@@ -98,9 +108,10 @@ public class JwtUtils {
     }
 
     /**
-     * 验证令牌
-     * @param token 令牌
-     * @return 是否有效
+     * 判断令牌是否有效。
+     *
+     * @param token 待校验的令牌
+     * @return true-签名有效且未过期
      */
     public static boolean validateToken(String token) {
         try {
@@ -112,9 +123,10 @@ public class JwtUtils {
     }
 
     /**
-     * 获取用户ID
+     * 从令牌中读取用户 ID。
+     *
      * @param token 令牌
-     * @return 用户ID
+     * @return 用户 ID；声明缺失时返回 null
      */
     public static Long getUserId(String token) {
         Claims claims = parseToken(token);
@@ -122,9 +134,10 @@ public class JwtUtils {
     }
 
     /**
-     * 获取用户名
+     * 从令牌中读取用户名。
+     *
      * @param token 令牌
-     * @return 用户名
+     * @return 用户名；声明缺失时返回 null
      */
     public static String getUsername(String token) {
         Claims claims = parseToken(token);
@@ -132,9 +145,10 @@ public class JwtUtils {
     }
 
     /**
-     * 获取角色
+     * 从令牌中读取角色。
+     *
      * @param token 令牌
-     * @return 角色
+     * @return 角色；声明缺失时返回 null
      */
     public static String getRole(String token) {
         Claims claims = parseToken(token);
@@ -142,9 +156,10 @@ public class JwtUtils {
     }
 
     /**
-     * 检查令牌是否过期
-     * @param token 令牌
-     * @return 是否过期
+     * 判断令牌是否已过期。
+     *
+     * @param token 待判断的令牌
+     * @return true-已过期或无法解析
      */
     public static boolean isTokenExpired(String token) {
         try {
@@ -157,9 +172,11 @@ public class JwtUtils {
     }
 
     /**
-     * 从请求头中提取令牌
-     * @param authHeader 认证头
-     * @return 令牌
+     * 从 Authorization 请求头中提取令牌。
+     *
+     * @param authHeader 请求头值
+     * @return 去掉 Bearer 前缀后的令牌
+     * @throws TokenException 请求头缺失或前缀不匹配
      */
     public static String extractToken(String authHeader) {
         if (authHeader != null && authHeader.startsWith(CommonConstant.TOKEN_PREFIX)) {

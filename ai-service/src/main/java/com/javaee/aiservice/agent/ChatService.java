@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * 自定义Chat服务
- * 支持多模型选择
+ * 自定义 Chat 服务，按模型类型或模型编码转发对话请求。
  */
 @Service
 public class ChatService {
@@ -20,7 +19,8 @@ public class ChatService {
     private AIServiceFactory aiServiceFactory;
 
     /**
-     * 调用默认模型（qwen-plus）
+     * 调用默认模型。
+     *
      * @param prompt 用户提示词
      * @return 响应内容
      */
@@ -29,9 +29,10 @@ public class ChatService {
     }
 
     /**
-     * 调用指定模型
+     * 调用指定模型类型，为 null 时使用默认模型。
+     *
      * @param prompt 用户提示词
-     * @param modelType 模型类型
+     * @param modelType 模型类型，null 表示默认模型
      * @return 响应内容
      */
     public String callChatApiWithModelType(String prompt, ModelType modelType) {
@@ -47,9 +48,10 @@ public class ChatService {
     }
 
     /**
-     * 调用指定模型（通过模型代码）
+     * 按模型编码调用指定模型。
+     *
      * @param prompt 用户提示词
-     * @param modelCode 模型代码
+     * @param modelCode 模型编码，空值表示默认模型
      * @return 响应内容
      */
     public String callChatApiWithModelCode(String prompt, String modelCode) {

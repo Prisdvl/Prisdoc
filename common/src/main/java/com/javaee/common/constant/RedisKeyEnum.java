@@ -1,8 +1,9 @@
 package com.javaee.common.constant;
 
 /**
+ * Redis 键名枚举，统一各类业务的键模板，避免键名硬编码。
+ *
  * @author qxk
- * @description: Redis键名枚举（避免硬编码）
  */
 public enum RedisKeyEnum {
     // 用户相关
@@ -69,18 +70,20 @@ public enum RedisKeyEnum {
     }
 
     /**
-     * 生成完整的Redis键
-     * @param params 键参数
-     * @return 完整的Redis键
+     * 按键模板与可变参数生成完整的 Redis 键。
+     *
+     * @param params 填充键模板的可变参数
+     * @return 完整的 Redis 键
      */
     public String getKey(Object... params) {
         return String.format(keyPattern, params);
     }
 
     /**
-     * 生成完整的Redis键
-     * @param param 键参数
-     * @return 完整的Redis键
+     * 按键模板与单个参数生成完整的 Redis 键。
+     *
+     * @param param 填充键模板的参数
+     * @return 完整的 Redis 键
      */
     public String getKey(String param) {
         return String.format(keyPattern, param);

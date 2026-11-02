@@ -9,6 +9,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * AI 服务安全配置，启用无状态 JWT 鉴权。
+ *
+ * <p>关闭 CSRF 与 Session，放行 Actuator、Swagger、静态页面、Agent 接口与 WebSocket 端点，
+ * 其余请求必须携带有效 JWT；JWT 过滤器置于用户名密码认证过滤器之前。</p>
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

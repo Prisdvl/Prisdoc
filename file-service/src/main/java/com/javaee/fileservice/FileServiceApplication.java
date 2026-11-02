@@ -7,7 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.core.env.Environment;
 
 /**
- * 文件服务应用启动类
+ * 文件服务应用启动类，负责启动 Spring Boot 应用并输出服务名与端口。
  */
 @SpringBootApplication(scanBasePackages = {"com.javaee.fileservice", "com.javaee.common"})
 @EnableDiscoveryClient

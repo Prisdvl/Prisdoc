@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * AIOps控制器
- * 提供系统监控和故障处理相关的REST API接口
+ * AIOps 控制器，提供监控指标、健康检查与故障处理接口。
+ *
+ * <p>重置指标、故障检测与故障处理属于管理操作，仅管理员可调用。</p>
  */
 @RestController
 @RequestMapping("/api/ai/aiops")
@@ -32,7 +33,9 @@ public class AIOpsController {
     private RequestUserContext requestUserContext;
 
     /**
-     * 系统监控 - 获取指标
+     * 获取全部监控指标。
+     *
+     * @return 计数器与耗时等指标数据
      */
     @GetMapping("/monitor")
     @Operation(summary = "获取监控指标", description = "获取系统的监控指标")
@@ -42,7 +45,9 @@ public class AIOpsController {
     }
 
     /**
-     * 系统监控 - 健康检查
+     * 检查系统健康状态。
+     *
+     * @return 健康检查结果
      */
     @GetMapping("/health")
     @Operation(summary = "健康检查", description = "检查系统健康状态")
@@ -52,7 +57,9 @@ public class AIOpsController {
     }
 
     /**
-     * 系统监控 - 重置指标
+     * 重置监控指标与故障记录。
+     *
+     * @return 成功时不含数据
      */
     @PostMapping("/metrics/reset")
     @Operation(summary = "重置指标", description = "重置所有监控指标")
@@ -64,7 +71,9 @@ public class AIOpsController {
     }
 
     /**
-     * 故障检测 - 检测故障
+     * 触发一次故障检测。
+     *
+     * @return 本次检测到的故障列表
      */
     @GetMapping("/detect")
     @Operation(summary = "检测故障", description = "检测系统中的故障")
@@ -75,7 +84,9 @@ public class AIOpsController {
     }
 
     /**
-     * 故障检测 - 获取所有故障
+     * 获取全部故障记录。
+     *
+     * @return 故障记录列表
      */
     @GetMapping("/faults")
     @Operation(summary = "获取故障列表", description = "获取所有故障记录")
@@ -86,7 +97,10 @@ public class AIOpsController {
     }
 
     /**
-     * 故障检测 - 处理故障
+     * 将指定故障标记为已处理。
+     *
+     * @param faultId 故障 ID
+     * @return 处理结果
      */
     @PostMapping("/faults/{faultId}/resolve")
     @Operation(summary = "处理故障", description = "处理指定的故障")
@@ -98,7 +112,11 @@ public class AIOpsController {
     }
 
     /**
-     * 系统监控 - 记录指标
+     * 累加指定计数器的值。
+     *
+     * @param name 指标名称
+     * @param delta 增量
+     * @return 成功时不含数据
      */
     @PostMapping("/metrics/counter")
     @Operation(summary = "记录计数器", description = "记录计数器指标")
@@ -110,7 +128,11 @@ public class AIOpsController {
     }
 
     /**
-     * 系统监控 - 记录耗时
+     * 记录一次耗时采样。
+     *
+     * @param name 指标名称
+     * @param duration 耗时，单位毫秒
+     * @return 成功时不含数据
      */
     @PostMapping("/metrics/timer")
     @Operation(summary = "记录耗时", description = "记录耗时指标")

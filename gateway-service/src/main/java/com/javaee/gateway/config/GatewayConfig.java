@@ -7,8 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 网关路由配置
- * 支持服务发现模式（lb://）和直连模式（http://）
+ * 网关路由配置，按路径前缀把请求转发到各后端服务。
+ *
+ * <p>支持服务发现模式（lb://）与直连模式（http://），目标地址可通过配置覆盖。</p>
  */
 @Configuration
 public class GatewayConfig {

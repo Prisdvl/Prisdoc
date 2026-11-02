@@ -18,9 +18,10 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 文件版本管理服务
- * 功能说明：管理文件的多个版本，支持查看和切换
- * 实现方式：Redis持久化版本元数据 + MinIO保存版本快照
+ * 文件版本管理服务，维护文件的多个版本并支持查看与切换。
+ *
+ * <p>版本元数据持久化在 Redis，版本快照保存在 MinIO 的版本对象路径；
+ * 每个文件同一时刻只有一个当前版本。</p>
  */
 @Service
 public class FileVersionService {

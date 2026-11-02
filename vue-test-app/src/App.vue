@@ -6,6 +6,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 应用根组件：渲染路由页面，并挂载全局 AI 助手与设置弹窗。
+ */
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import GlobalAiAssistant from './views/components/GlobalAiAssistant.vue'

@@ -63,7 +63,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Product-level Agent chain: plan -> execute tools -> synthesize answer -> persist conversation.
+ * 产品级 Agent 执行链：规划 -> 执行工具 -> 汇总答案 -> 持久化会话。
+ *
+ * <p>执行过程按步骤推进并写入任务快照，支持进度推送、审批拦截、失败重试与
+ * 反思式重规划；原始任务与上下文在整个链路中共享。</p>
  */
 @Service
 public class AgentExecutionService {
@@ -141,6 +144,12 @@ public class AgentExecutionService {
     @Value("${ai.agent.reflection.enabled:true}")
     private boolean defaultReflectionEnabled;
 
+    /**
+     * 执行一次完整的 Agent 任务，返回包含答案与执行轨迹的快照。
+     *
+     * @param request 执行请求，含任务、上下文与执行开关
+     * @return 执行结果，含状态、答案、计划与时间线等信息
+     */
     public Map<String, Object> execute(AgentExecutionRequest request) {
         validateRequest(request);
 
@@ -419,10 +428,21 @@ public class AgentExecutionService {
         return response;
     }
 
+    /**
+     * 列出当前可用的工具定义。
+     *
+     * @return 工具定义列表
+     */
     public List<AgentToolDefinition> listTools() {
         return toolRegistry.list();
     }
 
+    /**
+     * 确认待审批步骤并从中断处继续执行任务。
+     *
+     * @param request 确认请求，需携带审批令牌
+     * @return 继续执行后的任务快照；令牌失效或无待确认步骤时返回 not_found
+     */
     @SuppressWarnings("unchecked")
     public Map<String, Object> confirmApproval(AgentExecutionRequest request) {
         String userId = requestUserContext.getRequiredUserId();
@@ -463,6 +483,13 @@ public class AgentExecutionService {
         return execute(resumed);
     }
 
+    /**
+     * 取消待审批任务并作废审批令牌。
+     *
+     * @param token 审批令牌
+     * @param userId 请求者用户 ID，用于归属校验
+     * @return 是否已取消或令牌已作废
+     */
     public boolean cancelApproval(String token, String userId) {
         Map<String, Object> snapshot = taskRegistry.findByApprovalToken(token);
         boolean removed = agentApprovalService.cancel(token);
@@ -684,8 +711,14 @@ public class AgentExecutionService {
 
     /**
      * 对历史任务的单个步骤进行重试，返回最新工具结果与原任务快照。
-     * 仅用于已结束（success/error/cancelled）任务的针对性补救：不会触发整轮 replan，
-     * 也不会修改原始 timeline，结果通过 `singleStepRetry` 字段附加到 snapshot。
+     *
+     * <p>仅用于已结束（success/error/cancelled）任务的针对性补救：不会触发整轮 replan，
+     * 也不会修改原始 timeline，结果通过 {@code singleStepRetry} 字段附加到 snapshot。</p>
+     *
+     * @param traceId 任务追踪 ID
+     * @param stepId 待重试步骤的 ID
+     * @param overrideParams 覆盖步骤原始入参的参数，可为 null
+     * @return 重试结果，含状态、观察结果与数据；任务或步骤不存在时返回带状态码的说明
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> retryStep(String traceId, String stepId, Map<String, Object> overrideParams) {
@@ -1167,11 +1200,18 @@ public class AgentExecutionService {
     }
 
     /**
-     * 评估 successCriteria：支持以分号分隔的若干断言：
-     * - contains:keyword       observation 中必须包含 keyword
-     * - data.<key>             data 中必须存在该字段且非空
-     * - data.<key>=value       data.key 必须等于 value
-     * 返回 null 表示通过，否则返回未满足的条目。
+     * 评估步骤的成功判定条件（successCriteria），支持以分号分隔的若干断言。
+     *
+     * <p>断言语法：</p>
+     * <ul>
+     *   <li>contains:keyword —— observation 中必须包含 keyword</li>
+     *   <li>data.&lt;key&gt; —— data 中必须存在该字段且非空</li>
+     *   <li>data.&lt;key&gt;=value —— data.key 必须等于 value</li>
+     * </ul>
+     *
+     * @param step 待校验的步骤，取其 successCriteria 配置
+     * @param result 工具执行结果，提供 observation 与 data
+     * @return null 表示全部通过；否则返回首个未满足的断言文本
      */
     String evaluateSuccessCriteria(AgentPlanStep step, AgentToolResult result) {
         String criteria = step.getSuccessCriteria();
@@ -1556,10 +1596,18 @@ public class AgentExecutionService {
     }
 
     /**
-     * 在 ReAct loop 中支持模板变量引用：
-     * ${task}                直接引用用户原始任务
-     * ${context.userId}      引用 context 中的字段
-     * ${steps.<id>.<field>}  引用前序步骤结果（observation/answer/...）
+     * 在 ReAct loop 中把步骤入参里的模板变量替换为实际值。
+     *
+     * <p>支持三种引用形式：</p>
+     * <ul>
+     *   <li>${task} —— 直接引用用户原始任务</li>
+     *   <li>${context.userId} —— 引用 context 中的字段</li>
+     *   <li>${steps.&lt;id&gt;.&lt;field&gt;} —— 引用前序步骤结果（observation/answer 等）</li>
+     * </ul>
+     *
+     * @param step 待解析的步骤，其 params 会被原地改写
+     * @param request 执行请求，提供原始任务文本
+     * @param context 执行上下文，提供上下文变量与前序步骤结果
      */
     void resolvePlaceholders(AgentPlanStep step, AgentExecutionRequest request, Map<String, Object> context) {
         Map<String, Object> params = step.getParams();

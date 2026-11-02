@@ -117,6 +117,10 @@
 </template>
 
 <script setup>
+
+/**
+ * Agent 工作台页面：执行任务、查看工具与任务历史、审批危险操作。
+ */
 import { ref, onMounted } from 'vue'
 import { agentApi } from '../../api/agent'
 import { ElMessage } from 'element-plus'

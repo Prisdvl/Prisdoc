@@ -13,8 +13,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * 文件工具，提供文件类型判断、大小格式化、路径处理与读写能力。
+ *
+ * <p>类型判断基于小写扩展名；路径拼接与规范化统一走当前系统的文件分隔符。</p>
+ *
  * @author qxk
- * @description: 文件工具（大小/格式/路径）
  */
 public class FileUtils {
 
@@ -27,9 +30,10 @@ public class FileUtils {
     private static final DecimalFormat SIZE_FORMAT = new DecimalFormat("#.##");
 
     /**
-     * 获取文件扩展名
-     * @param filename 文件名
-     * @return 扩展名
+     * 获取文件扩展名。
+     *
+     * @param filename 文件名或完整路径
+     * @return 小写扩展名；无扩展名时返回空串
      */
     public static String getExtension(String filename) {
         if (StringUtils.isEmpty(filename)) {
@@ -43,9 +47,10 @@ public class FileUtils {
     }
 
     /**
-     * 判断是否为图片文件
-     * @param filename 文件名
-     * @return 是否为图片
+     * 判断是否为图片文件。
+     *
+     * @param filename 文件名或完整路径
+     * @return true-扩展名属于图片类型
      */
     public static boolean isImage(String filename) {
         String extension = getExtension(filename);
@@ -53,9 +58,10 @@ public class FileUtils {
     }
 
     /**
-     * 判断是否为文档文件
-     * @param filename 文件名
-     * @return 是否为文档
+     * 判断是否为文档文件。
+     *
+     * @param filename 文件名或完整路径
+     * @return true-扩展名属于文档类型
      */
     public static boolean isDocument(String filename) {
         String extension = getExtension(filename);
@@ -63,9 +69,10 @@ public class FileUtils {
     }
 
     /**
-     * 判断是否为视频文件
-     * @param filename 文件名
-     * @return 是否为视频
+     * 判断是否为视频文件。
+     *
+     * @param filename 文件名或完整路径
+     * @return true-扩展名属于视频类型
      */
     public static boolean isVideo(String filename) {
         String extension = getExtension(filename);
@@ -73,9 +80,10 @@ public class FileUtils {
     }
 
     /**
-     * 判断是否为音频文件
-     * @param filename 文件名
-     * @return 是否为音频
+     * 判断是否为音频文件。
+     *
+     * @param filename 文件名或完整路径
+     * @return true-扩展名属于音频类型
      */
     public static boolean isAudio(String filename) {
         String extension = getExtension(filename);
@@ -83,9 +91,10 @@ public class FileUtils {
     }
 
     /**
-     * 判断是否为压缩文件
-     * @param filename 文件名
-     * @return 是否为压缩文件
+     * 判断是否为压缩文件。
+     *
+     * @param filename 文件名或完整路径
+     * @return true-扩展名属于压缩包类型
      */
     public static boolean isArchive(String filename) {
         String extension = getExtension(filename);
@@ -93,9 +102,10 @@ public class FileUtils {
     }
 
     /**
-     * 格式化文件大小
-     * @param size 文件大小（字节）
-     * @return 格式化后的字符串
+     * 把字节数格式化为带单位的可读文本。
+     *
+     * @param size 文件大小，单位字节
+     * @return 可读大小，如 1.5 MB；非正数返回 0 B
      */
     public static String formatSize(long size) {
         if (size <= 0) {
@@ -107,9 +117,10 @@ public class FileUtils {
     }
 
     /**
-     * 获取文件大小
+     * 获取文件大小。
+     *
      * @param filepath 文件路径
-     * @return 文件大小
+     * @return 文件字节数；文件不存在时返回 0
      */
     public static long getFileSize(String filepath) {
         File file = new File(filepath);
@@ -120,9 +131,10 @@ public class FileUtils {
     }
 
     /**
-     * 判断文件是否存在
+     * 判断文件或目录是否存在。
+     *
      * @param filepath 文件路径
-     * @return 是否存在
+     * @return true-路径存在；入参为空时返回 false
      */
     public static boolean exists(String filepath) {
         if (StringUtils.isEmpty(filepath)) {
@@ -132,9 +144,10 @@ public class FileUtils {
     }
 
     /**
-     * 判断是否为文件
+     * 判断路径是否指向普通文件。
+     *
      * @param filepath 文件路径
-     * @return 是否为文件
+     * @return true-路径存在且为文件
      */
     public static boolean isFile(String filepath) {
         if (StringUtils.isEmpty(filepath)) {
@@ -145,9 +158,10 @@ public class FileUtils {
     }
 
     /**
-     * 判断是否为目录
-     * @param filepath 文件路径
-     * @return 是否为目录
+     * 判断路径是否指向目录。
+     *
+     * @param filepath 目录路径
+     * @return true-路径存在且为目录
      */
     public static boolean isDirectory(String filepath) {
         if (StringUtils.isEmpty(filepath)) {
@@ -158,9 +172,10 @@ public class FileUtils {
     }
 
     /**
-     * 创建目录
+     * 创建目录，已存在时直接视为成功。
+     *
      * @param dirpath 目录路径
-     * @return 是否创建成功
+     * @return true-目录已存在或创建成功
      */
     public static boolean createDirectory(String dirpath) {
         if (StringUtils.isEmpty(dirpath)) {
@@ -174,9 +189,10 @@ public class FileUtils {
     }
 
     /**
-     * 删除文件
+     * 删除文件，文件不存在时直接视为成功。
+     *
      * @param filepath 文件路径
-     * @return 是否删除成功
+     * @return true-已删除或本就不存在
      */
     public static boolean deleteFile(String filepath) {
         if (StringUtils.isEmpty(filepath)) {
@@ -190,9 +206,10 @@ public class FileUtils {
     }
 
     /**
-     * 获取文件名（不含扩展名）
+     * 获取文件名（不含扩展名）。
+     *
      * @param filename 文件名
-     * @return 文件名（不含扩展名）
+     * @return 去掉扩展名后的文件名
      */
     public static String getFileNameWithoutExtension(String filename) {
         if (StringUtils.isEmpty(filename)) {
@@ -206,7 +223,8 @@ public class FileUtils {
     }
 
     /**
-     * 获取文件名（含扩展名）
+     * 从路径中获取文件名（含扩展名）。
+     *
      * @param filepath 文件路径
      * @return 文件名
      */
@@ -222,9 +240,10 @@ public class FileUtils {
     }
 
     /**
-     * 获取文件父目录
+     * 获取文件所在父目录。
+     *
      * @param filepath 文件路径
-     * @return 父目录路径
+     * @return 父目录路径；无父目录时返回 null
      */
     public static String getParentPath(String filepath) {
         if (StringUtils.isEmpty(filepath)) {
@@ -235,9 +254,10 @@ public class FileUtils {
     }
 
     /**
-     * 拼接路径
-     * @param paths 路径片段
-     * @return 拼接后的路径
+     * 拼接路径片段，自动补齐系统文件分隔符。
+     *
+     * @param paths 路径片段，按顺序拼接
+     * @return 拼接后的路径；无片段时返回空串
      */
     public static String joinPath(String... paths) {
         if (paths == null || paths.length == 0) {
@@ -258,9 +278,10 @@ public class FileUtils {
     }
 
     /**
-     * 规范化路径
-     * @param path 路径
-     * @return 规范化后的路径
+     * 规范化路径，消除多余的 . 与 .. 片段。
+     *
+     * @param path 原始路径
+     * @return 规范化后的路径；解析失败时原样返回
      */
     public static String normalizePath(String path) {
         if (StringUtils.isEmpty(path)) {
@@ -275,9 +296,10 @@ public class FileUtils {
     }
 
     /**
-     * 获取文件MIME类型
+     * 根据扩展名推断文件的 MIME 类型。
+     *
      * @param filename 文件名
-     * @return MIME类型
+     * @return MIME 类型；未知类型返回 application/octet-stream
      */
     public static String getMimeType(String filename) {
         if (StringUtils.isEmpty(filename)) {
@@ -314,10 +336,11 @@ public class FileUtils {
     }
 
     /**
-     * 读取文件内容
+     * 读取文件全部内容。
+     *
      * @param filepath 文件路径
-     * @return 文件内容
-     * @throws IOException IO异常
+     * @return 文件文本内容；文件不存在时返回空串
+     * @throws IOException 读取文件失败时抛出
      */
     public static String readFile(String filepath) throws IOException {
         if (!exists(filepath)) {
@@ -328,10 +351,11 @@ public class FileUtils {
     }
 
     /**
-     * 写入文件内容
+     * 将内容写入文件，文件不存在时自动创建。
+     *
      * @param filepath 文件路径
-     * @param content 文件内容
-     * @throws IOException IO异常
+     * @param content 待写入的文本内容
+     * @throws IOException 写入文件失败时抛出
      */
     public static void writeFile(String filepath, String content) throws IOException {
         Path path = Paths.get(filepath);

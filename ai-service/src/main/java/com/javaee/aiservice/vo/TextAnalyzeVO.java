@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 文本分析结果，按类别统计字符数量。
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

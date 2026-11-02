@@ -1,7 +1,7 @@
 package com.javaee.fileservice.exception;
 
 /**
- * 文件权限异常
+ * 文件权限异常。
  */
 public class FilePermissionException extends RuntimeException {
 

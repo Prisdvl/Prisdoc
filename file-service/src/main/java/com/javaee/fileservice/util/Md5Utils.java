@@ -8,14 +8,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * MD5计算工具类
+ * MD5 计算工具类，支持对文件与输入流计算摘要。
  */
 public class Md5Utils {
 
     private static final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     /**
-     * 计算文件的MD5值
+     * 计算文件的 MD5 值。
+     *
+     * @param file 待计算的文件
+     * @return 32 位小写十六进制 MD5 字符串
+     * @throws IOException 读取文件失败时抛出
      */
     public static String calculateFileMd5(File file) throws IOException {
         try (FileInputStream fis = new FileInputStream(file)) {
@@ -24,7 +28,11 @@ public class Md5Utils {
     }
 
     /**
-     * 计算输入流的MD5值
+     * 计算输入流的 MD5 值，输入流由调用方负责关闭。
+     *
+     * @param inputStream 待读取的输入流
+     * @return 32 位小写十六进制 MD5 字符串
+     * @throws IOException 读取输入流失败或 MD5 算法不可用时抛出
      */
     public static String calculateInputStreamMd5(InputStream inputStream) throws IOException {
         try {
@@ -42,7 +50,7 @@ public class Md5Utils {
     }
 
     /**
-     * 将字节数组转换为十六进制字符串
+     * 将字节数组转换为十六进制字符串。
      */
     private static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];

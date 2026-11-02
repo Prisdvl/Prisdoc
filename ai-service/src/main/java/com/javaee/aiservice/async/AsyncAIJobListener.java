@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * Consumes queued model jobs and writes results back to Redis.
+ * 异步任务消费者，消费队列中的模型请求并把执行结果写回 Redis。
  */
 @Component
 public class AsyncAIJobListener {
@@ -44,6 +44,11 @@ public class AsyncAIJobListener {
     @Autowired
     private AgentExecutionService agentExecutionService;
 
+    /**
+     * 消费一条异步任务消息，执行后回写成功或失败状态。
+     *
+     * @param message 异步任务消息
+     */
     @RabbitListener(queues = AiRabbitMQConfig.AI_MODEL_REQUEST_QUEUE)
     public void handleModelJob(AsyncAIJobMessage message) {
         log.info("收到异步AI任务: jobId={}, type={}, model={}",

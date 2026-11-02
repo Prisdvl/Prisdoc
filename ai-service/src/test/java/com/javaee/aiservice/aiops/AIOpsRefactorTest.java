@@ -16,6 +16,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+/**
+ * AIOps 重构后的单元测试，校验指标窗口统计、故障检测与告警冷却。
+ */
 class AIOpsRefactorTest {
 
     @Test

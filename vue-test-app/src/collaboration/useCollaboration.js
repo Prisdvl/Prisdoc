@@ -16,6 +16,17 @@ function getUserColor(userId) {
   return userColorMap[userId]
 }
 
+/**
+ * 协同编辑组合式函数。
+ *
+ * 负责在线用户列表、远端光标、内容同步与断线重连，
+ * 编辑器只消费暴露出来的响应式状态与 start/stop 方法。
+ *
+ * @param {string} documentId 文档 ID
+ * @param {string} userId 当前用户 ID
+ * @param {string} userName 当前用户名，用于在线列表展示
+ * @returns {Object} 协同状态与操作方法
+ */
 export function useCollaboration(documentId, userId, userName) {
   const onlineUsers = ref([])
   const remoteCursors = ref([])

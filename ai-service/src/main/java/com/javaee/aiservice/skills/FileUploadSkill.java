@@ -6,6 +6,11 @@ import com.javaee.aiservice.service.MinIOService;
 import com.javaee.common.utils.UserBucketUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * 文件上传技能，将上传文件写入 MinIO。
+ *
+ * <p>未指定存储桶时使用当前用户专属桶；写入前先校验桶访问权限，失败时抛出 RuntimeException。</p>
+ */
 public class FileUploadSkill implements Skill {
 
     private final MinIOService minIOService;

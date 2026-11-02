@@ -5,7 +5,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 /**
- * Agent 实时进度广播器。若 WebSocket 消息模板不可用，则静默降级，不影响主流程。
+ * Agent 实时进度广播器，经 WebSocket 推送执行与索引任务状态。
+ *
+ * <p>消息模板不可用或推送异常时静默降级，不影响主流程。</p>
  */
 @Component
 public class AgentProgressBroadcaster {
@@ -13,6 +15,11 @@ public class AgentProgressBroadcaster {
     @Autowired(required = false)
     private SimpMessagingTemplate messagingTemplate;
 
+    /**
+     * 广播进度事件到全局、用户、任务与知识库索引通道。
+     *
+     * @param event 进度事件；为 null 时直接返回
+     */
     public void publish(AgentProgressEvent event) {
         if (messagingTemplate == null || event == null) {
             return;

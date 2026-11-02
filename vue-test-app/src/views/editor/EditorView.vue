@@ -287,6 +287,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 文档编辑器页面：正文编辑、AI 助手、版本历史与协同编辑。
+ */
 import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fileApi } from '../../api/file'
@@ -320,11 +324,10 @@ const indexing = ref(false)
 const currentModel = ref('qwen3.6-plus') // 默认模型
 const modelOptions = ref([])
 
-// 获取可用模型列表
+// 获取可用模型列表，用于编辑器顶部的模型选择器
 const fetchModels = async () => {
   try {
     const res = await aiApi.getModels()
-    console.log('所有模型:', JSON.stringify(res.data, null, 2))
     modelOptions.value = res.data
 
     // 默认用 GLM-5

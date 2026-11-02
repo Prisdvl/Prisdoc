@@ -14,8 +14,9 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 
 /**
- * 文件下载服务
- * 功能说明：使用skill实现从minIO下载文件到本地
+ * 文件下载服务，提供文件流下载与预签名访问 URL 获取。
+ *
+ * <p>操作前校验当前用户对目标存储桶的访问权限；未指定存储桶时回落到用户默认桶。</p>
  */
 @Service
 public class FileDownloadService {
@@ -35,12 +36,12 @@ public class FileDownloadService {
     private int defaultExpiry;
 
     /**
-     * 下载文件功能
-     * 功能说明：从minIO服务器下载文件
-     * 实现方式：使用skill方式实现，通过MinIOService接口调用minIO
-     * 
-     * @param dto 下载参数
-     * @return 文件输入流
+     * 从 MinIO 下载指定对象并返回文件输入流。
+     *
+     * <p>调用前校验存储桶权限；对象名为空时抛出 {@link IllegalArgumentException}。</p>
+     *
+     * @param dto 下载参数，包含存储桶名与对象名
+     * @return 文件输入流，由调用方负责关闭
      */
     public InputStream downloadFile(FileDownloadDTO dto) {
         log.info("开始下载文件: bucket={}, object={}", dto.getBucketName(), dto.getObjectName());
@@ -56,7 +57,7 @@ public class FileDownloadService {
                 throw new IllegalArgumentException("对象名称不能为空");
             }
 
-            // 调用MinIOService下载文件
+            // 调用 MinIOService 下载文件
             log.info("调用MinIO下载文件: bucket={}, object={}", bucketName, objectName);
             InputStream inputStream = minIOService.downloadFile(bucketName, objectName);
 
@@ -70,12 +71,12 @@ public class FileDownloadService {
     }
 
     /**
-     * 获取文件访问URL
-     * 功能说明：获取minIO中文件的预签名访问URL
-     * 实现方式：使用skill方式实现，通过MinIOService接口调用minIO
-     * 
-     * @param dto 下载参数
-     * @return 文件下载结果
+     * 获取 MinIO 对象的预签名访问 URL。
+     *
+     * <p>有效期取配置项 {@code minio.url.expiry}，调用前同样校验存储桶权限。</p>
+     *
+     * @param dto 下载参数，包含存储桶名与对象名
+     * @return 文件下载结果，含预签名 URL、存储桶、对象名与有效期
      */
     public FileDownloadVO getFileUrl(FileDownloadDTO dto) {
         log.info("开始获取文件URL: bucket={}, object={}", dto.getBucketName(), dto.getObjectName());
@@ -94,7 +95,7 @@ public class FileDownloadService {
             // 确定过期时间
             int expirySeconds = defaultExpiry;
 
-            // 调用MinIOService获取文件URL
+            // 调用 MinIOService 获取文件 URL
             log.info("调用MinIO获取文件URL: bucket={}, object={}, expiry={}s", 
                 bucketName, objectName, expirySeconds);
             String fileUrl = minIOService.getFileUrl(bucketName, objectName, expirySeconds);

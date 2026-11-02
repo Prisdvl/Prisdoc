@@ -1,5 +1,8 @@
 /**
- * @description AI 核心功能接口 (直连 8083 服务)
+ * AI 核心功能接口封装（直连 8083 服务）。
+ *
+ * 推理耗时较长的接口统一走异步任务：先提交任务，再轮询任务状态，
+ * 由 createAsyncJobRunner 负责超时与失败处理。
  */
 import request from '../utils/request'
 import { createAsyncJobRunner } from './asyncJob.js'
@@ -12,6 +15,9 @@ const runAsyncJob = (submit) => createAsyncJobRunner({
     timeoutMs: 300000
 }).runAsyncJob().then(wrapResult)
 
+/**
+ * AI 能力接口集合。
+ */
 export const aiApi = {
     // 统一 Agent 执行入口：规划、工具调用、RAG、审批和最终回答
     executeAgent: (payload) => {
@@ -33,7 +39,7 @@ export const aiApi = {
         return request.get('/ai/agent/tools')
     },
 
-
+    // 获取可用模型列表
     getModels: () => request.get('/ai/models'),
 
     // 开启一个带有记忆的新对话 (返回 conversationId)
@@ -82,8 +88,10 @@ export const aiApi = {
     getRagStatistics: () => request.get('/ai/rag/statistics'),
 
     /**
-     * RAG 问答
-     * 基于知识库直接搜索并回答，不带历史记忆，追求极致准确
+     * RAG 问答：基于知识库直接检索并回答，不带历史记忆。
+     *
+     * @param {string} question 用户问题
+     * @returns {Promise<Object>} 回答与命中的知识片段
      */
     ragQuery: (question) => {
         // 后端 @RequestBody 是 String，需要发纯文本
@@ -92,9 +100,9 @@ export const aiApi = {
         })
     },
 
-// ================= PPT 生成 Skill 接口 =================
-    // 下载 PPT
+    // ==================== PPT 生成 Skill 接口 ====================
+    // 下载 PPT（返回 Blob）
     downloadPpt: (data) => request.post('/skills/html-ppt/download', data, { responseType: 'blob' }),
-    // 预览 PPT (返回 HTML 字符串)
+    // 预览 PPT（返回 HTML 字符串）
     previewPpt: (data) => request.post('/skills/html-ppt/view', data)
 }

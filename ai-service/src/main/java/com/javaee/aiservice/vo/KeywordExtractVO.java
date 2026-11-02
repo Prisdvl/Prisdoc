@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * 关键词提取结果。
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

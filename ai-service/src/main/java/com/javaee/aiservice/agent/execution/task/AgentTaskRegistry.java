@@ -15,9 +15,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 简易任务运行注册表，保留最近一段时间的 Agent 任务执行快照，
- * 支持按 traceId 查询、按 userId 列出、取消标记等操作。
- * 生产环境建议改造为持久化存储（DB / Redis）。
+ * 任务运行注册表，保留最近一段时间的 Agent 任务执行快照。
+ *
+ * <p>支持按 traceId 查询、按 userId 列出与取消标记；内存中按 LRU 淘汰，
+ * Redis 可用时同时持久化。</p>
  */
 @Component
 public class AgentTaskRegistry {
@@ -34,6 +35,12 @@ public class AgentTaskRegistry {
     @Autowired(required = false)
     private RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * 保存任务快照，超过容量时淘汰最旧的记录。
+     *
+     * @param traceId 任务追踪 ID
+     * @param snapshot 任务快照，为空时忽略
+     */
     public void save(String traceId, Map<String, Object> snapshot) {
         if (traceId == null || snapshot == null) {
             return;
@@ -52,6 +59,12 @@ public class AgentTaskRegistry {
         }
     }
 
+    /**
+     * 查询任务快照，内存未命中时回源持久化存储。
+     *
+     * @param traceId 任务追踪 ID
+     * @return 任务快照；不存在时返回空映射
+     */
     public Map<String, Object> get(String traceId) {
         Map<String, Object> local = tasks.get(traceId);
         if (local != null) {
@@ -65,6 +78,12 @@ public class AgentTaskRegistry {
         return Collections.emptyMap();
     }
 
+    /**
+     * 按审批令牌反查待确认的任务快照。
+     *
+     * @param token 审批令牌
+     * @return 匹配的任务快照；无匹配时返回空映射
+     */
     public Map<String, Object> findByApprovalToken(String token) {
         if (token == null || token.isBlank()) {
             return Collections.emptyMap();
@@ -86,6 +105,12 @@ public class AgentTaskRegistry {
         return Collections.emptyMap();
     }
 
+    /**
+     * 列出指定用户的任务，按保存时间倒序排列。
+     *
+     * @param userId 用户 ID
+     * @return 该用户的任务快照列表；用户为 null 时返回空列表
+     */
     public List<Map<String, Object>> listByUser(String userId) {
         if (userId == null) {
             return List.of();
@@ -104,6 +129,12 @@ public class AgentTaskRegistry {
         return matched;
     }
 
+    /**
+     * 将未结束的任务标记为已取消。
+     *
+     * @param traceId 任务追踪 ID
+     * @return 是否成功取消：true-已取消，false-任务不存在或已结束
+     */
     public boolean cancel(String traceId) {
         Map<String, Object> snapshot = tasks.get(traceId);
         if (snapshot == null) {
@@ -119,13 +150,21 @@ public class AgentTaskRegistry {
         return true;
     }
 
+    /**
+     * 判断任务是否已标记取消。
+     *
+     * @param traceId 任务追踪 ID
+     * @return 是否已取消
+     */
     public boolean isCancelled(String traceId) {
         Map<String, Object> snapshot = tasks.get(traceId);
         return snapshot != null && "cancelled".equals(snapshot.get("status"));
     }
 
     /**
-     * 列出全部任务（按 savedAt 倒序）。供管理员/调试使用。
+     * 列出全部任务，按 savedAt 倒序排列，供管理员与调试使用。
+     *
+     * @return 全部任务快照列表
      */
     public List<Map<String, Object>> listAll() {
         List<Map<String, Object>> persisted = listFromRedis(TASK_ALL_ZSET);
@@ -138,7 +177,10 @@ public class AgentTaskRegistry {
     }
 
     /**
-     * 删除指定任务快照。
+     * 删除指定任务的快照。
+     *
+     * @param traceId 任务追踪 ID
+     * @return 是否删除成功：true-内存或持久化记录被移除，false-任务不存在
      */
     public boolean delete(String traceId) {
         Map<String, Object> removed = tasks.remove(traceId);

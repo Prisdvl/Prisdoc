@@ -30,7 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 文件服务实现类
+ * 文件服务实现类，同时支持本地磁盘与 MinIO 两种存储后端。
+ *
+ * <p>分片以临时文件保存在进程内的映射中，合并成功后才写入元数据，因此不适用于多实例部署。</p>
  */
 @Service
 public class FileServiceImpl implements FileService {
@@ -54,7 +56,7 @@ public class FileServiceImpl implements FileService {
     public String upload(MultipartFile file) {
         try {
             assertMinioBucketAccess();
-            // 生成文件ID
+            // 生成文件 ID
             String fileId = UUID.randomUUID().toString();
             String fileName = file.getOriginalFilename();
             String fileExtension = FileUtils.getFileExtension(fileName);
@@ -77,7 +79,7 @@ public class FileServiceImpl implements FileService {
                     }
                 }
                 
-                // 使用FileOutputStream保存文件
+                // 使用 FileOutputStream 保存文件
                 File destFile = storagePath.toFile();
                 System.out.println("目标文件: " + destFile.getAbsolutePath());
                 System.out.println("目标文件是否存在: " + destFile.exists());
@@ -98,7 +100,7 @@ public class FileServiceImpl implements FileService {
                 throw e;
             }
             } else if ("minio".equals(fileStorageConfig.getStorageType())) {
-                // MinIO存储
+                // MinIO 存储
                 System.out.println("=== 开始MinIO存储 ===");
                 System.out.println("存储桶名称: " + fileStorageConfig.getBucketName());
                 System.out.println("存储文件名: " + storageFileName);
@@ -164,7 +166,7 @@ public class FileServiceImpl implements FileService {
     public void uploadChunk(MultipartFile chunk, String fileId, int chunkIndex, int totalChunks) {
         try {
             assertMinioBucketAccess();
-            // 确保文件ID对应的分片映射存在
+            // 确保文件 ID 对应的分片映射存在
             chunkMap.computeIfAbsent(fileId, k -> new ConcurrentHashMap<>());
             ConcurrentMap<Integer, File> chunks = chunkMap.get(fileId);
 
@@ -214,7 +216,7 @@ public class FileServiceImpl implements FileService {
                 Files.write(storagePath, mergedBytes);
                 outputStream.close();
             } else if ("minio".equals(fileStorageConfig.getStorageType())) {
-                // MinIO存储合并（这里简化处理，实际应该使用MinIO的分片上传API）
+                // MinIO 存储合并（这里简化处理，实际应该使用 MinIO 的分片上传 API）
                 ensureBucketExists(fileStorageConfig.getBucketName());
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -317,7 +319,7 @@ public class FileServiceImpl implements FileService {
                 throw new RuntimeException("文件不存在: " + fileId);
             }
             
-            // 如果还是没有storageFileName，使用fileId作为默认值
+            // 如果还是没有 storageFileName，使用 fileId 作为默认值
             if (storageFileName == null) {
                 storageFileName = fileId;
             }
@@ -328,7 +330,7 @@ public class FileServiceImpl implements FileService {
                 Path storagePath = Paths.get(fileStorageConfig.getLocalPath(), storageFileName);
                 return Files.readAllBytes(storagePath);
             } else if ("minio".equals(fileStorageConfig.getStorageType())) {
-                // MinIO存储
+                // MinIO 存储
                 try (InputStream inputStream = minioClient.getObject(
                         GetObjectArgs.builder()
                                 .bucket(fileStorageConfig.getBucketName())
@@ -422,7 +424,7 @@ public class FileServiceImpl implements FileService {
                     throw new RuntimeException("不支持的存储类型: " + fileStorageConfig.getStorageType());
                 }
             } else {
-                // 如果没有存储文件名，尝试使用fileId加不同扩展名删除
+                // 如果没有存储文件名，尝试使用 fileId 加不同扩展名删除
                 System.out.println("没有存储文件名，尝试使用fileId加扩展名删除");
                 String[] extensions = {".txt", ".docx", ".pdf", ".jpg", ".png", ".jpeg", ""};
                 boolean deleted = false;
@@ -484,9 +486,9 @@ public class FileServiceImpl implements FileService {
                 System.out.println("数据库不可用，尝试不同的文件扩展名: " + e.getMessage());
             }
             
-            // 如果没有找到存储文件名，使用fileId作为默认值（去除扩展名）
+            // 如果没有找到存储文件名，使用 fileId 作为默认值（去除扩展名）
             if (storageFileName == null) {
-                // 去除fileId中的扩展名
+                // 去除 fileId 中的扩展名
                 int dotIndex = fileId.lastIndexOf('.');
                 if (dotIndex > 0) {
                     storageFileName = fileId.substring(0, dotIndex);
@@ -497,7 +499,7 @@ public class FileServiceImpl implements FileService {
             
             String oldFileName = storageFileName;
             String fileExtension = FileUtils.getFileExtension(newName);
-            // 新存储文件名使用fileId（去除扩展名）加上新的文件名
+            // 新存储文件名使用 fileId（去除扩展名）加上新的文件名
             int dotIndex = fileId.lastIndexOf('.');
             String fileIdWithoutExt = fileId;
             if (dotIndex > 0) {
@@ -513,7 +515,7 @@ public class FileServiceImpl implements FileService {
                 Path newPath = Paths.get(fileStorageConfig.getLocalPath(), newStorageFileName);
                 Files.move(oldPath, newPath);
             } else if ("minio".equals(fileStorageConfig.getStorageType())) {
-                // MinIO存储（先复制再删除）
+                // MinIO 存储（先复制再删除）
                 try {
                     // 尝试不同的文件扩展名找到原文件
                     String[] extensions = {"", ".txt", ".docx", ".pdf", ".jpg", ".png", ".jpeg"};
@@ -601,12 +603,12 @@ public class FileServiceImpl implements FileService {
                     System.out.println("数据库中未找到文件元数据: " + fileId);
                 }
             } catch (Exception e) {
-                // 数据库不可用时，使用fileId作为默认值
+                // 数据库不可用时，使用 fileId 作为默认值
                 System.out.println("数据库不可用: " + e.getMessage());
                 storageFileName = fileId;
             }
 
-            // 如果没有存储文件名，使用fileId作为默认值
+            // 如果没有存储文件名，使用 fileId 作为默认值
             if (storageFileName == null) {
                 storageFileName = fileId;
             }
@@ -619,7 +621,7 @@ public class FileServiceImpl implements FileService {
                 Files.createDirectories(newPath.getParent());
                 Files.move(oldPath, newPath);
             } else if ("minio".equals(fileStorageConfig.getStorageType())) {
-                // MinIO存储（先复制再删除）
+                // MinIO 存储（先复制再删除）
                 try {
                     // 尝试不同的文件扩展名找到原文件
                     String[] extensions = {"", ".txt", ".docx", ".pdf", ".jpg", ".png", ".jpeg"};
@@ -713,17 +715,17 @@ public class FileServiceImpl implements FileService {
                     System.out.println("数据库中未找到文件元数据: " + fileId);
                 }
             } catch (Exception e) {
-                // 数据库不可用时，使用fileId作为默认值
+                // 数据库不可用时，使用 fileId 作为默认值
                 System.out.println("数据库不可用: " + e.getMessage());
                 storageFileName = fileId;
             }
 
-            // 如果没有存储文件名，使用fileId作为默认值
+            // 如果没有存储文件名，使用 fileId 作为默认值
             if (storageFileName == null) {
                 storageFileName = fileId;
             }
 
-            // 生成新的文件ID
+            // 生成新的文件 ID
             String newFileId = UUID.randomUUID().toString();
             String newFileExtension = FileUtils.getFileExtension(fileName);
             String newStorageFileName = newFileId + (newFileExtension != null ? "." + newFileExtension : ".txt");
@@ -736,7 +738,7 @@ public class FileServiceImpl implements FileService {
                 Files.createDirectories(newPath.getParent());
                 Files.copy(oldPath, newPath);
             } else if ("minio".equals(fileStorageConfig.getStorageType())) {
-                // MinIO存储
+                // MinIO 存储
                 try {
                     // 尝试不同的文件扩展名找到原文件
                     String[] extensions = {"", ".txt", ".docx", ".pdf", ".jpg", ".png", ".jpeg"};
@@ -817,7 +819,10 @@ public class FileServiceImpl implements FileService {
     }
 
     /**
-     * 确保MinIO存储桶存在
+     * 确保 MinIO 存储桶存在，不存在时创建。
+     *
+     * @param bucketName 存储桶名称
+     * @throws Exception 查询或创建存储桶失败时抛出
      */
     private void ensureBucketExists(String bucketName) throws Exception {
         boolean exists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());

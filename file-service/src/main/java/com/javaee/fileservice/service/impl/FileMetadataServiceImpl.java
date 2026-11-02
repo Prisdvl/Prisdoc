@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 文件元数据服务实现类
+ * 文件元数据服务实现类，基于 MyBatis-Plus 完成元数据读写。
+ *
+ * <p>MinIO 存储下，查询、更新与删除统一按当前用户的存储桶过滤。</p>
  */
 @Service
 public class FileMetadataServiceImpl implements FileMetadataService {
@@ -141,13 +143,11 @@ public class FileMetadataServiceImpl implements FileMetadataService {
     @Override
     public Object getDirectoryStructure(String path) {
         try {
-            // 简单实现目录结构
+            // 当前为占位实现，固定返回示例目录结构
             Map<String, Object> structure = new HashMap<>();
             List<Map<String, Object>> files = new ArrayList<>();
             List<Map<String, Object>> directories = new ArrayList<>();
             
-            // 这里可以根据实际存储情况实现目录结构的获取
-            // 目前返回一个示例结构
             Map<String, Object> dir1 = new HashMap<>();
             dir1.put("name", "documents");
             dir1.put("type", "directory");

@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 模型可用性集成测试，遍历已注册模型并记录各模型的调用结果。
+ */
 @SpringBootTest
 public class AllModelsTest {
 

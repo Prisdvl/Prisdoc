@@ -18,9 +18,10 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 回收站服务
- * 功能说明：管理已删除的文件，支持在有效期内恢复
- * 实现方式：Redis持久化记录 + MinIO回收站对象路径
+ * 回收站服务，管理已删除文件并支持在保留期内恢复。
+ *
+ * <p>回收站记录以回收站 ID 为键持久化到 Redis，文件内容转存至 MinIO 的回收站对象路径；
+ * 超过配置的保留天数后记录自动过期，过期文件无法再恢复。</p>
  */
 @Service
 public class RecycleBinService {
@@ -224,8 +225,7 @@ public class RecycleBinService {
     }
 
     /**
-     * 清理过期的回收站文件
-     * 【待实现】定期调用此方法清理过期文件
+     * 清理已超过保留期的回收站记录及其对象存储文件。
      */
     public void cleanupExpiredFiles() {
         log.info("开始清理过期的回收站文件");

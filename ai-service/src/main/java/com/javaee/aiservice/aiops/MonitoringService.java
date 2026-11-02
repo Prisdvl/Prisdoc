@@ -20,8 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 监控服务
- * 使用滑动窗口保存指标，避免 timers 无限增长。
+ * 监控服务，采集并汇总 AI 接口的计数器与耗时指标。
+ *
+ * <p>指标以滑动窗口保存在内存中，窗口长度由 {@code ai.aiops.metrics.retention-ms} 配置，
+ * 定时任务负责淘汰过期样本并落 Redis，避免 timers 无限增长。</p>
  */
 @Component
 public class MonitoringService {
@@ -38,10 +40,21 @@ public class MonitoringService {
     private final ConcurrentMap<String, ArrayDeque<MetricPoint>> counters = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, ArrayDeque<TimerPoint>> timers = new ConcurrentHashMap<>();
 
+    /**
+     * 计数器加一。
+     *
+     * @param name 指标名称
+     */
     public void incrementCounter(String name) {
         incrementCounter(name, 1L);
     }
 
+    /**
+     * 计数器按指定增量累加。
+     *
+     * @param name 指标名称
+     * @param delta 增量值
+     */
     public void incrementCounter(String name, long delta) {
         long now = System.currentTimeMillis();
         ArrayDeque<MetricPoint> points = counters.computeIfAbsent(name, key -> new ArrayDeque<>());
@@ -52,6 +65,12 @@ public class MonitoringService {
         log.debug("计数器增量: name={}, delta={}", name, delta);
     }
 
+    /**
+     * 记录一次耗时样本。
+     *
+     * @param name 计时器名称
+     * @param durationMs 耗时，单位毫秒
+     */
     public void recordTimer(String name, long durationMs) {
         long now = System.currentTimeMillis();
         ArrayDeque<TimerPoint> points = timers.computeIfAbsent(name, key -> new ArrayDeque<>());
@@ -62,10 +81,23 @@ public class MonitoringService {
         log.debug("记录耗时: name={}, duration={}ms", name, durationMs);
     }
 
+    /**
+     * 在默认窗口内读取计数器累计值。
+     *
+     * @param name 指标名称
+     * @return 窗口内的累计值
+     */
     public long getCounter(String name) {
         return getCounter(name, retentionMs);
     }
 
+    /**
+     * 在指定窗口内读取计数器累计值。
+     *
+     * @param name 指标名称
+     * @param windowMs 统计窗口，单位毫秒
+     * @return 窗口内的累计值
+     */
     public long getCounter(String name, long windowMs) {
         ArrayDeque<MetricPoint> points = counters.get(name);
         if (points == null || points.isEmpty()) {
@@ -80,14 +112,34 @@ public class MonitoringService {
         }
     }
 
+    /**
+     * 在默认窗口内读取计时器统计。
+     *
+     * @param name 计时器名称
+     * @return 统计项映射
+     */
     public Map<String, Object> getTimerStats(String name) {
         return getTimerStats(name, retentionMs);
     }
 
+    /**
+     * 在指定窗口内读取计时器统计。
+     *
+     * @param name 计时器名称
+     * @param windowMs 统计窗口，单位毫秒
+     * @return 统计项映射
+     */
     public Map<String, Object> getTimerStats(String name, long windowMs) {
         return getTimerStatsObject(name, windowMs).toMap();
     }
 
+    /**
+     * 在指定窗口内计算计时器统计对象。
+     *
+     * @param name 计时器名称
+     * @param windowMs 统计窗口，单位毫秒
+     * @return 计时器统计；无样本时返回空统计
+     */
     public TimerStats getTimerStatsObject(String name, long windowMs) {
         ArrayDeque<TimerPoint> points = timers.get(name);
         if (points == null || points.isEmpty()) {
@@ -116,6 +168,11 @@ public class MonitoringService {
         return new TimerStats(values.size(), min, max, avg, p95, p99);
     }
 
+    /**
+     * 获取全部指标，按 1 分钟、5 分钟、15 分钟三个窗口聚合。
+     *
+     * @return 含各窗口指标与保留时长的映射
+     */
     public Map<String, Object> getAllMetrics() {
         Map<String, Object> metrics = new LinkedHashMap<>();
         metrics.put("windows", Map.of(
@@ -127,6 +184,12 @@ public class MonitoringService {
         return metrics;
     }
 
+    /**
+     * 按指定窗口聚合全部指标。
+     *
+     * @param windowMs 统计窗口，单位毫秒
+     * @return 指标映射，含计数、耗时统计与错误率
+     */
     public Map<String, Object> getMetricsForWindow(long windowMs) {
         Map<String, Object> metrics = new LinkedHashMap<>();
         for (String name : counters.keySet()) {
@@ -142,6 +205,9 @@ public class MonitoringService {
         return metrics;
     }
 
+    /**
+     * 把当前指标快照写入 Redis，保留 24 小时。
+     */
     public void saveMetrics() {
         String key = METRIC_PREFIX + System.currentTimeMillis();
         redisTemplate.opsForHash().putAll(key, getAllMetrics());
@@ -149,12 +215,20 @@ public class MonitoringService {
         log.debug("指标已保存: key={}", key);
     }
 
+    /**
+     * 清空全部内存指标。
+     */
     public void resetMetrics() {
         counters.clear();
         timers.clear();
         log.info("监控指标已重置");
     }
 
+    /**
+     * 返回健康检查结果与当前指标。
+     *
+     * @return 含状态、时间戳与指标快照的映射
+     */
     public Map<String, Object> healthCheck() {
         Map<String, Object> health = new HashMap<>();
         health.put("status", "UP");
@@ -163,6 +237,9 @@ public class MonitoringService {
         return health;
     }
 
+    /**
+     * 定时保存指标并淘汰过期样本。
+     */
     @Scheduled(fixedDelayString = "${ai.aiops.metrics.persist-interval-ms:60000}")
     public void scheduledPersistMetrics() {
         saveMetrics();

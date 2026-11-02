@@ -8,7 +8,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 /**
  * Agent 工作台实时进度通道。
- * 前端可连接 /ws/agent，并订阅 /topic/agent/** 获取任务和索引事件。
+ *
+ * <p>前端连接 /ws/agent 后订阅 /topic/agent/** 获取任务与索引事件，应用侧发送前缀为 /app。</p>
  */
 @Configuration
 @EnableWebSocketMessageBroker

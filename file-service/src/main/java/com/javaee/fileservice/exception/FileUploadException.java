@@ -1,7 +1,7 @@
 package com.javaee.fileservice.exception;
 
 /**
- * 文件上传异常
+ * 文件上传异常。
  */
 public class FileUploadException extends RuntimeException {
 

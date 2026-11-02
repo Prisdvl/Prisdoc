@@ -1,5 +1,8 @@
 /**
- * @description Axios 全局请求封装工具
+ * Axios 全局请求封装。
+ *
+ * 统一处理鉴权头注入、401 跳转登录与业务错误提示，
+ * 并对 /ai/** 请求上报 AIOps 指标（/ai/aiops/** 自身除外，避免递归统计）。
  */
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
@@ -14,19 +17,43 @@ const service = axios.create({
 const AI_PATH_PREFIX = '/ai/'
 const AIOPS_PATH_PREFIX = '/ai/aiops/'
 
+/**
+ * 读取本地保存的访问令牌。
+ *
+ * @returns {string|null} 访问令牌
+ */
 function getAccessToken() {
   return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
 }
 
+/**
+ * 构造鉴权请求头。
+ *
+ * @returns {Object} 含 Authorization 的请求头；未登录时返回空对象
+ */
 function buildAuthHeaders() {
   const token = getAccessToken()
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+/**
+ * 判断是否为需要统计的 AI 请求。
+ *
+ * @param {string} url 请求地址
+ * @returns {boolean} 是 AI 业务请求时返回 true
+ */
 function isAiRequest(url) {
   return url && url.startsWith(AI_PATH_PREFIX) && !url.startsWith(AIOPS_PATH_PREFIX)
 }
 
+/**
+ * 上报 AI 请求的调用次数、耗时与错误数。
+ *
+ * 指标上报失败不影响主流程，因此统一吞掉异常。
+ *
+ * @param {Object} config 请求配置，需含 _startTime
+ * @param {boolean} hasError 本次请求是否失败
+ */
 function reportAiMetrics(config, hasError) {
   const url = config.url || ''
   if (!isAiRequest(url)) return
@@ -77,12 +104,12 @@ service.interceptors.response.use(
 
         const res = response.data
 
-        // 如果后端返回的是字符串（比如 HTML 源码），而不是 JSON 对象，直接放行！
+        // 后端可能直接返回字符串（例如 HTML 源码），不属于统一 Result 结构，原样放行
         if (typeof res === 'string') {
             return res
         }
 
-        // 兼容后端直接返回数组而没有 code 的情况（如 getFileList）
+        // 兼容后端直接返回数组/对象而没有 code 的情况（如 getFileList）
         if (res && res.code === undefined) {
             reportAiMetrics(response.config, false)
             return { data: res, code: 200, message: 'success' }
@@ -122,4 +149,7 @@ service.interceptors.response.use(
     }
 )
 
+/**
+ * 全局 axios 实例：业务代码统一通过它访问 /api。
+ */
 export default service

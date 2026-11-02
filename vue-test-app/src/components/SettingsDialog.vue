@@ -13,6 +13,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 全局设置弹窗：承载外观等偏好设置，开关状态由 utils/settingsUi 统一管理。
+ */
 import AppearanceControls from './AppearanceControls.vue'
 import { settingsOpen, closeSettings } from '../utils/settingsUi'
 </script>

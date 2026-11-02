@@ -9,15 +9,17 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Feign 全局配置，统一日志级别、超时时间与重试策略。
+ *
  * @author qxk
- * @description: Feign全局配置（超时/拦截）
  */
 @Configuration
 public class FeignGlobalConfig {
 
     /**
-     * 配置Feign日志级别
-     * @return Logger实例
+     * 配置 Feign 日志级别。
+     *
+     * @return 日志级别，固定为 FULL
      */
     @Bean
     public Logger.Level feignLoggerLevel() {
@@ -25,8 +27,9 @@ public class FeignGlobalConfig {
     }
 
     /**
-     * 配置Feign超时时间
-     * @return Request.Options实例
+     * 配置 Feign 连接与读取超时时间。
+     *
+     * @return 请求选项，连接超时 10 秒、读取超时 60 秒
      */
     @Bean
     public Request.Options feignOptions() {
@@ -34,8 +37,9 @@ public class FeignGlobalConfig {
     }
 
     /**
-     * 配置Feign重试策略
-     * @return Retryer实例
+     * 配置 Feign 重试策略。
+     *
+     * @return 重试策略，初始间隔 100 毫秒、最大间隔 1 秒、最多重试 3 次
      */
     @Bean
     public Retryer feignRetryer() {

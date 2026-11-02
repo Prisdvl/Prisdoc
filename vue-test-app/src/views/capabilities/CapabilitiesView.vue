@@ -64,6 +64,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 能力中心页面：按分类展示技能与模板，一键发起任务或创建文档。
+ */
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'

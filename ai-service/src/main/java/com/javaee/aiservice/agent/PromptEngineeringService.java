@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 提示词工程服务
- * 使用Spring AI内置工具实现智能提示词拼接
- * 支持多种提示词模板的管理和动态生成
+ * 提示词工程服务，管理多种提示词模板并完成动态拼接。
+ *
+ * <p>基于 Spring AI 的模板能力渲染占位符，覆盖摘要、关键词、问答与文档处理等场景。</p>
  */
 @Service
 public class PromptEngineeringService {

@@ -3,7 +3,7 @@ package com.javaee.common.utils;
 import java.util.Locale;
 
 /**
- * Builds stable MinIO bucket names for user-owned storage.
+ * 用户存储桶工具，按用户 ID 生成 MinIO 中稳定可用的桶名。
  */
 public final class UserBucketUtils {
 

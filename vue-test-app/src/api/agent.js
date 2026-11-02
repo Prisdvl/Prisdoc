@@ -1,3 +1,8 @@
+/**
+ * Agent 工作台接口封装。
+ *
+ * executeTask 走异步任务（提交 + 轮询），executeTaskSync 为同步调试入口。
+ */
 import request from '../utils/request'
 import { createAsyncJobRunner } from './asyncJob.js'
 
@@ -9,6 +14,9 @@ const runAsyncAgentJob = (data) => createAsyncJobRunner({
     timeoutMs: 300000
 }).runAsyncJob().then(wrapResult)
 
+/**
+ * Agent 接口集合。
+ */
 export const agentApi = {
     // 获取工作台总览（包含工具列表、任务数等）
     getOverview: () => request.get('/ai/agent/workbench/overview'),
@@ -16,9 +24,10 @@ export const agentApi = {
     // 获取工具 Schema 列表
     getTools: () => request.get('/ai/agent/tools'),
 
-    // 执行 Agent 任务（核心交互）
+    // 执行 Agent 任务（核心交互，异步）
     executeTask: (data) => runAsyncAgentJob(data),
 
+    // 同步执行 Agent 任务，仅用于联调与排障
     executeTaskSync: (data) => request.post('/ai/agent/execute', data),
 
     // 查询单个任务快照

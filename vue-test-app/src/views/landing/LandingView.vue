@@ -170,6 +170,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 产品落地页：介绍平台能力并引导登录或进入工作台。
+ */
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import ThemeCorner from '../../components/ThemeCorner.vue'

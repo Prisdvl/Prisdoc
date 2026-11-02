@@ -111,6 +111,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 全局 AI 助手抽屉：在任意页面提供对话入口与快捷指令。
+ */
 import { ref, nextTick, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useGlobalAi } from '../../utils/useGlobalAi.js'

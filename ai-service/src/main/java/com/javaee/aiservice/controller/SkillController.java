@@ -21,6 +21,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import com.javaee.aiservice.service.MinIOService;
 
+/**
+ * 技能控制器，暴露文件上传、文件下载与 HTML PPT 生成技能。
+ *
+ * <p>文件上传直接接收 multipart 请求，文件下载与 PPT 生成以文件流响应，便于浏览器直接保存。</p>
+ */
 @RestController
 @RequestMapping("/api/skills")
 @Tag(name = "技能管理", description = "AI技能执行接口")
@@ -36,7 +41,8 @@ public class SkillController {
     }
 
     /**
-     * 执行文件上传技能（直接文件上传模式）
+     * 执行文件上传技能（直接文件上传模式）。
+     *
      * @param file 上传的文件
      * @param bucketName 存储桶名称
      * @param objectName 文件名称
@@ -54,7 +60,8 @@ public class SkillController {
     }
 
     /**
-     * 执行文件下载技能（直接返回文件流）
+     * 执行文件下载技能（直接返回文件流）。
+     *
      * @param objectName 对象名称
      * @param bucketName 存储桶名称
      * @return 文件流
@@ -145,7 +152,8 @@ public class SkillController {
     }
     
     /**
-     * 根据内容类型获取文件扩展名
+     * 根据内容类型获取文件扩展名。
+     *
      * @param contentType 内容类型
      * @return 文件扩展名
      */
@@ -190,7 +198,8 @@ public class SkillController {
     }
     
     /**
-     * 获取技能描述
+     * 获取指定技能的描述信息。
+     *
      * @param skillName 技能名称
      * @return 技能描述
      */

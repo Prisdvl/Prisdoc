@@ -20,8 +20,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 /**
+ * 用户服务实现，完成注册、登录、信息查询与令牌刷新。
+ *
+ * <p>密码统一使用 BCrypt 编码存储；查询结果统一转换为 UserVO，避免密码外泄。</p>
+ *
  * @author qxk
- * @description: 用户服务实现
  */
 @Slf4j
 @Service
@@ -112,7 +115,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User getUserByUsername(String username) {
+        // 校验参数
         ValidateUtils.notEmpty(username, "用户名不能为空");
+
+        // 按用户名查询；调用方负责处理查无此人的情况
         return userMapper.selectByUsername(username);
     }
 

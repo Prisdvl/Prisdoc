@@ -1,8 +1,9 @@
 package com.javaee.common.constant;
 
 /**
+ * 通用常量定义，集中分页、正则、日期格式、HTTP 与安全相关取值。
+ *
  * @author qxk
- * @description: 通用常量（分页/正则）
  */
 public class CommonConstant {
     // 分页常量

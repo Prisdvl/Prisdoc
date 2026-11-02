@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 单个关键词的词面、权重与类型。
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -6,15 +6,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 全局Swagger配置类
- * 用于配置API文档和Swagger UI
+ * 全局 Swagger 配置，定义对外 API 文档的标题、版本与说明。
  */
 @Configuration
 public class SwaggerConfig {
 
     /**
-     * 配置OpenAPI信息
-     * @return OpenAPI对象
+     * 构建 OpenAPI 文档元信息。
+     *
+     * @return OpenAPI 文档对象
      */
     @Bean
     public OpenAPI customOpenAPI() {

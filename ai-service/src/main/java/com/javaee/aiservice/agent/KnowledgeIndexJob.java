@@ -5,8 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 知识索引任务的内存状态记录。
- * 生产环境建议落库，这里提供最小可用版本以便业务串通。
+ * 知识索引任务的状态记录，持有进度、重试次数与质量评估结果。
  */
 public class KnowledgeIndexJob {
 
@@ -15,13 +14,21 @@ public class KnowledgeIndexJob {
     private final String userId;
     private final String knowledgeBaseId;
     private final long createdAt;
+    /** 任务状态，默认待处理。 */
     private volatile KnowledgeIndexStatus status = KnowledgeIndexStatus.PENDING;
+    /** 最近更新时间戳，单位毫秒。 */
     private volatile long updatedAt;
+    /** 已尝试执行次数。 */
     private volatile int attempts;
+    /** 失败原因，成功时为 null。 */
     private volatile String errorMessage;
+    /** 索引质量评估结果。 */
     private volatile Map<String, Object> quality = new LinkedHashMap<>();
+    /** 处理进度，取值 0 到 100。 */
     private volatile int progress;
+    /** 文档内容摘要，用于重复检测。 */
     private volatile String contentHash;
+    /** 是否复用已有索引：true-内容未变更，直接复用。 */
     private volatile boolean reused;
 
     public KnowledgeIndexJob(String jobId, String documentId, String userId, String knowledgeBaseId) {

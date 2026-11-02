@@ -6,6 +6,12 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 多模型配置，按提供方分组绑定模型参数。
+ *
+ * <p>对应配置前缀 {@code ai.models}，dashscope 与 openai 各自维护「模型名 → 模型参数」的映射，
+ * 供上层按模型代码选取 apiKey、模型名、baseUrl 与启用开关。</p>
+ */
 @Configuration
 @ConfigurationProperties(prefix = "ai.models")
 public class MultiModelConfig {
@@ -29,6 +35,9 @@ public class MultiModelConfig {
         this.openai = openai;
     }
     
+    /**
+     * 单个模型的连接参数。
+     */
     public static class ModelConfig {
         private String apiKey;
         private String model;

@@ -1,7 +1,7 @@
 package com.javaee.fileservice.exception;
 
 /**
- * 文件不存在异常
+ * 文件不存在异常。
  */
 public class FileNotFoundException extends RuntimeException {
 

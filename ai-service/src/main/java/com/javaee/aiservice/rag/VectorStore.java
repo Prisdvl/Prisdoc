@@ -24,10 +24,10 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * 向量存储
- * - 写入：Redis 持久化向量与元数据；HNSW in-memory 索引建立近邻图
- * - 检索：先在 HNSW 中做近似最近邻搜索，再用 Redis 中的元数据做过滤
- * - 启动：从 Redis 灌入历史向量重建索引
+ * 向量存储，基于 Redis 持久化向量与元数据，并用 HNSW 内存索引提供近邻检索。
+ *
+ * <p>写入时同步更新 Redis 与 HNSW 索引；检索先做近似最近邻搜索，再按 Redis 元数据过滤；
+ * 应用启动时从 Redis 灌入历史向量重建索引，读写通过读写锁保证线程安全。</p>
  */
 @Component
 public class VectorStore {
@@ -91,7 +91,11 @@ public class VectorStore {
     }
 
     /**
-     * 存储向量
+     * 存储向量及其元数据，并同步更新 HNSW 索引。
+     *
+     * @param id 向量标识，通常为文档 ID 或分段 ID
+     * @param vector 向量数据，维度需与索引维度一致
+     * @param metadata 向量元数据，写入 Redis 供检索时过滤
      */
     public void store(String id, float[] vector, Map<String, Object> metadata) {
         log.info("存储向量: id={}, dimension={}", id, vector.length);

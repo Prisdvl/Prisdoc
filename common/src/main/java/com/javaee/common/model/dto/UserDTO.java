@@ -5,8 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 用户数据传输对象，承载用户资料、角色与权限信息。
+ *
  * @author qxk
- * @description: 用户DTO（数据传输对象）
  */
 public class UserDTO implements Serializable {
     private static final long serialVersionUID = 1L;

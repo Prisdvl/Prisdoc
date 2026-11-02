@@ -17,6 +17,11 @@ import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+/**
+ * HTML PPT 生成技能，按大纲生成带主题与演讲者逐字稿的演示文稿。
+ *
+ * <p>大纲交由大模型拆分为多页内容，再渲染为单文件 HTML 写入临时目录，返回 HTML 内容与落盘路径。</p>
+ */
 public class HtmlPptSkill implements Skill {
 
     private static final Logger log = LoggerFactory.getLogger(HtmlPptSkill.class);
@@ -359,6 +364,9 @@ public class HtmlPptSkill implements Skill {
                    .trim();
     }
 
+    /**
+     * PPT 单页数据，保存页面类型、标题、内容与演讲者逐字稿。
+     */
     static class Slide {
         String type;
         String title;

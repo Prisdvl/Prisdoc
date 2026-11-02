@@ -12,7 +12,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Optional;
 
 /**
- * 文件存储通用配置类
+ * 文件存储配置类，从配置项读取存储类型、本地路径、大小上限与存储桶名称。
+ *
+ * <p>存储桶名称优先取当前登录用户的专属桶，取不到用户时回退到配置的默认桶。</p>
  */
 @Configuration
 public class FileStorageConfig {

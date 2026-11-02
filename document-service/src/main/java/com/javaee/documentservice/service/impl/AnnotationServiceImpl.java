@@ -18,6 +18,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 批注服务实现，完成批注的创建、查询、更新与软删除。
+ *
+ * <p>更新与删除前校验操作者为批注创建者；删除只把状态置为 deleted，不做物理删除。</p>
+ */
 @Service
 public class AnnotationServiceImpl implements AnnotationService {
 

@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 
 /**
- * Reads the authenticated user from Spring Security.
+ * 从 Spring Security 上下文读取当前登录用户。
+ *
+ * <p>匿名用户按未登录处理；角色与权限组取自认证信息中的 authorities，并去掉 ROLE_、GROUP_ 前缀。</p>
  */
 @Component
 public class RequestUserContext {

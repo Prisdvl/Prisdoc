@@ -13,7 +13,10 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * 文档与用户的协作访问控制。
+ * 文档协作权限服务，负责授权记录的写入与读写权限校验。
+ *
+ * <p>文档创建者视为所有者，无需授权记录即可读写；其余用户按 owner/editor/viewer
+ * 角色判定，读权限三者皆有，写权限仅 owner 与 editor 拥有。</p>
  */
 @Service
 public class DocumentAccessService {
@@ -24,10 +27,25 @@ public class DocumentAccessService {
     @Autowired
     private DocumentAccessMapper documentAccessMapper;
 
+    /**
+     * 为文档创建者写入 owner 授权记录。
+     *
+     * @param documentId 文档 ID
+     * @param bucketName 文档所在存储桶
+     * @param userId 文档创建者 ID
+     */
     public void grantOwnerAccess(String documentId, String bucketName, Long userId) {
         grantAccess(documentId, bucketName, userId, "owner");
     }
 
+    /**
+     * 授予或更新用户对文档的协作角色。
+     *
+     * @param documentId 文档 ID
+     * @param bucketName 文档所在存储桶
+     * @param userId 被授权用户 ID
+     * @param role 协作角色，为空时按 editor 处理
+     */
     public void grantAccess(String documentId, String bucketName, Long userId, String role) {
         if (documentId == null || documentId.isBlank()) {
             throw new BusinessException("文档ID不能为空");
@@ -60,18 +78,37 @@ public class DocumentAccessService {
         documentAccessMapper.updateById(existing);
     }
 
+    /**
+     * 校验用户具备文档的读权限，失败时抛出业务异常。
+     *
+     * @param document 目标文档
+     * @param userId 当前用户 ID
+     */
     public void assertCanRead(Document document, Long userId) {
         if (!canAccess(document, userId, READ_ROLES)) {
             throw new BusinessException("无权访问此文档");
         }
     }
 
+    /**
+     * 校验用户具备文档的写权限，失败时抛出业务异常。
+     *
+     * @param document 目标文档
+     * @param userId 当前用户 ID
+     */
     public void assertCanWrite(Document document, Long userId) {
         if (!canAccess(document, userId, WRITE_ROLES)) {
             throw new BusinessException("无权修改此文档");
         }
     }
 
+    /**
+     * 判断用户是否为文档创建者。
+     *
+     * @param document 目标文档
+     * @param userId 当前用户 ID
+     * @return 是文档创建者返回 {@code true}
+     */
     public boolean isOwner(Document document, Long userId) {
         return document != null && userId != null
                 && document.getUserId() != null && document.getUserId().equals(userId);

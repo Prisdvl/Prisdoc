@@ -3,8 +3,9 @@ package com.javaee.user.dto;
 import lombok.Data;
 
 /**
+ * 登录请求参数，包含用户名与密码。
+ *
  * @author qxk
- * @description: 登录请求DTO
  */
 @Data
 public class LoginDTO {

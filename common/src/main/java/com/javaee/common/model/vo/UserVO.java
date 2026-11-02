@@ -5,8 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 用户展示对象，向前端输出用户资料、角色与权限信息。
+ *
  * @author qxk
- * @description: 用户VO（展示）
  */
 public class UserVO implements Serializable {
     private static final long serialVersionUID = 1L;

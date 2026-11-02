@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
 
+/**
+ * 用户服务启动类，开启服务注册并扫描用户与公共组件。
+ */
 @SpringBootApplication
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.javaee.user", "com.javaee.common"})

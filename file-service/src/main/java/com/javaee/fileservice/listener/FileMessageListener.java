@@ -9,14 +9,16 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
- * 文件服务消息监听器
+ * 文件服务消息监听器，消费上传、下载、处理与删除事件并记录日志。
  */
 @Slf4j
 @Component
 public class FileMessageListener {
 
     /**
-     * 处理文件上传消息
+     * 处理文件上传事件，输出文件 ID、名称与大小。
+     *
+     * @param message 上传事件消息，含 fileId、fileName、fileSize 与 userId
      */
     @RabbitListener(queues = RabbitMQConfig.FILE_UPLOAD_QUEUE)
     public void handleFileUploadMessage(Map<String, Object> message) {
@@ -35,7 +37,9 @@ public class FileMessageListener {
     }
 
     /**
-     * 处理文件下载消息
+     * 处理文件下载事件，输出文件 ID 与用户 ID。
+     *
+     * @param message 下载事件消息，含 fileId 与 userId
      */
     @RabbitListener(queues = RabbitMQConfig.FILE_DOWNLOAD_QUEUE)
     public void handleFileDownloadMessage(Map<String, Object> message) {
@@ -52,7 +56,9 @@ public class FileMessageListener {
     }
 
     /**
-     * 处理文件处理消息
+     * 处理文件处理事件，输出文件 ID 与处理类型。
+     *
+     * @param message 处理事件消息，含 fileId 与 processType
      */
     @RabbitListener(queues = RabbitMQConfig.FILE_PROCESS_QUEUE)
     public void handleFileProcessMessage(Map<String, Object> message) {
@@ -69,7 +75,9 @@ public class FileMessageListener {
     }
 
     /**
-     * 处理文件删除消息
+     * 处理文件删除事件，输出文件 ID 与用户 ID。
+     *
+     * @param message 删除事件消息，含 fileId 与 userId
      */
     @RabbitListener(queues = RabbitMQConfig.FILE_DELETE_QUEUE)
     public void handleFileDeleteMessage(Map<String, Object> message) {

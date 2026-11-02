@@ -1,3 +1,6 @@
+/**
+ * 前端入口：装配 Vue、路由、Element Plus、设计令牌与全局主题。
+ */
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'

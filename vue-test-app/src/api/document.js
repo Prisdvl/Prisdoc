@@ -1,8 +1,11 @@
 /**
- * @description 文档业务 API
+ * 文档业务接口封装。
  */
 import request from '../utils/request'
 
+/**
+ * 文档接口集合。
+ */
 export const docApi = {
     // 获取用户所有的文档列表
     getUserDocs: (userId) => {
@@ -14,19 +17,19 @@ export const docApi = {
         return request.get(`/documents/${id}`)
     },
 
-    // 新增全文搜索接口
+    // 全文搜索：按关键词检索文档
     searchDocs: (keyword) => {
         return request.get('/documents/search', {
             params: { keyword }
         })
     },
 
-    // 创建文档
+    // 创建文档，data 对应后端的 DocumentCreateDTO
     createDoc: (data) => {
-        return request.post('/documents', data) // data 对应后端的 DocumentCreateDTO
+        return request.post('/documents', data)
     },
 
-    // 更新文档内容 (保存编辑)
+    // 更新文档内容（保存编辑）
     updateDoc: (id, data) => {
         return request.put(`/documents/${id}`, data)
     },
@@ -41,11 +44,12 @@ export const docApi = {
         return request.post(`/documents/${id}/restore/${versionNumber}`)
     },
 
-    // 删除文档
+    // 删除文档（后端为软删除）
     deleteDoc: (id) => {
         return request.delete(`/documents/${id}`)
     },
 
+    // 授权协作者，role 取值 editor / viewer
     grantCollaborator: (id, collaboratorUserId, role = 'editor') => {
         return request.post(`/documents/${id}/collaborators/${collaboratorUserId}`, null, {
             params: { role }

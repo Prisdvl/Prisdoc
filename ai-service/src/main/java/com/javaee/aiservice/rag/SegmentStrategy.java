@@ -2,12 +2,18 @@ package com.javaee.aiservice.rag;
 
 import java.util.List;
 
+/**
+ * 文档分段策略接口，定义把文档内容切分为片段并返回策略名称的统一契约。
+ */
 public interface SegmentStrategy {
 
     List<Segment> segment(String documentId, String content);
 
     String getStrategyName();
 
+    /**
+     * 文档分段结果，保存分段 ID、所属文档、内容、序号、标题与字符数。
+     */
     static class Segment {
         private String segmentId;
         private String documentId;

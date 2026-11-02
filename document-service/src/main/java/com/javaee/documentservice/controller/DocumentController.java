@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 文档管理控制器
- * 提供文档的CRUD和版本控制REST API接口
+ * 文档管理控制器，提供文档增删改查、协作者授权与版本控制接口。
+ *
+ * <p>当前用户由 {@link RequestUserContext} 从请求头解析，所有服务调用都带用户维度做权限校验。</p>
  */
 @RestController
 @RequestMapping("/api/documents")
@@ -32,9 +33,10 @@ public class DocumentController {
     private RequestUserContext requestUserContext;
 
     /**
-     * 创建文档
+     * 创建文档，并自动保存初始版本。
+     *
      * @param dto 创建文档请求参数
-     * @return 文档VO
+     * @return 新建文档信息
      */
     @PostMapping
     @Operation(summary = "创建文档", description = "创建新文档，自动保存初始版本")
@@ -45,10 +47,11 @@ public class DocumentController {
     }
 
     /**
-     * 更新文档
-     * @param id 文档ID
+     * 更新文档内容，并把更新前的正文保存为历史版本。
+     *
+     * @param id 文档 ID
      * @param dto 更新文档请求参数
-     * @return 更新后的文档VO
+     * @return 更新后的文档信息
      */
     @PutMapping("/{id}")
     @Operation(summary = "更新文档", description = "更新文档内容，自动保存历史版本")
@@ -61,9 +64,10 @@ public class DocumentController {
     }
 
     /**
-     * 删除文档
-     * @param id 文档ID
-     * @return 无
+     * 软删除文档，仅把状态标记为已删除。
+     *
+     * @param id 文档 ID
+     * @return 操作结果，无业务数据
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "删除文档", description = "软删除文档，将文档状态标记为已删除")
@@ -74,11 +78,12 @@ public class DocumentController {
     }
 
     /**
-     * 添加文档协作者
-     * @param id 文档ID
-     * @param collaboratorUserId 协作者用户ID
-     * @param role 协作角色
-     * @return 无
+     * 为文档添加协作者并授予角色。
+     *
+     * @param id 文档 ID
+     * @param collaboratorUserId 协作者用户 ID
+     * @param role 协作角色，支持 owner/editor/viewer
+     * @return 操作结果，无业务数据
      */
     @PostMapping("/{id}/collaborators/{collaboratorUserId}")
     @Operation(summary = "添加文档协作者", description = "为文档授权协作者，角色支持 owner/editor/viewer")
@@ -92,9 +97,10 @@ public class DocumentController {
     }
 
     /**
-     * 获取文档详情
-     * @param id 文档ID
-     * @return 文档VO
+     * 获取文档详情，调用者需具备该文档的访问权限。
+     *
+     * @param id 文档 ID
+     * @return 文档详情
      */
     @GetMapping("/{id}")
     @Operation(summary = "获取文档详情", description = "根据文档ID获取文档详细信息")
@@ -105,9 +111,10 @@ public class DocumentController {
     }
 
     /**
-     * 获取文档MinIO存储位置
-     * @param id 文档ID
-     * @return 文档存储位置
+     * 获取文档在 MinIO 中的存储位置，供 AI 服务直接读写文件。
+     *
+     * @param id 文档 ID
+     * @return 文档信息，含 bucket 与对象名
      */
     @GetMapping("/{id}/storage")
     @Operation(summary = "获取文档存储位置", description = "根据文档ID获取其MinIO bucket/objectName，供AI文件操作使用")
@@ -118,9 +125,10 @@ public class DocumentController {
     }
 
     /**
-     * 获取用户文档列表
-     * @param userId 用户ID
-     * @return 文档VO列表
+     * 获取指定用户的文档列表，只允许查询本人文档。
+     *
+     * @param userId 用户 ID
+     * @return 该用户的活跃文档列表
      */
     @GetMapping("/user/{userId}")
     @Operation(summary = "获取用户文档列表", description = "获取指定用户的所有活跃文档列表")
@@ -134,10 +142,11 @@ public class DocumentController {
     }
 
     /**
-     * 搜索文档
-     * @param keyword 关键词（可选）
-     * @param category 分类（可选）
-     * @return 文档VO列表
+     * 按关键词或分类搜索当前用户可访问的文档。
+     *
+     * @param keyword 关键词，可选，匹配标题、正文与关键词
+     * @param category 分类，可选
+     * @return 命中的文档列表
      */
     @GetMapping("/search")
     @Operation(summary = "搜索文档", description = "根据关键词搜索标题、内容、关键词，或按分类筛选文档")
@@ -153,9 +162,10 @@ public class DocumentController {
     }
 
     /**
-     * 获取文档版本列表
-     * @param id 文档ID
-     * @return 文档版本列表
+     * 获取文档的历史版本列表，按版本号降序返回。
+     *
+     * @param id 文档 ID
+     * @return 历史版本列表
      */
     @GetMapping("/{id}/versions")
     @Operation(summary = "获取文档版本列表", description = "获取文档的所有历史版本，按版本号降序排列")
@@ -166,10 +176,11 @@ public class DocumentController {
     }
 
     /**
-     * 恢复文档版本
-     * @param id 文档ID
-     * @param versionNumber 版本号
-     * @return 恢复后的文档VO
+     * 把文档恢复到指定版本，恢复前先把当前正文存为历史版本。
+     *
+     * @param id 文档 ID
+     * @param versionNumber 目标版本号
+     * @return 恢复后的文档信息
      */
     @PostMapping("/{id}/restore/{versionNumber}")
     @Operation(summary = "恢复文档版本", description = "将文档恢复到指定版本，自动保存当前版本作为历史版本")

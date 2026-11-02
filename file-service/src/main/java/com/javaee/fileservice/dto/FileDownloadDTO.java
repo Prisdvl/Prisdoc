@@ -3,7 +3,7 @@ package com.javaee.fileservice.dto;
 import lombok.Data;
 
 /**
- * 文件下载请求参数
+ * 文件下载请求参数。
  */
 @Data
 public class FileDownloadDTO {

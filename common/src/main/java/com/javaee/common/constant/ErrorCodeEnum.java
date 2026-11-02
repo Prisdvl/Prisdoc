@@ -1,8 +1,9 @@
 package com.javaee.common.constant;
 
 /**
+ * 错误码枚举，按客户端、服务端、业务、AI 与系统分组定义状态码与提示语。
+ *
  * @author qxk
- * @description: 错误码枚举（200/401/500等）
  */
 public enum ErrorCodeEnum {
     // 成功
@@ -69,9 +70,10 @@ public enum ErrorCodeEnum {
     }
 
     /**
-     * 根据错误码获取错误枚举
+     * 根据错误码获取对应的错误枚举。
+     *
      * @param code 错误码
-     * @return 错误枚举
+     * @return 匹配的错误枚举；未匹配时返回内部错误
      */
     public static ErrorCodeEnum getByCode(Integer code) {
         for (ErrorCodeEnum errorCode : values()) {
@@ -83,9 +85,10 @@ public enum ErrorCodeEnum {
     }
 
     /**
-     * 根据错误码获取错误消息
+     * 根据错误码获取错误提示语。
+     *
      * @param code 错误码
-     * @return 错误消息
+     * @return 对应的错误提示语；未匹配时返回内部错误提示
      */
     public static String getMessageByCode(Integer code) {
         ErrorCodeEnum errorCode = getByCode(code);

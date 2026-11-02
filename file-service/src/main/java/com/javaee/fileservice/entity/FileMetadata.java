@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 文件元数据实体类
+ * 文件元数据实体类，对应 file_metadata 表。
  */
 @Data
 @TableName("file_metadata")

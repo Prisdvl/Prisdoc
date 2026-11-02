@@ -11,7 +11,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Checks bucket access by permission group without changing file operation flows.
+ * 按权限组校验存储桶访问权限，不改变原有文件操作流程。
+ *
+ * <p>管理员与用户自己的存储桶直接放行；其余桶按配置项 {@code minio.bucket-permissions}
+ * 匹配，未配置或未命中时取 {@code minio.bucket-permission-default-allow} 的默认策略。</p>
  */
 @Service
 public class BucketPermissionService {

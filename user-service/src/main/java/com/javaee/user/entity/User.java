@@ -7,8 +7,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
+ * 用户实体，映射 user 表并承载账号资料与启用状态。
+ *
  * @author qxk
- * @description: 用户实体类
  */
 @Data
 @TableName("user")

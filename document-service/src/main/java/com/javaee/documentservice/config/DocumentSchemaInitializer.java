@@ -17,8 +17,10 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * Keeps the document-service schema compatible with the current code when an
- * existing deployment was created from an older SQL file.
+ * 启动时补齐文档服务的表结构，使由旧版 SQL 初始化的库与当前代码兼容。
+ *
+ * <p>按需补建缺失的表、列与索引，并将受管表的字符集统一为 utf8mb4；
+ * 可通过 {@code document.schema.auto-migration.enabled} 关闭，修复失败会中断启动。</p>
  */
 @Component
 public class DocumentSchemaInitializer implements ApplicationRunner {

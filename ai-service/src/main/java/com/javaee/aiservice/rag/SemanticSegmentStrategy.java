@@ -8,6 +8,12 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 语义分段策略，按句子向量相似度把文档聚合为语义片段。
+ *
+ * <p>先按段落与句末标点拆句，再计算相邻句子的余弦相似度：低于阈值时开启新分组，
+ * 过短的分组会合并到前一个分段，避免产生碎片。</p>
+ */
 @Component
 public class SemanticSegmentStrategy implements SegmentStrategy {
 
@@ -210,6 +216,9 @@ public class SemanticSegmentStrategy implements SegmentStrategy {
         return similarityThreshold;
     }
 
+    /**
+     * 句子及其在原文中的字符位置。
+     */
     private static class Sentence {
         private final String text;
         private final int charPosition;
@@ -223,6 +232,9 @@ public class SemanticSegmentStrategy implements SegmentStrategy {
         int getCharPosition() { return charPosition; }
     }
 
+    /**
+     * 语义分组，保存分组内的句子、主题与首句文本。
+     */
     private static class SentenceGroup {
         private final List<Sentence> sentences = new ArrayList<>();
         private String theme;

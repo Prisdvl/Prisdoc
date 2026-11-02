@@ -106,6 +106,10 @@
 </template>
 
 <script setup>
+
+/**
+ * AIOps 运维监控页面：展示指标、健康状态与故障记录。
+ */
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { aiopsApi } from '../../api/aiops'

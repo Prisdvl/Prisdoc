@@ -1,28 +1,39 @@
 /**
- * @description 文件模块 API 接口
+ * 文件模块接口封装。
+ *
+ * 上传使用 multipart/form-data，下载与预览返回 Blob。
  */
 import request from '../utils/request'
 
+/**
+ * 文件接口集合。
+ */
 export const fileApi = {
     /**
-     * 获取文件列表 (支持分页)
-     * @param {Object} params { page: 1, size: 10, sortBy: 'createTime', direction: 'desc' }
+     * 获取文件列表（支持分页）。
+     *
+     * @param {object} params 查询参数：`{ page, size, sortBy, direction }`
+     * @returns {Promise<Object>} 分页后的文件列表
      */
     getFileList: (params) => {
         return request.get('/files/list', { params })
     },
 
     /**
-     * 搜索文件
-     * @param {Object} params { keyword: '搜索词', page: 1, size: 10 }
+     * 按关键词搜索文件。
+     *
+     * @param {object} params 查询参数：`{ keyword, page, size }`
+     * @returns {Promise<Object>} 匹配的文件列表
      */
     searchFiles: (params) => {
         return request.get('/files/search', { params })
     },
 
     /**
-     * 获取文件详细元数据
-     * @param {String} fileId 文件唯一标识
+     * 获取文件详细元数据。
+     *
+     * @param {string} fileId 文件唯一标识
+     * @returns {Promise<Object>} 文件元数据
      */
     getMetadata: (fileId) => {
         return request.get(`/files/metadata/${fileId}`)
@@ -30,33 +41,25 @@ export const fileApi = {
 
 
     /**
-     * 单文件上传 (FormData 格式)
-     * @param {File} rawFile 原生文件对象 (从 input type="file" 或 el-upload 中获取)
+     * 单文件上传（FormData 格式）。
+     *
+     * 不监听上传进度：后端未稳定返回 content-length，进度条由上层的请求状态展示。
+     *
+     * @param {File} rawFile 原生文件对象（来自 input[type=file] 或 el-upload）
+     * @returns {Promise<Object>} 上传结果，含文件 ID 与访问地址
      */
     upload: (rawFile) => {
         const formData = new FormData()
         formData.append('file', rawFile)
 
-        return request.post('/files/upload', formData, {
-            // 更加健壮的进度条监听
-            onUploadProgress: (progressEvent) => {
-                // 如果后端没返回总大小，我们设为 0
-                const total = progressEvent.total || 0;
-                const loaded = progressEvent.loaded || 0;
-
-                if (total > 0) {
-                    const percent = Math.round((loaded * 100) / total);
-                    console.log(`文件上传进度: ${percent}%`);
-                } else {
-                    console.log('正在上传，但无法计算具体百分比...');
-                }
-            }
-        })
+        return request.post('/files/upload', formData)
     },
 
     /**
-     * 文件下载 (返回二进制数据流 Blob)
-     * @param {String} fileId 文件ID
+     * 下载文件，返回二进制数据流。
+     *
+     * @param {string} fileId 文件 ID
+     * @returns {Promise<Blob>} 文件内容
      */
     download: (fileId) => {
         return request.get(`/files/download/${fileId}`, {
@@ -65,8 +68,10 @@ export const fileApi = {
     },
 
     /**
-     * 文件预览 (主要用于图片、PDF，返回流)
-     * @param {String} fileId 文件ID
+     * 预览文件（主要用于图片、PDF），返回二进制流。
+     *
+     * @param {string} fileId 文件 ID
+     * @returns {Promise<Blob>} 预览内容
      */
     preview: (fileId) => {
         return request.get(`/files/preview/${fileId}`, {
@@ -74,22 +79,25 @@ export const fileApi = {
         })
     },
 
-
     /**
-     * 删除文件
-     * @param {String} fileId 文件ID
+     * 删除文件。
+     *
+     * @param {string} fileId 文件 ID
+     * @returns {Promise<Object>} 删除结果
      */
     delete: (fileId) => {
         return request.delete(`/files/${fileId}`)
     },
 
     /**
-     * 重命名文件
-     * @param {String} fileId 文件ID
-     * @param {String} newName 新文件名
+     * 重命名文件。
+     *
+     * @param {string} fileId 文件 ID
+     * @param {string} newName 新文件名
+     * @returns {Promise<Object>} 重命名结果
      */
     rename: (fileId, newName) => {
-        // 注意：newName 后端要求通过 @RequestParam 接收，所以放在 params 里
+        // 后端用 @RequestParam 接收 newName，因此放在 params 中传递
         return request.put(`/files/${fileId}/rename`, null, {
             params: { newName }
         })

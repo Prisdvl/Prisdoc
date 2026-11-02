@@ -70,6 +70,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 注册页面：校验表单后创建账号并跳转登录。
+ */
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'

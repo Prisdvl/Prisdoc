@@ -39,6 +39,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Agent 执行链的单元测试，覆盖工具注册、参数解析、审批拦截与反思决策。
+ */
 class AgentExecutionServiceTest {
 
     @Test

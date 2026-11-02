@@ -21,6 +21,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 登录页面：校验账号密码并保存访问令牌。
+ */
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'

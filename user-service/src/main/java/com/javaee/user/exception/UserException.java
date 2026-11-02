@@ -3,8 +3,9 @@ package com.javaee.user.exception;
 import lombok.Getter;
 
 /**
+ * 用户模块业务异常，携带错误码与提示语。
+ *
  * @author qxk
- * @description: 用户模块异常
  */
 @Getter
 public class UserException extends RuntimeException {

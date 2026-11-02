@@ -4,24 +4,39 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Unified request for the product-level Agent execution chain.
+ * 产品级 Agent 执行链的统一请求参数。
  */
 public class AgentExecutionRequest {
 
+    /** 用户原始任务描述。 */
     private String task;
+    /** 会话 ID，为空表示新建会话。 */
     private String conversationId;
+    /** 请求用户 ID。 */
     private String userId = "default";
+    /** 指定模型编码，为空时使用默认模型。 */
     private String model;
+    /** 是否启用 RAG 检索增强：true-启用，false-关闭。 */
     private Boolean ragEnabled = true;
+    /** 是否只做规划不真正执行工具：true-预演，false-实际执行。 */
     private Boolean dryRun = false;
+    /** 最大推理轮次。 */
     private Integer maxIterations = 3;
+    /** 单次执行允许的最大工具调用次数。 */
     private Integer maxToolCalls = 8;
+    /** 检索使用的知识库 ID。 */
     private String knowledgeBaseId = "default";
+    /** 失败后是否自动重新规划：true-允许，false-禁止。 */
     private Boolean autoReplan = true;
+    /** 是否启用反思环节，null 表示取服务端默认配置。 */
     private Boolean reflectionEnabled;
+    /** 是否返回中间步骤明细：true-返回，false-只返回最终答案。 */
     private Boolean returnIntermediateSteps = true;
+    /** 附加上下文变量，供模板引用。 */
     private Map<String, Object> context = new HashMap<>();
+    /** 继续执行的追踪 ID，用于恢复历史任务。 */
     private String continueTraceId;
+    /** 危险操作的用户审批令牌。 */
     private String approvalToken;
 
     public String getTask() {

@@ -16,8 +16,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * JWT认证过滤器
- * 用于验证请求中的JWT令牌并设置认证上下文
+ * JWT 认证过滤器，校验请求中的访问令牌并写入安全上下文。
+ *
+ * <p>令牌有效时按用户 ID、角色与权限组构造认证信息；校验失败则清空安全上下文，
+ * 请求继续沿过滤链放行，由后续鉴权规则决定是否拒绝。</p>
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

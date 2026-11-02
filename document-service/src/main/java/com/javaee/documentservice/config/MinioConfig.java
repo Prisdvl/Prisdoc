@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * MinIO配置类
+ * MinIO 客户端配置，注册连接对象存储所需的最小化客户端 Bean。
  */
 @Configuration
 public class MinioConfig {

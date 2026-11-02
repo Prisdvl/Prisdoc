@@ -31,9 +31,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 知识索引Agent
- * 负责异步管道: 解析 -> 切分 -> 标签/分类 -> 向量化 -> 写库 -> 质量评估。
- * 支持权限隔离、状态查询、失败重试。
+ * 知识索引 Agent，负责文档索引的异步管道。
+ *
+ * <p>管道顺序为解析、切分、标签分类、向量化、写库与质量评估，支持权限隔离、
+ * 任务状态查询与失败重试。</p>
  */
 @Component
 public class KnowledgeIndexAgent {
@@ -69,13 +70,23 @@ public class KnowledgeIndexAgent {
                 return thread;
             });
 
+    /**
+     * 关闭索引线程池，释放后台工作线程。
+     */
     @PreDestroy
     public void shutdown() {
         indexExecutor.shutdownNow();
     }
 
     /**
-     * 同步索引文档（保留兼容旧接口，内部走相同管道但阻塞返回）。
+     * 同步索引文档，管道执行完成后返回任务快照。
+     *
+     * <p>保留用于兼容旧的同步调用方，内部与异步接口共用同一条管道。</p>
+     *
+     * @param documentId 文档 ID
+     * @param content 文档正文
+     * @param metadata 文档元数据，可携带 userId、knowledgeBaseId 等
+     * @return 任务快照，含状态、进度与质量评估结果
      */
     public Map<String, Object> indexDocument(String documentId, String content, Map<String, Object> metadata) {
         KnowledgeIndexJob job = createJob(documentId, metadata);
@@ -84,7 +95,12 @@ public class KnowledgeIndexAgent {
     }
 
     /**
-     * 异步索引文档，立即返回任务状态。
+     * 异步索引文档，提交后立即返回任务状态。
+     *
+     * @param documentId 文档 ID
+     * @param content 文档正文
+     * @param metadata 文档元数据，可携带 userId、knowledgeBaseId 等
+     * @return 任务快照，状态为排队中，进度由后续事件推送
      */
     public Map<String, Object> indexDocumentAsync(String documentId, String content, Map<String, Object> metadata) {
         KnowledgeIndexJob job = createJob(documentId, metadata);
@@ -96,6 +112,12 @@ public class KnowledgeIndexAgent {
         return indexExecutor.submit(() -> runPipeline(job, content, metadata));
     }
 
+    /**
+     * 查询索引任务状态，内存未命中时读取持久化快照。
+     *
+     * @param jobId 任务 ID
+     * @return 任务快照；不存在时返回带 not_found 状态的说明
+     */
     public Map<String, Object> getJobStatus(String jobId) {
         KnowledgeIndexJob job = jobs.get(jobId);
         if (job != null) {
@@ -105,6 +127,14 @@ public class KnowledgeIndexAgent {
         return persisted.isEmpty() ? Map.of("status", "not_found", "jobId", jobId) : persisted;
     }
 
+    /**
+     * 重试失败的索引任务，重新排入异步队列。
+     *
+     * @param jobId 任务 ID
+     * @param content 文档正文
+     * @param metadata 文档元数据
+     * @return 任务快照；任务不存在或非失败态时返回当前状态
+     */
     public Map<String, Object> retryJob(String jobId, String content, Map<String, Object> metadata) {
         KnowledgeIndexJob job = jobs.get(jobId);
         if (job == null) {
@@ -200,7 +230,10 @@ public class KnowledgeIndexAgent {
     }
 
     /**
-     * 计算内容 SHA-256 hash 用于重复检测。
+     * 计算内容 SHA-256 摘要，用于重复文档检测。
+     *
+     * @param content 文档正文
+     * @return 十六进制摘要；算法不可用时退化为 hashCode 的十六进制串
      */
     String computeHash(String content) {
         try {
@@ -217,8 +250,13 @@ public class KnowledgeIndexAgent {
     }
 
     /**
-     * 列出索引任务，按 userId 过滤；管理员场景下传 null 返回全部。
-     * 任务按 updatedAt 倒序排列。
+     * 列出索引任务，按用户与知识库过滤。
+     *
+     * <p>按 updatedAt 倒序排列；参数为 null 表示不限制该维度，供管理员场景使用。</p>
+     *
+     * @param userId 用户 ID，null 表示不限用户
+     * @param knowledgeBaseId 知识库 ID，null 表示不限知识库
+     * @return 任务快照列表
      */
     public List<Map<String, Object>> listJobs(String userId, String knowledgeBaseId) {
         List<Map<String, Object>> persisted = listPersistedJobs(userId, knowledgeBaseId);
@@ -234,7 +272,12 @@ public class KnowledgeIndexAgent {
     }
 
     /**
-     * 删除一条索引任务记录。仅删除任务追踪数据，不影响向量库内容。
+     * 删除一条索引任务记录。
+     *
+     * <p>仅删除任务追踪数据，不影响向量库中已写入的内容。</p>
+     *
+     * @param jobId 任务 ID
+     * @return 是否删除成功：true-存在并已删除，false-任务不存在
      */
     public boolean deleteJob(String jobId) {
         return jobs.remove(jobId) != null || deletePersistedJob(jobId);
@@ -371,6 +414,15 @@ public class KnowledgeIndexAgent {
         }
     }
 
+    /**
+     * 向量检索知识库，并按归属过滤结果。
+     *
+     * @param query 查询文本
+     * @param topK 期望返回条数，实际会被限制在 1 到 50 之间
+     * @param userId 用户 ID，null 表示不过滤
+     * @param knowledgeBaseId 知识库 ID，null 表示不过滤
+     * @return 命中的片段列表
+     */
     public List<Map<String, Object>> searchKnowledge(String query, int topK, String userId, String knowledgeBaseId) {
         log.info("搜索知识库: query={}, userId={}", query, userId);
         try {
@@ -385,6 +437,12 @@ public class KnowledgeIndexAgent {
         }
     }
 
+    /**
+     * 删除文档的向量与元数据索引。
+     *
+     * @param documentId 文档 ID
+     * @return 删除结果，含状态与说明
+     */
     public Map<String, Object> deleteIndex(String documentId) {
         log.info("删除文档索引: documentId={}", documentId);
         try {
@@ -429,7 +487,10 @@ public class KnowledgeIndexAgent {
     }
 
     /**
-     * 生成文档标签：先用关键词命中，再补充少量启发式标签。
+     * 生成文档标签，先按关键词命中，再补充少量启发式标签。
+     *
+     * @param content 文档正文
+     * @return 标签列表；无命中时返回「通用」
      */
     List<String> generateTags(String content) {
         Set<String> tags = new LinkedHashSet<>();

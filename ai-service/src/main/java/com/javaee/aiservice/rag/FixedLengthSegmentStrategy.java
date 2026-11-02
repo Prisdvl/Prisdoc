@@ -7,6 +7,11 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 固定长度分段策略，按配置的分片长度与重叠长度切分文档。
+ *
+ * <p>切分点优先落在中文标点或空白处，避免把句子截断；相邻分段之间保留指定字符数的重叠内容。</p>
+ */
 @Component
 public class FixedLengthSegmentStrategy implements SegmentStrategy {
 

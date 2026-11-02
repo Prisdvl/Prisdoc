@@ -16,8 +16,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
- * 文件上传服务
- * 功能说明：使用skill实现文件上传至minIO
+ * 文件上传服务，把本地文件上传到 MinIO 并登记文件版本。
+ *
+ * <p>上传前校验存储桶权限；桶名为空时使用用户默认桶，对象名缺省时按日期与 UUID 生成。</p>
  */
 @Service
 public class FileUploadService {
@@ -37,13 +38,13 @@ public class FileUploadService {
     private BucketPermissionService bucketPermissionService;
 
     /**
-     * 文件上传功能
-     * 功能说明：将本地文件上传至minIO服务器
-     * 实现方式：使用skill方式实现，通过MinIOService接口调用minIO
-     * 
+     * 上传文件到 MinIO 并创建对应的文件版本记录。
+     *
+     * <p>上传成功后由 {@link FileVersionService} 生成初始版本，返回结果包含访问 URL 与文件信息。</p>
+     *
      * @param file 上传的文件
-     * @param dto 上传参数
-     * @return 文件上传结果
+     * @param dto 上传参数，可指定存储桶与对象名
+     * @return 文件上传结果，含访问 URL、对象名与文件基本信息
      */
     public FileUploadVO uploadFile(MultipartFile file, FileUploadDTO dto) {
         log.info("开始上传文件: filename={}", file.getOriginalFilename());
@@ -56,7 +57,7 @@ public class FileUploadService {
             // 确定对象名称（文件路径）
             String objectName = dto.getObjectName() != null ? dto.getObjectName() : generateObjectName(file);
 
-            // 调用MinIOService上传文件
+            // 调用 MinIOService 上传文件
             log.info("调用MinIO上传文件: bucket={}, object={}", bucketName, objectName);
             String fileUrl = minIOService.uploadFile(file, bucketName, objectName);
 

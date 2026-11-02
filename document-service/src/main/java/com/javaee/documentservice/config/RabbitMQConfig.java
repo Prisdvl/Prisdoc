@@ -11,6 +11,12 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * RabbitMQ 配置，声明文件上传与协同编辑的交换机、队列、绑定及 JSON 消息转换器。
+ *
+ * <p>队列与交换机均持久化，消息体统一使用 Jackson JSON 序列化，避免跨服务
+ * 依赖 Java 原生序列化。</p>
+ */
 @Configuration
 public class RabbitMQConfig {
 

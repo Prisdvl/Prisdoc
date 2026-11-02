@@ -4,6 +4,10 @@
 </template>
 
 <script setup>
+
+/**
+ * PPT 运行时页面：从 sessionStorage 取出 HTML 源码并渲染预览。
+ */
 import { onMounted, ref } from 'vue'
 
 const hasContent = ref(false)

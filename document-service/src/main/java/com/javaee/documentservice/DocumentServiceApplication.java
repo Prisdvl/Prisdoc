@@ -9,7 +9,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
- * 文档服务应用启动类
+ * 文档服务启动类，启用服务发现、Feign 客户端、Mapper 扫描与异步执行能力。
  */
 @SpringBootApplication(scanBasePackages = {"com.javaee.documentservice", "com.javaee.common"})
 @EnableDiscoveryClient

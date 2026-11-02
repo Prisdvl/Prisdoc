@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 文档批注控制器，提供批注的创建、查询、更新与删除接口。
+ */
 @RestController
 @RequestMapping("/api/documents/{documentId}/annotations")
 @Tag(name = "文档批注", description = "文档批注管理接口")

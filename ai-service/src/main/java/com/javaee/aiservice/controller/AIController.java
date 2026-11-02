@@ -27,8 +27,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * AI控制器
- * 提供AI处理和文件管理相关的REST API接口，支持多模型选择
+ * AI 控制器，提供 AI 处理与文件管理接口。
+ *
+ * <p>摘要、关键词与文档分析支持按模型代码切换底层模型；文件接口覆盖上传、下载、删除、
+ * 回收站与版本管理。</p>
  */
 @RestController
 @RequestMapping("/api/ai")
@@ -60,7 +62,8 @@ public class AIController {
     private RequestUserContext requestUserContext;
 
     /**
-     * 获取可用模型列表
+     * 获取可用模型列表。
+     *
      * @return 模型列表
      */
     @GetMapping("/models")
@@ -80,7 +83,8 @@ public class AIController {
     }
 
     /**
-     * 文档摘要
+     * 对文档进行智能摘要。
+     *
      * @param dto 摘要请求参数
      * @param model 模型代码（可选）
      * @return 摘要结果
@@ -99,7 +103,8 @@ public class AIController {
     }
 
     /**
-     * 关键词提取
+     * 从文档中提取关键词。
+     *
      * @param dto 关键词提取请求参数
      * @param model 模型代码（可选）
      * @return 关键词结果
@@ -118,7 +123,8 @@ public class AIController {
     }
 
     /**
-     * 文档分析
+     * 对文档进行字符维度的统计分析。
+     *
      * @param dto 文档分析请求参数
      * @return 分析结果
      */
@@ -130,7 +136,8 @@ public class AIController {
     }
 
     /**
-     * 文件上传接口
+     * 将文件上传至 MinIO。
+     *
      * @param file 上传的文件
      * @param dto 上传参数
      * @return 文件上传结果
@@ -145,7 +152,8 @@ public class AIController {
     }
 
     /**
-     * 文件下载接口（直接下载）
+     * 从 MinIO 直接下载文件。
+     *
      * @param dto 下载参数
      * @return 文件流
      */
@@ -174,7 +182,8 @@ public class AIController {
     }
 
     /**
-     * 获取文件访问URL接口
+     * 获取文件的预签名访问 URL。
+     *
      * @param dto 下载参数
      * @return 文件访问URL
      */
@@ -186,7 +195,8 @@ public class AIController {
     }
 
     /**
-     * 删除文件接口
+     * 删除文件，支持二次确认与移入回收站。
+     *
      * @param dto 删除参数
      * @return 删除结果
      */
@@ -201,7 +211,8 @@ public class AIController {
     }
 
     /**
-     * 恢复文件接口
+     * 从回收站恢复文件。
+     *
      * @param dto 恢复参数
      * @return 恢复结果
      */
@@ -213,7 +224,8 @@ public class AIController {
     }
 
     /**
-     * 获取回收站文件列表接口
+     * 获取回收站中的文件列表。
+     *
      * @param bucketName 存储桶名称
      * @return 回收站文件列表
      */
@@ -226,7 +238,8 @@ public class AIController {
     }
 
     /**
-     * 获取文件版本列表接口
+     * 获取文件的所有版本。
+     *
      * @param dto 查询参数
      * @return 文件版本信息
      */
@@ -238,7 +251,8 @@ public class AIController {
     }
 
     /**
-     * 切换文件版本接口
+     * 切换文件版本，属于高风险操作，仅管理员可执行。
+     *
      * @param dto 切换参数
      * @return 切换后的版本信息
      */

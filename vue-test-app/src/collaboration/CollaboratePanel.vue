@@ -80,6 +80,10 @@
 </template>
 
 <script setup>
+
+/**
+ * 协同编辑面板：展示在线协作者、远端光标与连接状态。
+ */
 import { ref, computed, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { docApi } from '../api/document'

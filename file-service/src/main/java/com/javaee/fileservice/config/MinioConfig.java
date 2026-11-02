@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * MinIO配置类
+ * MinIO 配置类，根据配置项构建 MinioClient 客户端实例。
  */
 @Configuration
 public class MinioConfig {
@@ -21,7 +21,9 @@ public class MinioConfig {
     private String secretKey;
 
     /**
-     * 创建MinIO客户端
+     * 创建 MinIO 客户端，供文件上传下载复用。
+     *
+     * @return 使用配置的访问地址与访问密钥构建的 MinioClient 实例
      */
     @Bean
     public MinioClient minioClient() {

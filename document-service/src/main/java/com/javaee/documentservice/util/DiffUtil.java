@@ -8,13 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 文本差异对比工具类
- * 基于LCS（最长公共子序列）算法实现
+ * 文本差异对比工具，基于最长公共子序列逐行比较两段文本。
+ *
+ * <p>只输出新增与删除两类变更，修改行按「一删一增」体现；对比异常时返回仅含
+ * 失败摘要的结果而不抛出。</p>
  */
 public class DiffUtil {
 
     private static final Logger log = LoggerFactory.getLogger(DiffUtil.class);
 
+    /**
+     * 逐行对比两段文本并生成差异结果。
+     *
+     * @param originalText 原始文本，可为 {@code null}
+     * @param revisedText 修订文本，可为 {@code null}
+     * @return 对比结果，含逐行变更明细与增删行数统计
+     */
     public static DocumentCompareVO compareTexts(String originalText, String revisedText) {
         DocumentCompareVO result = new DocumentCompareVO();
         List<DocumentCompareVO.ChangeDetail> changes = new ArrayList<>();

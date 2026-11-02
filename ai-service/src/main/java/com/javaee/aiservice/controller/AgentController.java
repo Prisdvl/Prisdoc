@@ -20,8 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Agent控制器
- * 提供AI Agent相关的REST API接口
+ * Agent 控制器，提供统一 Agent 执行、任务运行、对话与知识索引接口。
+ *
+ * <p>所有端点都以当前登录用户身份执行，任务与索引的读写会校验归属，管理员可查看他人数据。</p>
  */
 @RestController
 @RequestMapping("/api/ai/agent")
@@ -47,7 +48,10 @@ public class AgentController {
     private KnowledgeBase knowledgeBase;
 
     /**
-     * 统一Agent链路 - 自动规划、工具执行、RAG、最终回答
+     * 执行统一 Agent 链路，自动完成规划、工具调用、RAG 检索与最终回答。
+     *
+     * @param request 执行请求，包含任务描述、上下文与对话标识
+     * @return 执行结果，含任务计划、工具调用记录与最终回答
      */
     @PostMapping("/execute")
     @Operation(summary = "执行统一Agent链路", description = "自动完成任务规划、工具调用、RAG检索、最终回答和对话记忆")
@@ -58,7 +62,9 @@ public class AgentController {
     }
 
     /**
-     * 统一Agent链路 - 获取工具列表
+     * 获取统一 Agent 可调用的工具列表。
+     *
+     * @return 工具定义列表，包含名称、描述与参数结构
      */
     @GetMapping("/tools")
     @Operation(summary = "获取Agent工具列表", description = "获取统一Agent可调用的全部工具能力")
@@ -67,7 +73,10 @@ public class AgentController {
     }
 
     /**
-     * 统一Agent链路 - 确认危险操作并继续执行
+     * 确认危险操作并继续执行原挂起任务。
+     *
+     * @param request 执行请求，需携带审批令牌 agentApprovalToken
+     * @return 继续执行后的任务结果
      */
     @PostMapping("/approvals/confirm")
     @Operation(summary = "确认危险操作", description = "携带 agentApprovalToken 继续执行原挂起任务")
@@ -78,7 +87,10 @@ public class AgentController {
     }
 
     /**
-     * 统一Agent链路 - 取消挂起的危险操作
+     * 取消挂起的危险操作，丢弃审批令牌。
+     *
+     * @param token 审批令牌
+     * @return 是否成功取消，true 表示挂起任务已丢弃
      */
     @PostMapping("/approvals/{token}/cancel")
     @Operation(summary = "取消危险操作", description = "用户拒绝危险操作时丢弃挂起的审批令牌")
@@ -87,7 +99,10 @@ public class AgentController {
     }
 
     /**
-     * 任务运行 - 查询单个任务快照。
+     * 查询单个任务快照。
+     *
+     * @param traceId 任务追踪 ID
+     * @return 任务快照；任务不存在时返回 not_found 状态
      */
     @GetMapping("/tasks/{traceId}")
     @Operation(summary = "查询Agent任务快照", description = "返回指定 traceId 的任务执行计划、工具结果与时间线")
@@ -104,7 +119,10 @@ public class AgentController {
     }
 
     /**
-     * 任务运行 - 列出当前用户最近的任务。
+     * 列出当前用户最近的任务。
+     *
+     * @param userId 管理员可指定查看的用户 ID，留空表示当前用户
+     * @return 任务快照列表
      */
     @GetMapping("/tasks")
     @Operation(summary = "列出Agent任务历史", description = "按当前用户列出最近的任务快照，管理员可查看全部")
@@ -118,7 +136,10 @@ public class AgentController {
     }
 
     /**
-     * 任务运行 - 取消挂起的 Agent 任务。
+     * 取消挂起的 Agent 任务。
+     *
+     * @param traceId 任务追踪 ID
+     * @return 是否成功标记取消，取消在下次迭代入口生效
      */
     @PostMapping("/tasks/{traceId}/cancel")
     @Operation(summary = "取消Agent任务", description = "在主循环下一次迭代入口生效；终态任务不会被覆盖")
@@ -133,7 +154,10 @@ public class AgentController {
     }
 
     /**
-     * 任务运行 - 删除任务快照。
+     * 删除任务快照。
+     *
+     * @param traceId 任务追踪 ID
+     * @return 是否成功删除
      */
     @DeleteMapping("/tasks/{traceId}")
     @Operation(summary = "删除Agent任务", description = "从注册表中彻底删除任务快照")
@@ -148,7 +172,11 @@ public class AgentController {
     }
 
     /**
-     * 任务运行 - 续接 action_required 任务。
+     * 续接处于 action_required 状态的任务。
+     *
+     * @param traceId 任务追踪 ID
+     * @param request 续接请求，携带用户补充的信息
+     * @return 续接后的任务结果
      */
     @PostMapping("/tasks/{traceId}/continue")
     @Operation(summary = "续接Agent任务", description = "对处于 action_required 状态的任务补充信息后继续执行")
@@ -167,7 +195,12 @@ public class AgentController {
     }
 
     /**
-     * 任务运行 - 单步重试。
+     * 对已结束任务的单个失败步骤执行重试。
+     *
+     * @param traceId 任务追踪 ID
+     * @param stepId 步骤 ID
+     * @param overrideParams 重试时覆盖的参数，可为空
+     * @return 重试后的任务结果
      */
     @PostMapping("/tasks/{traceId}/steps/{stepId}/retry")
     @Operation(summary = "单步重试Agent任务", description = "对已结束任务的单个失败步骤进行针对性重试")
@@ -185,7 +218,10 @@ public class AgentController {
     }
 
     /**
-     * 对话Agent - 开始对话
+     * 为当前登录用户创建新的对话会话。
+     *
+     * @param userId 用户 ID 参数，仅用于兼容旧调用，实际以当前登录用户为准
+     * @return 新建的对话 ID
      */
     @PostMapping("/chat/start")
     @Operation(summary = "开始对话", description = "创建新的对话会话")
@@ -196,7 +232,11 @@ public class AgentController {
     }
 
     /**
-     * 对话Agent - 发送消息
+     * 向统一 Agent 发送消息，自动完成规划、工具调用与记忆。
+     *
+     * @param conversationId 对话 ID
+     * @param userInput 用户输入文本
+     * @return 本轮对话结果
      */
     @PostMapping("/chat")
     @Operation(summary = "发送消息", description = "向统一Agent发送消息，自动完成规划、工具调用和记忆")
@@ -213,7 +253,10 @@ public class AgentController {
     }
 
     /**
-     * 对话Agent - 结束对话
+     * 结束指定对话。
+     *
+     * @param conversationId 对话 ID
+     * @return 固定为 true，表示对话已结束
      */
     @PostMapping("/chat/{conversationId}/end")
     @Operation(summary = "结束对话", description = "结束指定对话")
@@ -224,7 +267,10 @@ public class AgentController {
     }
 
     /**
-     * 对话Agent - 获取对话历史
+     * 获取对话的消息历史。
+     *
+     * @param conversationId 对话 ID
+     * @return 对话消息列表
      */
     @GetMapping("/chat/{conversationId}/history")
     @Operation(summary = "获取对话历史", description = "获取对话的消息历史")
@@ -235,7 +281,11 @@ public class AgentController {
     }
 
     /**
-     * 知识索引Agent - 索引文档
+     * 将文档加入知识库索引。
+     *
+     * @param documentId 文档 ID
+     * @param content 文档正文
+     * @return 索引结果
      */
     @PostMapping("/knowledge/index")
     @Operation(summary = "索引文档", description = "将文档添加到知识库索引")
@@ -250,7 +300,11 @@ public class AgentController {
     }
 
     /**
-     * 知识索引Agent - 搜索知识库
+     * 搜索知识库中的相关文档。
+     *
+     * @param query 查询词
+     * @param topK 返回条数，实际限制在 1 到 20 之间
+     * @return 命中的文档分段列表
      */
     @GetMapping("/knowledge/search")
     @Operation(summary = "搜索知识库", description = "搜索知识库中的相关文档")
@@ -264,7 +318,10 @@ public class AgentController {
     }
 
     /**
-     * 知识索引Agent - 删除索引
+     * 删除文档索引。
+     *
+     * @param documentId 文档 ID
+     * @return 删除结果
      */
     @DeleteMapping("/knowledge/index/{documentId}")
     @Operation(summary = "删除索引", description = "删除文档索引")
@@ -280,7 +337,12 @@ public class AgentController {
     }
 
     /**
-     * 知识索引Agent - 异步索引文档
+     * 异步索引文档，立即返回任务 ID。
+     *
+     * @param documentId 文档 ID
+     * @param knowledgeBaseId 知识库 ID
+     * @param content 文档正文
+     * @return 任务信息，含任务 ID 与初始状态
      */
     @PostMapping("/knowledge/index/async")
     @Operation(summary = "异步索引文档", description = "立即返回任务ID，索引在后台异步执行")
@@ -295,7 +357,10 @@ public class AgentController {
     }
 
     /**
-     * 知识索引Agent - 查询任务状态
+     * 查询索引任务状态。
+     *
+     * @param jobId 索引任务 ID
+     * @return 任务状态、质量评估与错误信息
      */
     @GetMapping("/knowledge/jobs/{jobId}")
     @Operation(summary = "查询索引任务状态", description = "返回任务状态、质量评估、错误信息")
@@ -304,7 +369,11 @@ public class AgentController {
     }
 
     /**
-     * 知识索引Agent - 重试失败任务
+     * 重试状态为 FAILED 的索引任务。
+     *
+     * @param jobId 索引任务 ID
+     * @param content 重新索引的文档正文
+     * @return 重试后的任务状态
      */
     @PostMapping("/knowledge/jobs/{jobId}/retry")
     @Operation(summary = "重试失败索引任务", description = "对状态为 FAILED 的任务重新执行索引管道")
@@ -317,7 +386,11 @@ public class AgentController {
     }
 
     /**
-     * 知识索引Agent - 列出当前用户的索引任务，包含进度、质量、复用状态。
+     * 列出当前用户的索引任务，包含进度、质量与复用状态。
+     *
+     * @param knowledgeBaseId 知识库 ID，留空返回全部
+     * @param userId 管理员可指定用户 ID
+     * @return 索引任务列表
      */
     @GetMapping("/knowledge/jobs")
     @Operation(summary = "列出索引任务", description = "按用户/知识库过滤，返回任务进度、质量评估、是否复用旧索引")
@@ -334,7 +407,10 @@ public class AgentController {
     }
 
     /**
-     * 知识索引Agent - 删除索引任务记录。
+     * 删除索引任务记录，不影响实际向量索引。
+     *
+     * @param jobId 索引任务 ID
+     * @return 是否成功删除
      */
     @DeleteMapping("/knowledge/jobs/{jobId}")
     @Operation(summary = "删除索引任务记录", description = "仅删除任务追踪数据，不影响实际向量索引；如需删除索引请使用 /knowledge/index/{documentId}")
@@ -349,7 +425,9 @@ public class AgentController {
     }
 
     /**
-     * Agent 工作台 - 聚合接口，返回工具/对话/任务等综合数据。
+     * Agent 工作台聚合数据，返回工具、对话与任务等总览信息。
+     *
+     * @return 工作台总览数据
      */
     @GetMapping("/workbench/overview")
     @Operation(summary = "Agent工作台总览", description = "聚合工具列表、用户对话、最近Agent任务和索引任务用于前端展示")
@@ -368,7 +446,10 @@ public class AgentController {
     }
 
     /**
-     * 规划执行Agent - 执行任务
+     * 执行规划任务，兼容旧接口，内部走统一 Agent 链路。
+     *
+     * @param task 任务描述
+     * @return 任务执行结果
      */
     @PostMapping("/plan/execute")
     @Operation(summary = "执行规划任务", description = "兼容旧接口，内部使用统一Agent链路执行复杂任务")

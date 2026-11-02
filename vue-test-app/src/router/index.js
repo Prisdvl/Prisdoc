@@ -1,9 +1,12 @@
 /**
- * @description 页面路由配置
+ * 页面路由配置。
+ *
+ * 除 `/`、`/login`、`/register` 外，其余页面都要求本地存在访问令牌。
  */
 import { createRouter, createWebHistory } from 'vue-router'
 import { STORAGE_KEYS } from '../constants'
 
+/** 路由表：路径与页面组件一一对应 */
 const routes = [
     { path: '/', component: () => import('../views/landing/LandingView.vue') },
     { path: '/index.html', redirect: '/' },
@@ -22,7 +25,7 @@ const router = createRouter({
     routes
 })
 
-// 路由守卫
+// 路由守卫：未登录访问受保护页面时跳转登录页
 const PUBLIC_PATHS = ['/', '/login', '/register']
 
 router.beforeEach((to, from, next) => {

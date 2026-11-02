@@ -16,7 +16,9 @@ import org.springframework.web.server.WebFilter;
 import reactor.core.publisher.Mono;
 
 /**
- * 全局跨域配置
+ * 全局跨域配置，统一网关对前端来源的访问规则。
+ *
+ * <p>仅允许本地前端开发地址携带凭证访问，预检结果缓存 1 小时。</p>
  */
 @Configuration
 public class GlobalCorsConfig {

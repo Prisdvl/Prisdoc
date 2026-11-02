@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 章节分段策略，按文档中的标题层级切分章节片段。
+ *
+ * <p>依次尝试中文章节标题、数字编号、Chapter/Section 与 Markdown 标题等正则；
+ * 未识别到章节结构时回退为固定长度分段，超长章节再按固定长度拆分为子片段。</p>
+ */
 @Component
 public class ChapterSegmentStrategy implements SegmentStrategy {
 
@@ -168,6 +174,9 @@ public class ChapterSegmentStrategy implements SegmentStrategy {
         return maxChapterLength;
     }
 
+    /**
+     * 章节匹配结果，记录章节标题及其在原文中的起始位置。
+     */
     private static class ChapterMatch {
         int start;
         String title;

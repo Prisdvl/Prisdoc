@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * AI服务
- * 提供文档摘要、纠错、关键词提取等功能，支持多模型选择
+ * AI 服务，提供文档摘要、文本分析、关键词提取与文档纠错能力。
+ *
+ * <p>摘要与关键词提取的 Prompt 由 PromptEngineeringService 构建，经 ChatService 调用大模型，
+ * 并支持指定模型代码；文本分析与纠错为本地规则实现。</p>
  */
 @Service
 public class AIService {
@@ -34,19 +36,21 @@ public class AIService {
     private PromptEngineeringService promptEngineeringService;
 
     /**
-     * 文档摘要（使用默认模型）
-     * @param dto 请求参数
-     * @return 摘要结果
+     * 使用默认模型生成文档摘要。
+     *
+     * @param dto 请求参数，包含原文与摘要长度上限
+     * @return 摘要结果，含摘要文本与压缩比
      */
     public TextSummarizeVO summarize(TextSummarizeDTO dto) {
         return summarize(dto, null);
     }
 
     /**
-     * 文档摘要（使用指定模型）
-     * @param dto 请求参数
-     * @param model 模型代码
-     * @return 摘要结果
+     * 使用指定模型生成文档摘要。
+     *
+     * @param dto 请求参数，包含原文与摘要长度上限
+     * @param model 模型代码，为空时使用默认模型
+     * @return 摘要结果，含摘要文本与压缩比
      */
     public TextSummarizeVO summarize(TextSummarizeDTO dto, String model) {
         log.info("开始文档摘要，文本长度={}, 模型={}", dto.getContent().length(), model);
@@ -67,9 +71,10 @@ public class AIService {
     }
 
     /**
-     * 文档分析
-     * @param dto 请求参数
-     * @return 分析结果
+     * 统计文档的字符构成，包括中英文字符、数字、空白、标点与行数。
+     *
+     * @param dto 请求参数，包含待分析文本
+     * @return 文本分析结果
      */
     public TextAnalyzeVO analyze(TextAnalyzeDTO dto) {
         log.info("开始文档分析");
@@ -107,7 +112,7 @@ public class AIService {
     }
 
     /**
-     * 判断是否为标点符号
+     * 判断字符是否为中英文标点符号。
      */
     private boolean isPunctuation(char c) {
         return "，。！？；：、\"\"''（）{}[]<>《》·".indexOf(c) >= 0 ||
@@ -115,19 +120,21 @@ public class AIService {
     }
 
     /**
-     * 关键词提取（使用默认模型）
-     * @param dto 请求参数
-     * @return 关键词结果
+     * 使用默认模型提取关键词。
+     *
+     * @param dto 请求参数，包含原文与关键词数量
+     * @return 关键词提取结果
      */
     public KeywordExtractVO extractKeywords(KeywordExtractDTO dto) {
         return extractKeywords(dto, null);
     }
 
     /**
-     * 关键词提取（使用指定模型）
-     * @param dto 请求参数
-     * @param model 模型代码
-     * @return 关键词结果
+     * 使用指定模型提取关键词。
+     *
+     * @param dto 请求参数，包含原文与关键词数量
+     * @param model 模型代码，为空时使用默认模型
+     * @return 关键词提取结果
      */
     public KeywordExtractVO extractKeywords(KeywordExtractDTO dto, String model) {
         log.info("开始关键词提取，模型={}", model);
@@ -152,9 +159,10 @@ public class AIService {
     }
 
     /**
-     * 文档纠错
-     * @param dto 请求参数
-     * @return 分析结果
+     * 对文档执行纠错并返回文本分析结果。
+     *
+     * @param dto 请求参数，包含待纠错文本
+     * @return 文本分析结果
      */
     public TextAnalyzeVO correct(TextAnalyzeDTO dto) {
         log.info("开始文档纠错");

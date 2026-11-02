@@ -5,14 +5,16 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
+ * Web MVC 配置，统一全局跨域访问规则。
+ *
  * @author qxk
- * @description: Web配置（跨域/拦截器）
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
     /**
-     * 配置跨域请求
+     * 配置全局跨域请求规则。
+     *
      * @param registry 跨域注册器
      */
     @Override

@@ -6,6 +6,12 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+/**
+ * WebSocket 配置，开启 STOMP 消息代理并注册协同编辑端点。
+ *
+ * <p>广播地址以 {@code /topic} 为前缀，客户端发送地址以 {@code /app} 为前缀，
+ * 端点 {@code /ws/collaborate} 兼容 SockJS 回退。</p>
+ */
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {

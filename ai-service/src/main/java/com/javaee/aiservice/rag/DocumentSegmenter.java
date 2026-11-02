@@ -12,11 +12,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 文档分段器，按指定策略调度章节、定长与语义三种分段实现。
+ *
+ * <p>自动模式依据章节标记与文档长度选择策略；混合模式先按章节切分，再在章节内做语义分段，
+ * 最后对分段内容去重并重排分段序号。</p>
+ */
 @Component
 public class DocumentSegmenter {
 
     private static final Logger log = LoggerFactory.getLogger(DocumentSegmenter.class);
 
+    /**
+     * 分段策略类型，描述自动、定长、章节、语义与混合五种取值。
+     */
     public enum StrategyType {
         AUTO("自动选择"),
         FIXED_LENGTH("固定长度分段"),

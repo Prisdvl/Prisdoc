@@ -12,6 +12,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * RequestUserContext 的单元测试，覆盖匿名用户拒绝与认证用户的角色、用户组解析。
+ */
 class RequestUserContextTest {
 
     private final RequestUserContext requestUserContext = new RequestUserContext();

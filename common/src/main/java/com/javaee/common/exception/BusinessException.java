@@ -4,9 +4,11 @@ import com.javaee.common.constant.ErrorCodeEnum;
 import lombok.Getter;
 
 /**
+ * 业务异常，承载错误码与提示语，用于表达可预期的业务失败。
+ *
+ * <p>默认使用通用业务错误码，也支持指定错误码或错误码枚举。</p>
+ *
  * @author qxk
- * @description: 自定义业务异常（可控）
- * 用于处理业务逻辑中的可控异常，如数据不存在、业务规则不满足等
  */
 @Getter
 public class BusinessException extends RuntimeException {
@@ -14,7 +16,8 @@ public class BusinessException extends RuntimeException {
     private String message;
 
     /**
-     * 构造函数：仅指定错误消息
+     * 以错误消息构造业务异常，错误码取通用业务错误。
+     *
      * @param message 错误消息
      */
     public BusinessException(String message) {
@@ -24,7 +27,8 @@ public class BusinessException extends RuntimeException {
     }
 
     /**
-     * 构造函数：指定错误码和错误消息
+     * 以错误码与错误消息构造业务异常。
+     *
      * @param code 错误码
      * @param message 错误消息
      */
@@ -35,7 +39,8 @@ public class BusinessException extends RuntimeException {
     }
 
     /**
-     * 构造函数：使用错误码枚举
+     * 以错误码枚举构造业务异常。
+     *
      * @param errorCodeEnum 错误码枚举
      */
     public BusinessException(ErrorCodeEnum errorCodeEnum) {

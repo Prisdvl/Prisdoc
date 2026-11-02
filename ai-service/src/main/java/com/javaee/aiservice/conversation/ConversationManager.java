@@ -13,9 +13,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 对话管理器
- * 管理对话生命周期和消息历史
- * 支持多轮对话和上下文管理
+ * 对话管理器，管理对话生命周期与消息历史。
+ *
+ * <p>对话元数据与消息列表保存在 Redis Hash 中，按配置的最大消息数截断历史并设置过期时间。</p>
  */
 @Component
 public class ConversationManager {
@@ -34,9 +34,10 @@ public class ConversationManager {
     private int expiryHours;
 
     /**
-     * 创建新对话
-     * @param userId 用户ID
-     * @return 对话ID
+     * 创建新对话并初始化消息列表。
+     *
+     * @param userId 所属用户 ID
+     * @return 新对话的对话 ID
      */
     public String createConversation(String userId) {
         String conversationId = UUID.randomUUID().toString();
@@ -56,8 +57,9 @@ public class ConversationManager {
     }
 
     /**
-     * 添加消息到对话
-     * @param conversationId 对话ID
+     * 向对话追加一轮用户消息与助手回复，并按上限截断历史。
+     *
+     * @param conversationId 对话 ID
      * @param userMessage 用户消息
      * @param assistantMessage 助手消息
      */
@@ -85,9 +87,10 @@ public class ConversationManager {
     }
 
     /**
-     * 获取对话历史
-     * @param conversationId 对话ID
-     * @return 消息列表
+     * 获取对话历史消息。
+     *
+     * @param conversationId 对话 ID
+     * @return 消息列表，不存在时返回空列表
      */
     public List<String> getConversationHistory(String conversationId) {
         String key = CONVERSATION_PREFIX + conversationId;
@@ -98,8 +101,9 @@ public class ConversationManager {
     }
 
     /**
-     * 删除对话
-     * @param conversationId 对话ID
+     * 删除指定对话及其历史消息。
+     *
+     * @param conversationId 对话 ID
      */
     public void deleteConversation(String conversationId) {
         String key = CONVERSATION_PREFIX + conversationId;
@@ -137,9 +141,10 @@ public class ConversationManager {
     }
 
     /**
-     * 获取用户的所有对话
-     * @param userId 用户ID
-     * @return 对话ID列表
+     * 获取指定用户创建的全部对话 ID。
+     *
+     * @param userId 用户 ID
+     * @return 对话 ID 列表，查询失败时返回空列表
      */
     public List<String> getUserConversations(String userId) {
         try {
@@ -162,9 +167,10 @@ public class ConversationManager {
     }
 
     /**
-     * 获取对话信息
-     * @param conversationId 对话ID
-     * @return 对话信息
+     * 获取对话的元数据信息。
+     *
+     * @param conversationId 对话 ID
+     * @return 对话信息，包含所属用户、创建时间与更新时间等字段
      */
     public Map<String, Object> getConversationInfo(String conversationId) {
         String key = CONVERSATION_PREFIX + conversationId;

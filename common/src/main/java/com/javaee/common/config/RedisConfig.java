@@ -13,17 +13,21 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
+ * Redis 序列化配置，统一键值序列化方式，避免乱码与 Java 对象写入失败。
+ *
+ * <p>键使用字符串序列化，值使用 Jackson JSON 序列化并保留类型信息。</p>
+ *
  * @author qxk
- * @description: Redis序列化配置（解决乱码、解决java数据存不进redis的问题）
  */
 @Configuration
 @EnableCaching
 public class RedisConfig {
 
     /**
-     * 配置RedisTemplate，使用Jackson2JsonRedisSerializer进行序列化
-     * @param connectionFactory Redis连接工厂
-     * @return RedisTemplate实例
+     * 配置 RedisTemplate，键使用字符串序列化、值使用 Jackson JSON 序列化。
+     *
+     * @param connectionFactory Redis 连接工厂
+     * @return 完成序列化配置的 Redis 操作模板
      */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
@@ -37,7 +41,7 @@ public class RedisConfig {
 
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
 
-        // key一般用string序列化，value用jackson2JsonRedisSerializer序列化
+        // 键使用字符串序列化，值使用 Jackson JSON 序列化
         template.setKeySerializer(stringRedisSerializer);
         template.setHashKeySerializer(stringRedisSerializer);
         template.setValueSerializer(jackson2JsonRedisSerializer);

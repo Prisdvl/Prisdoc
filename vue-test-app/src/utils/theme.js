@@ -1,9 +1,8 @@
 /**
- * @description 主题（亮 / 暗 / 跟随系统）
+ * 主题管理（亮色 / 暗色 / 跟随系统）。
  *
- * 与 Prisma 的做法一致：只改 `documentElement` 上的 `data-theme`，
- * 所有颜色由 `styles/prisdoc-tokens.css` 里的 `--pd-*` 变量切换，
- * 组件本身不感知主题。`html.dark` 类保留给 Element Plus 的暗色变量表。
+ * 只改 `documentElement` 上的 `data-theme` 与 `html.dark` 类，
+ * 所有颜色由 `styles/prisdoc-tokens.css` 里的 `--pd-*` 变量切换，组件不感知主题。
  */
 import { ref, computed } from 'vue'
 
@@ -33,11 +32,20 @@ export const themeSetting = ref(readSetting())
 /** 实际生效的主题：system 已解析成 light / dark */
 export const resolvedTheme = ref('dark')
 
+/**
+ * 把「用户设置」解析成实际生效的主题。
+ *
+ * @param {string} setting 用户设置：light / dark / system
+ * @returns {string} 实际主题：light / dark
+ */
 const resolve = (setting) => {
   if (setting === 'system') return media && media.matches ? 'dark' : 'light'
   return setting === 'light' ? 'light' : 'dark'
 }
 
+/**
+ * 将当前主题应用到根元素。
+ */
 function apply() {
   const resolved = resolve(themeSetting.value)
   resolvedTheme.value = resolved
@@ -47,6 +55,7 @@ function apply() {
   root.classList.toggle('dark', resolved === 'dark')
 }
 
+// 模块加载即应用一次，避免首屏闪烁
 apply()
 
 if (media) {
@@ -55,21 +64,34 @@ if (media) {
   })
 }
 
+/**
+ * 设置主题并持久化。
+ *
+ * @param {string} setting 主题取值：light / dark / system
+ */
 export function setTheme(setting) {
   if (!THEME_OPTIONS.some((option) => option.value === setting)) return
   themeSetting.value = setting
   try {
     localStorage.setItem(STORAGE_KEY, setting)
   } catch {
-    /* 存不下就算了，本次会话内仍然生效 */
+    /* 隐私模式下 localStorage 不可用，本次会话内仍然生效 */
   }
   apply()
 }
 
+/**
+ * 在亮色与暗色之间切换。
+ */
 export function toggleTheme() {
   setTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark')
 }
 
+/**
+ * 组合式函数：向组件暴露主题状态与操作。
+ *
+ * @returns {{ setting: import('vue').Ref<string>, resolved: import('vue').Ref<string>, isDark: import('vue').ComputedRef<boolean>, setTheme: Function, toggleTheme: Function }} 主题上下文
+ */
 export function useTheme() {
   return {
     setting: themeSetting,

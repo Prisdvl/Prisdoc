@@ -10,18 +10,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
+ * 全局异常处理器，把业务、令牌与参数校验异常统一转换为 Result 响应。
+ *
+ * <p>未被具体处理器匹配的异常走兜底处理，统一返回服务器内部错误。</p>
+ *
  * @author qxk
- * @description: 全局异常捕获（统一返回）
- * 使用@RestControllerAdvice注解实现全局异常处理，统一返回Result格式的错误信息
  */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
-     * 处理业务异常
-     * @param e 业务异常
-     * @return 统一返回结果
+     * 处理业务异常。
+     *
+     * @param e 业务异常，携带错误码与提示语
+     * @return 统一返回结果，包含业务错误码与提示语
      */
     @ExceptionHandler(BusinessException.class)
     public Result<Void> handleBusinessException(BusinessException e) {
@@ -30,9 +33,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理令牌异常
-     * @param e 令牌异常
-     * @return 统一返回结果
+     * 处理令牌异常。
+     *
+     * @param e 令牌异常，携带错误码与提示语
+     * @return 统一返回结果，包含令牌错误码与提示语
      */
     @ExceptionHandler(TokenException.class)
     public Result<Void> handleTokenException(TokenException e) {
@@ -41,9 +45,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理参数校验异常（@Valid注解触发）
-     * @param e 参数校验异常
-     * @return 统一返回结果
+     * 处理 @Valid 触发的参数校验异常。
+     *
+     * @param e 参数校验异常，包含首个字段错误的提示语
+     * @return 统一返回结果，错误码为请求参数错误
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<Void> handleValidationException(MethodArgumentNotValidException e) {
@@ -54,9 +59,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理参数绑定异常
-     * @param e 参数绑定异常
-     * @return 统一返回结果
+     * 处理参数绑定异常。
+     *
+     * @param e 参数绑定异常，包含首个字段错误的提示语
+     * @return 统一返回结果，错误码为请求参数错误
      */
     @ExceptionHandler(BindException.class)
     public Result<Void> handleBindException(BindException e) {
@@ -67,9 +73,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理非法参数异常
-     * @param e 非法参数异常
-     * @return 统一返回结果
+     * 处理非法参数异常。
+     *
+     * @param e 非法参数异常，消息作为提示语返回
+     * @return 统一返回结果，错误码为请求参数错误
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public Result<Void> handleIllegalArgumentException(IllegalArgumentException e) {
@@ -78,9 +85,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理所有未捕获的异常（兜底处理）
-     * @param e 异常
-     * @return 统一返回结果
+     * 处理所有未被具体处理器匹配的异常。
+     *
+     * @param e 未捕获的异常
+     * @return 统一返回结果，错误码为服务器内部错误
      */
     @ExceptionHandler(Exception.class)
     public Result<Void> handleException(Exception e) {

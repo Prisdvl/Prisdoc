@@ -41,7 +41,8 @@ prisdoc/
 - Axios
 
 > 界面视觉体系（深海军蓝单主题、令牌、组件规范）见 [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md)；
-> 零后端演示方式见 [`docs/MOCK_MODE_GUIDE.md`](docs/MOCK_MODE_GUIDE.md)。
+> 零后端演示方式见 [`docs/MOCK_MODE_GUIDE.md`](docs/MOCK_MODE_GUIDE.md)；
+> 代码注释规范见 [`docs/CODE_COMMENT_SPEC.md`](docs/CODE_COMMENT_SPEC.md)。
 
 ### 容器化
 - Docker

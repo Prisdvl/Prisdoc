@@ -19,6 +19,9 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * 知识索引 Agent 的单元测试，覆盖管道状态流转、重复检测与任务筛选。
+ */
 class KnowledgeIndexAgentTest {
 
     @Test

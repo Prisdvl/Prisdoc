@@ -16,6 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * AI 服务工厂，按模型类型装配并缓存对应的 {@link AIService} 实例。
+ *
+ * <p>启动时依据 {@link ModelType} 与多模型配置逐个创建服务；OpenAI 兼容模型缺少
+ * apiKey 或 baseUrl 时跳过注册。取用已禁用或未注册的模型会抛出运行时异常。</p>
+ */
 @Component
 public class AIServiceFactory {
     
@@ -35,6 +41,9 @@ public class AIServiceFactory {
     
     private final Map<ModelType, AIService> serviceMap = new ConcurrentHashMap<>();
     
+    /**
+     * 初始化所有模型对应的服务实例并注册到缓存。
+     */
     @PostConstruct
     public void init() {
         log.info("初始化AI服务工厂...");
@@ -87,6 +96,12 @@ public class AIServiceFactory {
         log.info("AI服务工厂初始化完成，共注册 {} 个模型", serviceMap.size());
     }
     
+    /**
+     * 按模型类型获取可用的服务实例。
+     *
+     * @param modelType 模型类型
+     * @return 对应的 AI 服务实例
+     */
     public AIService getService(ModelType modelType) {
         AIService service = serviceMap.get(modelType);
         if (service == null) {
@@ -98,14 +113,30 @@ public class AIServiceFactory {
         return service;
     }
     
+    /**
+     * 按模型编码获取可用的服务实例。
+     *
+     * @param modelCode 模型编码，如 {@code qwen3.6-plus}
+     * @return 对应的 AI 服务实例；编码无法识别时回退到默认模型
+     */
     public AIService getService(String modelCode) {
         return getService(ModelType.fromCode(modelCode));
     }
     
+    /**
+     * 获取默认模型服务。
+     *
+     * @return 默认模型的 AI 服务实例
+     */
     public AIService getDefaultService() {
         return getService(ModelType.QWEN36_PLUS);
     }
     
+    /**
+     * 获取全部已注册的模型服务快照。
+     *
+     * @return 模型类型到服务实例的副本，修改不影响内部缓存
+     */
     public Map<ModelType, AIService> getAllServices() {
         return new HashMap<>(serviceMap);
     }

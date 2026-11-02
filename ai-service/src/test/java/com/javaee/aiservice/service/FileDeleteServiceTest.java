@@ -16,6 +16,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+/**
+ * FileDeleteService 的单元测试，覆盖文档删除与对象删除分支及存储桶权限校验。
+ */
 class FileDeleteServiceTest {
 
     private RecycleBinService recycleBinService;

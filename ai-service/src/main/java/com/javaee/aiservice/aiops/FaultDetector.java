@@ -18,9 +18,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 故障检测器
- * 自动检测系统故障和异常
- * 支持自动故障处理和告警
+ * 故障检测器，按窗口指标自动识别性能劣化与错误率超限，并触发告警或自动恢复。
+ *
+ * <p>同一指纹的故障在未恢复前只维护一条记录；阈值与检测窗口均通过配置项调整。</p>
  */
 @Component
 public class FaultDetector {
@@ -48,6 +48,11 @@ public class FaultDetector {
     private final ConcurrentHashMap<String, FaultRecord> faultsById = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, FaultRecord> activeFaultsByFingerprint = new ConcurrentHashMap<>();
 
+    /**
+     * 执行一轮故障检测，返回当前活跃故障。
+     *
+     * @return 活跃故障列表，按记录内容转为映射
+     */
     public List<Map<String, Object>> detectFaults() {
         log.info("开始故障检测");
 
@@ -119,6 +124,12 @@ public class FaultDetector {
         return record;
     }
 
+    /**
+     * 手动处理指定故障，同时清除其告警冷却。
+     *
+     * @param faultId 故障 ID
+     * @return 处理结果，含状态与说明；故障不存在时返回错误状态
+     */
     public Map<String, Object> resolveFault(String faultId) {
         log.info("处理故障: faultId={}", faultId);
 
@@ -142,6 +153,11 @@ public class FaultDetector {
         );
     }
 
+    /**
+     * 获取全部故障记录，按最近发生时间倒序排列。
+     *
+     * @return 故障记录映射列表
+     */
     public List<Map<String, Object>> getAllFaults() {
         return faultsById.values().stream()
                 .sorted(Comparator.comparingLong(FaultRecord::getLastOccurrence).reversed())
@@ -149,6 +165,9 @@ public class FaultDetector {
                 .toList();
     }
 
+    /**
+     * 清空全部故障记录与告警冷却状态。
+     */
     public void resetFaults() {
         faultsById.clear();
         activeFaultsByFingerprint.clear();
@@ -165,6 +184,9 @@ public class FaultDetector {
         }
     }
 
+    /**
+     * 定时执行故障检测。
+     */
     @Scheduled(fixedDelayString = "${ai.aiops.detection.interval-ms:60000}")
     public void scheduledDetection() {
         detectFaults();

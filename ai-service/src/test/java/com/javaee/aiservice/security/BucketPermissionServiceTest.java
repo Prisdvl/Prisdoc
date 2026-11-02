@@ -9,6 +9,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * BucketPermissionService 的单元测试，验证用户组对指定存储桶的访问放行。
+ */
 class BucketPermissionServiceTest {
 
     @Test

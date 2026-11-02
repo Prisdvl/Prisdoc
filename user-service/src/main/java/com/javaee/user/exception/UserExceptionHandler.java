@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
+ * 用户模块异常处理器，把业务异常转换为统一响应。
+ *
  * @author qxk
- * @description: 用户模块异常处理器
  */
 @Slf4j
 @RestControllerAdvice

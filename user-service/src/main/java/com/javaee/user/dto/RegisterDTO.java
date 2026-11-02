@@ -3,8 +3,9 @@ package com.javaee.user.dto;
 import lombok.Data;
 
 /**
+ * 注册请求参数，包含用户名、密码、邮箱与手机号。
+ *
  * @author qxk
- * @description: 注册请求DTO
  */
 @Data
 public class RegisterDTO {
