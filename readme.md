@@ -1,822 +1,226 @@
-# Prisdoc 项目文档
+<div align="center">
 
-## 项目概述
+<img src="vue-test-app/public/brand/prisdvl-nexus.png" width="120" alt="Prisdvl" />
 
-Prisdoc 是一个基于 Spring Cloud 的文档智能处理系统，包含用户管理、文件处理、AI 分析和文档管理等功能模块。
+<h1>Prisdoc</h1>
 
-## 项目结构
+<p><strong>智能文档平台 · Spring Cloud × Vue 3 × RAG × Agent</strong></p>
 
+<p>写文档、发批注、问知识库、让 Agent 把活干完 —— 一套能本地跑通的文档智能工作台。</p>
+
+<p>
+  <a href="https://github.com/Prisdvl/Prisdoc"><img alt="repo" src="https://img.shields.io/badge/repo-Prisdvl%2FPrisdoc-2457D6?style=flat-square" /></a>
+  <img alt="Java" src="https://img.shields.io/badge/Java-17-437291?style=flat-square&amp;logo=openjdk&amp;logoColor=white" />
+  <img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.2-6DB33F?style=flat-square&amp;logo=springboot&amp;logoColor=white" />
+  <img alt="Spring Cloud" src="https://img.shields.io/badge/Spring%20Cloud-2023.0-6DB33F?style=flat-square" />
+  <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-42B883?style=flat-square&amp;logo=vuedotjs&amp;logoColor=white" />
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-4.5-646CFF?style=flat-square&amp;logo=vite&amp;logoColor=white" />
+  <img alt="Element Plus" src="https://img.shields.io/badge/Element%20Plus-2.14-409EFF?style=flat-square" />
+  <img alt="MySQL" src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&amp;logo=mysql&amp;logoColor=white" />
+  <img alt="Redis" src="https://img.shields.io/badge/Redis-7.0-DC382D?style=flat-square&amp;logo=redis&amp;logoColor=white" />
+  <img alt="RabbitMQ" src="https://img.shields.io/badge/RabbitMQ-3.x-FF6600?style=flat-square&amp;logo=rabbitmq&amp;logoColor=white" />
+  <img alt="MinIO" src="https://img.shields.io/badge/MinIO-S3%20API-C72E49?style=flat-square" />
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-Swarm-2496ED?style=flat-square&amp;logo=docker&amp;logoColor=white" />
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-2EA44F?style=flat-square" />
+</p>
+
+</div>
+
+<p align="center">
+  <img src="docs/screenshots/02-dashboard.png" width="880" alt="Prisdoc 工作台" />
+</p>
+
+---
+
+## 目录
+
+- [项目简介](#项目简介)
+- [功能亮点](#功能亮点)
+- [界面预览](#界面预览)
+- [系统架构](#系统架构)
+- [技术栈](#技术栈)
+- [快速开始](#快速开始)
+- [模块与接口](#模块与接口)
+- [目录结构](#目录结构)
+- [文档](#文档)
+- [许可证](#许可证)
+
+## 项目简介
+
+Prisdoc 是一套面向团队的智能文档平台。后端由 Spring Cloud 微服务组成（用户、文件、AI、文档、网关），
+前端是 Vue 3 + Element Plus 的单页应用，覆盖「写作 → 批注 → 版本 → 知识库 → Agent 自动化」的完整链路。
+
+- **不用装数据库也能看**：前端内置零后端 Mock 模式，`npm run dev:mock` 一条命令跑通全部页面。
+- **真实的微服务骨架**：Nacos 注册发现、网关鉴权、OpenFeign 调用、Sentinel 限流、RabbitMQ 异步任务。
+- **AI 是主角而非点缀**：摘要 / 纠错 / 关键词、RAG 知识库问答、多步 Agent 规划与工具调用，危险操作走人工审批。
+
+## 功能亮点
+
+| 能力 | 说明 |
+| --- | --- |
+| 账号与鉴权 | 注册、登录、刷新令牌；网关统一校验 JWT，白名单放行登录/注册/刷新。 |
+| 文件中心 | 上传（含分片）、下载、预览、重命名、元数据管理、回收站与版本快照，文件落在 MinIO。 |
+| 在线编辑器 | A4 纸面编辑、自动保存、版本历史与恢复、批注与评论、协作者授权。 |
+| 实时协同 | WebSocket/STOMP 广播编辑操作与光标位置，多人在线状态可见。 |
+| AI 助手 | 文档摘要、纠错、关键词提取，支持多模型切换（通义千问 / GLM / Kimi / MiniMax）。 |
+| RAG 知识库 | 文档分段与向量化，HNSW 近邻检索 + BM25 融合重排，回答可溯源到片段。 |
+| Agent 工作台 | 规划 → 调工具 → 反思重规划，工具调用可视化；危险操作走服务端一次性审批令牌。 |
+| AIOps 运维 | 请求量/耗时/错误率指标、故障指纹聚合告警、熔断与自动恢复建议。 |
+| 演示文稿 | 由大纲生成 HTML 版 PPT，支持主题切换、在线预览与导出。 |
+| 主题系统 | 深色 / 浅色 / 跟随系统三态，全部颜色走设计令牌（A4 纸面始终为浅色）。 |
+
+## 界面预览
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/03-editor.png" alt="文档编辑器" /></td>
+    <td width="50%"><img src="docs/screenshots/04-agent-workbench.png" alt="Agent 工作台" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>文档编辑器：纸面写作 + AI 侧栏 + 版本历史</sub></td>
+    <td align="center"><sub>Agent 工作台：任务规划、工具调用与结果审阅</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/09-capabilities.png" alt="能力中心" /></td>
+    <td width="50%"><img src="docs/screenshots/05-aiops.png" alt="AIOps 运维中心" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>能力中心：技能与模板一键直达</sub></td>
+    <td align="center"><sub>AIOps：指标、健康度与故障记录</sub></td>
+  </tr>
+</table>
+
+<p align="center"><sub>另有登录页、AI 对话模式、PPT 预览与「浅色主题」截图，见 <a href="docs/screenshots/">docs/screenshots</a>。</sub></p>
+
+## 系统架构
+
+```mermaid
+flowchart LR
+    U["浏览器<br/>Vue 3 SPA"] --> G["gateway-service :8080<br/>路由 · JWT 鉴权 · 限流"]
+
+    G --> US["user-service :8081<br/>账号 · 角色"]
+    G --> FS["file-service :8082<br/>上传 · 下载 · 元数据"]
+    G --> AS["ai-service :8083<br/>摘要 · RAG · Agent · AIOps"]
+    G --> DS["document-service :8084<br/>文档 · 版本 · 批注 · 协同"]
+
+    US --> DB[("MySQL 8")]
+    FS --> DB
+    DS --> DB
+
+    FS --> S3[("MinIO")]
+    DS --> S3
+
+    AS --> R[("Redis 7<br/>缓存 · 向量")]
+    AS --> MQ[("RabbitMQ")]
+    DS --> MQ
+
+    AS --> LLM["大模型 API<br/>DashScope / OpenAI 兼容"]
+    US -. 注册发现 .-> N["Nacos"]
+    G -. 注册发现 .-> N
 ```
-prisdoc/
-├── common/                  # 公共组件模块
-├── user-service/            # 用户服务模块
-├── file-service/            # 文件服务模块
-├── ai-service/              # AI 服务模块
-├── document-service/        # 文档服务模块
-├── gateway-service/         # API 网关模块
-├── vue-test-app/            # Vue 前端测试应用
-├── pom.xml                  # 父项目 POM 文件
-└── readme.md                # 项目文档
-```
+
+请求统一从网关进入，由 `AuthGlobalFilter` 解析 JWT 并向下游透传用户身份；
+耗时较长的 AI 推理通过 RabbitMQ 转为异步任务，前端轮询任务状态，避免长连接阻塞。
 
 ## 技术栈
 
-### 后端
-- Spring Boot 3.2.0
-- Spring Cloud 2023.0.3
-- Spring Cloud Alibaba 2023.0.1.0
-- MyBatis-Plus 3.5.5
-- MySQL 8.0+
-- Redis 7.0+ (集群)
-- RabbitMQ
-- JWT 0.11.5
-- Swagger 2.3.0
-- Spring AI
+| 层次 | 选型 |
+| --- | --- |
+| 框架 | Spring Boot 3.2.0、Spring Cloud 2023.0.3、Spring Cloud Alibaba 2023.0.1.0 |
+| 数据访问 | MyBatis-Plus 3.5.5、MySQL 8.0 |
+| 中间件 | Redis 7（缓存 / 向量）、RabbitMQ（异步任务 / 事件）、MinIO（对象存储）、Nacos（注册发现） |
+| 安全 | Spring Security、JWT 0.11.5、网关全局过滤器、Sentinel 限流 |
+| AI | Spring AI、DashScope（通义千问）、OpenAI 兼容协议、HNSW + BM25 混合检索 |
+| 文档处理 | Apache POI、PDFBox、Tesseract OCR、LCS 文本 diff |
+| 前端 | Vue 3.5、Vite 4.5、Element Plus 2.14、Vue Router、Axios |
+| 工程化 | Docker Swarm、Maven、npm、Prometheus |
 
-### 前端
-- Vue 3
-- Vite 4.5.3
-- Element Plus（暗色主题 + 自定义设计令牌）
-- Vue Router
-- Axios
+## 快速开始
 
-> 界面视觉体系（深海军蓝单主题、令牌、组件规范）见 [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md)；
-> 零后端演示方式见 [`docs/MOCK_MODE_GUIDE.md`](docs/MOCK_MODE_GUIDE.md)；
-> 代码注释规范见 [`docs/CODE_COMMENT_SPEC.md`](docs/CODE_COMMENT_SPEC.md)。
+### 方式一：只跑前端（零后端，约 3 分钟）
 
-### 容器化
-- Docker
-- Docker Swarm
-
-## 配置说明
-
-### 1. 公共组件模块 (common)
-
-#### 依赖配置
-- Spring Boot Web
-- JWT (用户鉴权)
-- Redis (缓存)
-- OpenFeign (服务间调用)
-- Swagger (API 文档)
-
-#### 核心配置类
-- `SwaggerConfig.java` - 全局 Swagger 配置
-- `WebMvcConfig.java` - Web MVC 配置
-- `RedisConfig.java` - Redis 配置
-- `FeignGlobalConfig.java` - Feign 全局配置
-- `security/BaseSecurityConfig.java` - 基础安全配置（JWT认证）
-- `security/JwtAuthenticationFilter.java` - JWT认证过滤器
-
-#### 工具类
-- `ValidateUtils` - 验证工具
-- `RedisUtils` - Redis 工具
-- `JwtUtils` - JWT 工具
-- `FileUtils` - 文件工具
-- `DateUtils` - 日期工具
-
-#### 异常处理
-- `BusinessException.java` - 业务异常
-- `TokenException.java` - 令牌异常
-- `GlobalExceptionHandler.java` - 全局异常处理器
-
-### 2. 用户服务模块 (user-service)
-
-#### 依赖配置
-- 公共组件模块
-- Spring Cloud Alibaba Nacos Discovery
-- MyBatis-Plus
-- MySQL 驱动
-- Spring Security
-
-#### 核心配置
-- `application.yml` - 应用配置
-  - 数据库连接配置
-  - MyBatis-Plus 配置
-  - 服务器端口 (8081)
-
-#### 数据库配置
-- 数据库：`doc_ai`
-- 表结构：`user` 表
-- 初始数据：admin 用户 (密码：${DOC_AI_ADMIN_PASSWORD}) 和 user 用户 (密码：${DOC_AI_USER_PASSWORD})
-
-#### API 接口
-- `POST /api/users/login` - 用户登录
-- `POST /api/users/register` - 用户注册
-- `GET /api/users/{id}` - 获取用户信息
-- `POST /api/users/refresh` - 刷新令牌
-- `POST /api/users/logout` - 用户登出
-
-### 3. API 网关模块 (gateway-service)
-
-#### 依赖配置
-- Spring Cloud Gateway
-- Spring Cloud Alibaba Nacos Discovery
-- Spring Cloud Alibaba Sentinel (网关限流)
-- Redis (用于限流)
-- 公共组件模块 (JWT工具/统一返回)
-
-#### 核心配置
-- `application.yml` - 应用配置
-  - 服务器端口 (8080)
-  - Nacos服务发现配置
-  - Redis配置
-  - Sentinel配置
-  - 健康检查和超时配置
-
-#### 核心配置类
-- `GatewayApplication.java` - 网关服务启动类
-- `GatewayConfig.java` - 路由配置
-- `GlobalCorsConfig.java` - 跨域配置
-- `AuthGlobalFilter.java` - JWT鉴权全局过滤器
-
-#### 路由规则
-- `/api/users/**` → user-service
-- `/api/files/**` → file-service
-- `/api/ai/**` → ai-service
-- `/api/documents/**` → document-service
-
-#### 鉴权规则
-- 白名单路径（无需鉴权）：
-  - `/api/users/login` - 用户登录
-  - `/api/users/register` - 用户注册
-  - `/api/users/refresh` - 刷新令牌
-- 其他路径需要携带有效的JWT令牌
-
-#### 限流配置
-- 使用Sentinel进行网关限流
-- 使用Redis进行分布式限流计数
-
-### 4. 文件服务模块 (file-service)
-
-#### 依赖配置
-- 公共组件模块
-- Spring Cloud Alibaba Nacos Discovery
-- MyBatis-Plus
-- MySQL 驱动
-- MinIO 客户端
-- Spring Security
-
-#### 核心配置
-- `application.yml` - 应用配置
-  - 服务器端口 (8082)
-  - 数据库连接配置
-  - MinIO 配置
-  - Nacos服务发现配置
-
-#### 核心功能
-- 文件上传/下载/删除
-- 大文件分片上传
-- 文件元数据管理
-- 多存储策略支持（本地/MinIO）
-- 文件类型校验和大小限制
-
-#### API 接口
-- `POST /api/files/upload` - 文件上传
-- `GET /api/files/download/{id}` - 文件下载
-- `DELETE /api/files/{id}` - 文件删除
-- `GET /api/files/metadata/{id}` - 获取文件元数据
-- `GET /api/files/list` - 获取文件列表
-
-### 5. AI 服务模块 (ai-service)
-
-#### 依赖配置
-- 公共组件模块
-- Spring Cloud Alibaba Nacos Discovery
-- Spring AI
-- Redis (向量搜索)
-- RabbitMQ
-
-#### 核心配置
-- `application.yml` - 应用配置
-  - 服务器端口 (8083)
-  - Nacos服务发现配置
-  - AI 模型配置
-  - Redis 向量搜索配置
-
-#### 核心功能
-- AI 文档摘要
-- AI 文档纠错
-- 关键词提取
-- RAG 知识库系统
-- AI Agent 架构
-
-#### API 接口
-- `POST /api/ai/summarize` - 文档摘要
-- `POST /api/ai/correct` - 文档纠错
-- `POST /api/ai/keywords` - 关键词提取
-- `POST /api/ai/rag/query` - 知识库问答
-
-### 5. 文档服务模块 (document-service)
-
-#### 依赖配置
-- 公共组件模块
-- Spring Cloud Alibaba Nacos Discovery
-- MyBatis-Plus
-- MySQL 驱动
-- Redis (缓存)
-- Sentinel (限流熔断)
-
-#### 核心配置
-- `application.yml` - 应用配置
-  - 服务器端口 (8084)
-  - Nacos服务发现配置
-  - Redis缓存配置
-
-#### 核心功能
-- 文档创建、更新、删除
-- 文档版本控制
-- 文档内容索引
-- 文档搜索
-
-#### API 接口
-- `POST /api/documents` - 创建文档
-- `PUT /api/documents` - 更新文档
-- `DELETE /api/documents/{id}` - 删除文档
-- `GET /api/documents/{id}` - 获取文档详情
-- `GET /api/documents/user/{userId}` - 获取用户文档列表
-- `GET /api/documents/search` - 搜索文档
-- `GET /api/documents/{id}/versions` - 获取文档版本列表
-- `POST /api/documents/{id}/restore/{versionNumber}` - 恢复文档版本
-
-### 6. Nacos 服务配置
-
-#### 运行方式
-- 在 Docker Swarm 集群中运行
-- 配置为高可用模式
-
-#### 端口说明
-- **8848**：HTTP 端口，用于 Web 控制台访问和部分 API 调用
-- **9848**：gRPC 主端口，用于服务注册发现的实时通信
-- **9849**：gRPC 客户端端口，用于客户端向服务端发送请求
-
-> 注意：Nacos 2.0+ 版本必需映射 gRPC 端口，否则客户端无法正常连接
-
-### 7. Docker 配置
-
-#### user-service Dockerfile
-```dockerfile
-FROM swr.cn-north-4.myhuaweicloud.com/qxk/jdk-17:latest
-WORKDIR /app
-COPY target/user-service-1.0.0.jar /app/user-service.jar
-EXPOSE 8081
-CMD ["java", "-jar", "user-service.jar"]
-```
-
-#### gateway-service Dockerfile
-```dockerfile
-FROM swr.cn-north-4.myhuaweicloud.com/qxk/jdk-17:latest
-WORKDIR /app
-COPY target/gateway-service-1.0.0.jar /app/gateway-service.jar
-EXPOSE 8080
-CMD ["java", "-jar", "gateway-service.jar"]
-```
-
-#### file-service Dockerfile
-```dockerfile
-FROM swr.cn-north-4.myhuaweicloud.com/qxk/jdk-17:latest
-WORKDIR /app
-COPY target/file-service-1.0.0.jar /app/file-service.jar
-EXPOSE 8082
-CMD ["java", "-jar", "file-service.jar"]
-```
-
-#### ai-service Dockerfile
-```dockerfile
-FROM swr.cn-north-4.myhuaweicloud.com/qxk/jdk-17:latest
-WORKDIR /app
-COPY target/ai-service-1.0.0.jar /app/ai-service.jar
-EXPOSE 8083
-CMD ["java", "-jar", "ai-service.jar"]
-```
-
-### 8. 前端配置 (vue-test-app)
-
-#### 依赖配置
-- Vue 3
-- Vite
-- Axios
-
-#### 核心配置
-- `vite.config.js` - Vite 配置
-  - 代理配置：`/api` → http://localhost:8080
-
-#### 测试页面
-- 登录页面
-- 注册页面
-- 用户信息页面
-
-## 部署说明
-
-### 1. 环境准备
-
-#### 服务器配置
-
-| 服务器 | CPU | 内存 | 磁盘 | IP 地址 | 角色 |
-|--------|-----|------|------|---------|------|
-| manager | 2核 | 16G | 40G | ${DOC_AI_MANAGER_HOST} | Manager + 存储节点 |
-| node1 | 2核 | 4G | 40G | ${DOC_AI_NODE1_HOST} | Worker + 计算节点 |
-| node2 | 2核 | 4G | 40G | ${DOC_AI_NODE2_HOST} | Worker + 计算节点 |
-| node3 | 1核 | 2G | 40G | ${DOC_AI_NODE3_HOST} | Worker + 监控节点 |
-
-#### 后端环境
-- Docker 26.0+
-- Docker Swarm
-- JDK 17+ (用于构建)
-- Maven 3.8+ (用于构建)
-
-#### 前端环境
-- Node.js 18+
-- npm 9+
-
-### 2. Docker Swarm 集群初始化
-
-#### 1. 初始化 Swarm 集群
-
-在 manager 节点 (${DOC_AI_MANAGER_HOST}) 上执行：
+不启动任何后端服务，用内置 Mock 数据走通全部页面：
 
 ```bash
-# 初始化 Swarm 集群
-docker swarm init --advertise-addr ${DOC_AI_MANAGER_HOST}
-
-# 获取加入命令
-docker swarm join-token worker
+cd vue-test-app
+npm install
+npm run dev:mock
 ```
 
-#### 2. 其他节点加入集群
+打开 <http://localhost:5173>，任意账号密码即可登录。
+页面走查顺序与 Mock 原理见 [docs/MOCK_MODE_GUIDE.md](docs/MOCK_MODE_GUIDE.md)。
 
-在 node1、node2、node3 上执行获取到的加入命令：
+### 方式二：完整部署（Docker Swarm）
 
 ```bash
-docker swarm join --token <token> ${DOC_AI_MANAGER_HOST}:2377
+# 1) 准备：Docker 26+、JDK 17、Maven 3.8+、Node 18+
+git clone https://github.com/Prisdvl/Prisdoc.git && cd Prisdoc
+
+# 2) 按 .env.example 填写节点地址、数据库与中间件密码，并导出为环境变量
+cp .env.example .env
+set -a; source .env; set +a
+
+# 3) 构建镜像并部署（建网络/卷 → 构建镜像 → docker stack deploy）
+chmod +x deploy.sh
+./deploy.sh
 ```
 
-#### 3. 验证集群状态
+| 服务 | 端口 | 说明 |
+| --- | --- | --- |
+| 前端 | 5173（开发） | Vite 开发服务器；生产可由 Nginx 托管 `dist/` |
+| 网关 | 8080 | 所有 `/api/**` 的统一入口 |
+| 用户服务 | 8081 | Swagger UI：`/swagger-ui.html` |
+| 文件服务 | 8082 | 同上 |
+| AI 服务 | 8083 | 同上 |
+| 文档服务 | 8084 | 同上 |
+| Nacos | 8848 / 9848 / 9849 | 控制台 `/nacos`，必须映射 gRPC 端口 |
+| MinIO | 9000 / 9001 | 9001 为控制台 |
+| RabbitMQ | 5672 / 15672 | 15672 为控制台 |
 
-```bash
-docker node ls
+完整步骤、集群初始化与故障排查见 [DEPLOY.md](DEPLOY.md) 与 [INSTALLATION_AND_USAGE.md](INSTALLATION_AND_USAGE.md)。
+
+## 模块与接口
+
+| 模块 | 职责 | 路由前缀 |
+| --- | --- | --- |
+| `common` | 公共返回体、异常、JWT、Redis/Feign/Swagger 配置 | — |
+| `gateway-service` | 路由转发、JWT 鉴权、跨域、限流 | `/api/**` → 下游 |
+| `user-service` | 注册、登录、令牌刷新、用户查询 | `/api/users/**` |
+| `file-service` | 上传、下载、预览、元数据、回收站 | `/api/files/**` |
+| `ai-service` | 摘要/纠错/关键词、RAG、Agent、AIOps、技能 | `/api/ai/**`、`/api/skills/**` |
+| `document-service` | 文档 CRUD、版本、批注、评论、协同 | `/api/documents/**` |
+| `vue-test-app` | 单页应用（含 Mock 插件） | — |
+
+数据库脚本见 [mysql-schema.sql](mysql-schema.sql)，消息队列设计见 [RABBITMQ_IMPLEMENTATION.md](RABBITMQ_IMPLEMENTATION.md)。
+
+## 目录结构
+
+```text
+Prisdoc/
+├── common/                  # 公共组件：统一返回、异常、JWT、Redis、Feign、Swagger
+├── gateway-service/         # API 网关：路由、鉴权过滤器、跨域、限流
+├── user-service/            # 用户服务：注册/登录/令牌
+├── file-service/            # 文件服务：MinIO 存储、分片上传、元数据
+├── ai-service/              # AI 服务：摘要、RAG、Agent、AIOps、技能、异步任务
+├── document-service/        # 文档服务：文档、版本、批注、评论、协同编辑
+├── vue-test-app/            # Vue 3 前端（src/ 业务代码，mock/ 零后端插件）
+├── docs/                    # 设计系统、Mock 指南、注释规范、界面截图
+├── docker-compose-*.yml     # 基础设施 / 服务 / 监控编排
+├── deploy.sh                # 一键部署脚本
+└── pom.xml                  # 父 POM
 ```
 
-### 3. 网络配置
-
-#### 创建 overlay 网络
-
-```bash
-docker network create --driver overlay --attachable prisdoc-network
-```
-
-### 4. 存储配置
-
-#### 创建 Docker 卷
-
-在 manager 节点上创建持久化卷：
-
-```bash
-# MySQL 数据卷
-docker volume create mysql-data
-
-# Redis 数据卷
-docker volume create redis-data
-
-# MinIO 数据卷
-docker volume create minio-data
-
-# Nacos 数据卷
-docker volume create nacos-data
-```
-
-### 5. 服务部署
-
-#### 1. 部署基础设施服务
-
-创建 `docker-compose.yml` 文件：
-
-```yaml
-version: '3.8'
-
-services:
-  # MySQL 服务
-  mysql:
-    image: mysql:8.0
-    deploy:
-      placement:
-        constraints: [node.hostname == manager]
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: doc_ai
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - prisdoc-network
-    ports:
-      - "3306:3306"
-
-  # Redis 集群
-  redis:
-    image: redis:7.0
-    deploy:
-      mode: replicated
-      replicas: 3
-      placement:
-        max_replicas_per_node: 1
-      restart_policy:
-        condition: on-failure
-    command: redis-server --requirepass ${REDIS_PASSWORD}
-    volumes:
-      - redis-data:/data
-    networks:
-      - prisdoc-network
-    ports:
-      - "6379:6379"
-
-  # RabbitMQ
-  rabbitmq:
-    image: rabbitmq:3.8-management
-    deploy:
-      placement:
-        constraints: [node.hostname == manager]
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-    networks:
-      - prisdoc-network
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
-  # MinIO
-  minio:
-    image: minio/minio
-    deploy:
-      placement:
-        constraints: [node.hostname == manager]
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    command: server /data
-    volumes:
-      - minio-data:/data
-    networks:
-      - prisdoc-network
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-
-  # Nacos
-  nacos:
-    image: nacos/nacos-server:v2.2.0
-    deploy:
-      placement:
-        constraints: [node.hostname == manager]
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-    environment:
-      MODE: standalone
-      SPRING_DATASOURCE_PLATFORM: mysql
-      MYSQL_SERVICE_HOST: mysql
-      MYSQL_SERVICE_PORT: 3306
-      MYSQL_SERVICE_DB_NAME: nacos_config
-      MYSQL_SERVICE_USER: root
-      MYSQL_SERVICE_PASSWORD: 123456
-    volumes:
-      - nacos-data:/home/nacos/data
-    networks:
-      - prisdoc-network
-    ports:
-      - "8848:8848"
-      - "9848:9848"
-      - "9849:9849"
-
-networks:
-  prisdoc-network:
-    external: true
-
-volumes:
-  mysql-data:
-    external: true
-  redis-data:
-    external: true
-  minio-data:
-    external: true
-  nacos-data:
-    external: true
-```
-
-部署基础设施服务：
-
-```bash
-docker stack deploy -c docker-compose.yml prisdoc-infra
-```
-
-#### 2. 构建微服务镜像
-
-在本地构建微服务镜像：
-
-```bash
-# 构建所有服务
-mvn clean package -DskipTests
-
-# 构建并推送镜像
-docker build -t prisdoc/user-service:1.0.0 user-service/
-docker build -t prisdoc/gateway-service:1.0.0 gateway-service/
-docker build -t prisdoc/file-service:1.0.0 file-service/
-docker build -t prisdoc/ai-service:1.0.0 ai-service/
-```
-
-#### 3. 部署微服务
-
-创建 `docker-compose-services.yml` 文件：
-
-```yaml
-version: '3.8'
-
-services:
-  # 网关服务
-  gateway-service:
-    image: prisdoc/gateway-service:1.0.0
-    deploy:
-      mode: replicated
-      replicas: 2
-      placement:
-        constraints: [node.role == worker]
-      restart_policy:
-        condition: on-failure
-    environment:
-      SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR: nacos:8848
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD}
-    networks:
-      - prisdoc-network
-    ports:
-      - "8080:8080"
-
-  # 用户服务
-  user-service:
-    image: prisdoc/user-service:1.0.0
-    deploy:
-      mode: replicated
-      replicas: 2
-      placement:
-        constraints: [node.role == worker]
-      restart_policy:
-        condition: on-failure
-    environment:
-      SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR: nacos:8848
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/doc_ai?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 123456
-    networks:
-      - prisdoc-network
-    ports:
-      - "8081:8081"
-
-  # 文件服务
-  file-service:
-    image: prisdoc/file-service:1.0.0
-    deploy:
-      mode: replicated
-      replicas: 2
-      placement:
-        constraints: [node.role == worker]
-      restart_policy:
-        condition: on-failure
-    environment:
-      SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR: nacos:8848
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/doc_ai?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 123456
-      MINIO_ENDPOINT: http://minio:9000
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-    networks:
-      - prisdoc-network
-    ports:
-      - "8082:8082"
-
-  # AI 服务
-  ai-service:
-    image: prisdoc/ai-service:1.0.0
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints: [node.hostname == node2]
-      restart_policy:
-        condition: on-failure
-    environment:
-      SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR: nacos:8848
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD}
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_USERNAME: guest
-      SPRING_RABBITMQ_PASSWORD: guest
-    networks:
-      - prisdoc-network
-    ports:
-      - "8083:8083"
-
-networks:
-  prisdoc-network:
-    external: true
-```
-
-部署微服务：
-
-```bash
-docker stack deploy -c docker-compose-services.yml prisdoc-services
-```
-
-### 6. 数据库初始化
-
-#### SQL 初始化代码
-
-```sql
--- 创建数据库
-CREATE DATABASE IF NOT EXISTS doc_ai DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- 切换到 doc_ai 数据库
-USE doc_ai;
-
--- 创建 user 表
-CREATE TABLE IF NOT EXISTS `user` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `username` VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
-  `password` VARCHAR(100) NOT NULL COMMENT '密码（加密存储）',
-  `email` VARCHAR(100) NOT NULL UNIQUE COMMENT '邮箱',
-  `phone` VARCHAR(20) COMMENT '手机号',
-  `nickname` VARCHAR(50) COMMENT '昵称',
-  `avatar` VARCHAR(255) COMMENT '头像',
-  `gender` TINYINT DEFAULT 0 COMMENT '性别：0-未知，1-男，2-女',
-  `status` TINYINT DEFAULT 1 COMMENT '状态：0-禁用，1-启用',
-  `role` VARCHAR(20) DEFAULT 'user' COMMENT '角色：admin，user',
-  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  INDEX `idx_username` (`username`),
-  INDEX `idx_email` (`email`),
-  INDEX `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
-
--- 插入初始数据（密码使用 BCrypt 加密，明文分别为 ${DOC_AI_ADMIN_PASSWORD} 和 ${DOC_AI_USER_PASSWORD}）
-INSERT INTO `user` (`username`, `password`, `email`, `phone`, `nickname`, `avatar`, `gender`, `status`, `role`) VALUES
-('admin', '${DOC_AI_PASSWORD_HASH}', '${DOC_AI_ADMIN_EMAIL}', '${DOC_AI_ADMIN_PHONE}', '管理员', NULL, 0, 1, 'admin'),
-('user', '${DOC_AI_PASSWORD_HASH}', '${DOC_AI_USER_EMAIL}', '${DOC_AI_USER_PHONE}', '测试用户', NULL, 0, 1, 'user');
-
--- 查看用户数据
-SELECT id, username, email, phone, nickname, status, role, create_time FROM `user`;
-```
-
-### 7. 服务启动顺序
-
-1. **基础设施服务**：MySQL → Redis → RabbitMQ → MinIO → Nacos
-2. **微服务**：user-service → file-service → ai-service → gateway-service
-
-### 8. 访问地址
-
-- Nacos 控制台：http://${DOC_AI_MANAGER_HOST}:8848/nacos
-- API 网关：http://${DOC_AI_MANAGER_HOST}:8080
-- User Service Swagger UI：http://${DOC_AI_MANAGER_HOST}:8081/swagger-ui.html
-- File Service Swagger UI：http://${DOC_AI_MANAGER_HOST}:8082/swagger-ui.html
-- AI Service Swagger UI：http://${DOC_AI_MANAGER_HOST}:8083/swagger-ui.html
-- MinIO 控制台：http://${DOC_AI_MANAGER_HOST}:9001
-- RabbitMQ 控制台：http://${DOC_AI_MANAGER_HOST}:15672
-
-## 测试方法
-
-### 1. 使用 Swagger UI 测试 API
-
-#### 测试用户服务 API
-1. 访问：http://${DOC_AI_MANAGER_HOST}:8081/swagger-ui.html
-2. 点击 `user-controller` 展开接口列表
-3. 测试 `POST /api/users/register` 注册新用户
-4. 测试 `POST /api/users/login` 登录获取令牌
-5. 测试 `GET /api/users/{id}` 获取用户信息
-
-#### 测试文件服务 API
-1. 访问：http://${DOC_AI_MANAGER_HOST}:8082/swagger-ui.html
-2. 点击 `file-controller` 展开接口列表
-3. 测试 `POST /api/files/upload` 上传文件
-4. 测试 `GET /api/files/download/{id}` 下载文件
-5. 测试 `DELETE /api/files/{id}` 删除文件
-6. 测试 `GET /api/files/metadata/{id}` 获取文件元数据
-7. 测试 `GET /api/files/list` 获取文件列表
-
-#### 测试 AI 服务 API
-1. 访问：http://${DOC_AI_MANAGER_HOST}:8083/swagger-ui.html
-2. 测试 `POST /api/ai/summarize` 文档摘要
-3. 测试 `POST /api/ai/correct` 文档纠错
-4. 测试 `POST /api/ai/keywords` 关键词提取
-
-### 2. 使用前端应用测试
-
-1. 构建前端应用：
-   ```bash
-   cd vue-test-app
-   npm install
-   npm run build
-   ```
-
-2. 部署前端应用（可使用 Nginx 或直接部署到容器）
-
-3. 访问前端应用，测试注册、登录和用户信息功能
-
-## 监控与维护
-
-### 1. 集群监控
-
-- **Docker Swarm 监控**：使用 Portainer 或 Docker Dashboard
-- **服务监控**：集成 Prometheus + Grafana
-- **日志管理**：使用 ELK 栈或 Loki
-
-### 2. 常见问题
-
-#### 1. Nacos 服务无法访问
-- 检查 Nacos 容器是否运行：`docker service ps prisdoc-infra_nacos`
-- 检查端口映射：`docker service inspect prisdoc-infra_nacos | grep -A 20 "Ports"`
-- 检查网络连接：`docker exec -it <nacos-container-id> ping mysql`
-
-#### 2. API 网关路由失败
-- 检查 Nacos 服务是否运行
-- 检查微服务是否注册到 Nacos
-- 检查路由配置是否正确
-
-#### 3. 前端请求 500 错误
-- 检查 API 网关是否运行
-- 检查对应微服务是否运行
-- 检查数据库连接是否正常
-- 查看服务日志获取详细错误信息：`docker service logs prisdoc-services_user-service`
-
-#### 4. 密码验证失败
-- 确认使用明文密码登录（系统会自动加密验证）
-- 检查数据库中密码是否正确存储
-- 检查 `UserServiceImpl` 中的密码验证逻辑
-
-#### 5. 网关服务返回503错误
-**问题描述**：通过网关访问API时返回503 Service Unavailable错误，但直接访问微服务正常。
-
-**原因分析**：
-- 网关服务缺少Spring Cloud LoadBalancer依赖，无法支持`lb://`协议
-- 版本兼容性问题：Spring Cloud 2023.0.3依赖于Spring Boot 3.2.0中引入的RestClient类
-
-**解决方案**：
-1. **升级Spring Boot版本**：
-   - 修改父POM文件中的Spring Boot版本从3.1.8到3.2.0
-   - 同时更新`spring-boot.version`属性值
-
-2. **添加Spring Cloud LoadBalancer依赖**：
-   ```xml
-   <!-- 在gateway-service的pom.xml中添加 -->
-   <dependency>
-       <groupId>org.springframework.cloud</groupId>
-       <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-   </dependency>
-   ```
-
-3. **重新构建并部署服务**：
-   ```bash
-   # 构建网关服务
-   cd gateway-service
-   mvn clean package -DskipTests
-   
-   # 重新构建Docker镜像
-   docker build -t prisdoc/gateway-service:1.0.0 .
-   
-   # 重新部署服务
-   docker service update --image prisdoc/gateway-service:1.0.0 prisdoc-services_gateway-service
-   ```
-
-## 注意事项
-
-1. **安全配置**
-   - 生产环境中应修改默认密码
-   - 生产环境中应启用 HTTPS
-   - 生产环境中应配置更严格的 CORS 规则
-   - 统一安全配置：所有服务使用 common 模块中的基础安全配置，确保安全性一致
-
-2. **性能优化**
-   - 生产环境中应配置 Redis 缓存
-   - 生产环境中应配置数据库连接池
-   - 生产环境中应配置日志级别
-
-3. **容器化部署**
-   - 生产环境中应配置容器健康检查
-   - 生产环境中应配置容器资源限制
-   - 生产环境中应使用 Docker Secret 管理敏感信息
-
-4. **高可用性**
-   - 确保所有关键服务都有多个副本
-   - 配置适当的重启策略
-   - 定期备份数据
+## 文档
+
+| 文档 | 内容 |
+| --- | --- |
+| [docs/MOCK_MODE_GUIDE.md](docs/MOCK_MODE_GUIDE.md) | 零后端启动、页面走查路线、Mock 原理 |
+| [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | 设计令牌、组件规范、明暗主题约定 |
+| [docs/CODE_COMMENT_SPEC.md](docs/CODE_COMMENT_SPEC.md) | 代码注释规范（Java / JS / Vue） |
+| [DEPLOY.md](DEPLOY.md) | Docker Swarm 部署、扩缩容、备份 |
+| [INSTALLATION_AND_USAGE.md](INSTALLATION_AND_USAGE.md) | 安装与功能使用指南 |
+| [RABBITMQ_IMPLEMENTATION.md](RABBITMQ_IMPLEMENTATION.md) | 消息队列实现与验证 |
 
 ## 许可证
 
-MIT License
+[MIT License](LICENSE) © Prisdvl
