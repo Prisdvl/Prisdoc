@@ -1,29 +1,23 @@
 <div align="center">
-
-<img src="vue-test-app/public/brand/prisdvl-nexus.png" width="120" alt="Prisdvl" />
-
-<h1>Prisdoc</h1>
-
-<p><strong>智能文档平台 · Spring Cloud × Vue 3 × RAG × Agent</strong></p>
-
-<p>写文档、发批注、问知识库、让 Agent 把活干完 —— 一套能本地跑通的文档智能工作台。</p>
-
-<p>
-  <a href="https://github.com/Prisdvl/Prisdoc"><img alt="repo" src="https://img.shields.io/badge/repo-Prisdvl%2FPrisdoc-2457D6?style=flat-square" /></a>
-  <img alt="Java" src="https://img.shields.io/badge/Java-17-437291?style=flat-square&amp;logo=openjdk&amp;logoColor=white" />
-  <img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.2-6DB33F?style=flat-square&amp;logo=springboot&amp;logoColor=white" />
-  <img alt="Spring Cloud" src="https://img.shields.io/badge/Spring%20Cloud-2023.0-6DB33F?style=flat-square" />
-  <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-42B883?style=flat-square&amp;logo=vuedotjs&amp;logoColor=white" />
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-4.5-646CFF?style=flat-square&amp;logo=vite&amp;logoColor=white" />
-  <img alt="Element Plus" src="https://img.shields.io/badge/Element%20Plus-2.14-409EFF?style=flat-square" />
-  <img alt="MySQL" src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&amp;logo=mysql&amp;logoColor=white" />
-  <img alt="Redis" src="https://img.shields.io/badge/Redis-7.0-DC382D?style=flat-square&amp;logo=redis&amp;logoColor=white" />
-  <img alt="RabbitMQ" src="https://img.shields.io/badge/RabbitMQ-3.x-FF6600?style=flat-square&amp;logo=rabbitmq&amp;logoColor=white" />
-  <img alt="MinIO" src="https://img.shields.io/badge/MinIO-S3%20API-C72E49?style=flat-square" />
-  <img alt="Docker" src="https://img.shields.io/badge/Docker-Swarm-2496ED?style=flat-square&amp;logo=docker&amp;logoColor=white" />
-  <img alt="License" src="https://img.shields.io/badge/License-MIT-2EA44F?style=flat-square" />
-</p>
-
+  <img src="vue-test-app/public/brand/prisdvl-nexus.png" width="120" alt="Prisdvl" />
+  <h1>Prisdoc</h1>
+  <p><strong>智能文档平台 · Spring Cloud × Vue 3 × RAG × Agent</strong></p>
+  <p>写文档、发批注、问知识库、让 Agent 把活干完 —— 一套能本地跑通的文档智能工作台。</p>
+  <p>
+    <a href="https://github.com/Prisdvl/Prisdoc"><img alt="repo" src="https://img.shields.io/badge/repo-Prisdvl%2FPrisdoc-2457D6?style=flat-square" /></a>
+    <img alt="Java" src="https://img.shields.io/badge/Java-17-437291?style=flat-square&amp;logo=openjdk&amp;logoColor=white" />
+    <img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.2-6DB33F?style=flat-square&amp;logo=springboot&amp;logoColor=white" />
+    <img alt="Spring Cloud" src="https://img.shields.io/badge/Spring%20Cloud-2023.0-6DB33F?style=flat-square" />
+    <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-42B883?style=flat-square&amp;logo=vuedotjs&amp;logoColor=white" />
+    <img alt="Vite" src="https://img.shields.io/badge/Vite-4.5-646CFF?style=flat-square&amp;logo=vite&amp;logoColor=white" />
+    <img alt="Element Plus" src="https://img.shields.io/badge/Element%20Plus-2.14-409EFF?style=flat-square" />
+    <img alt="MySQL" src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&amp;logo=mysql&amp;logoColor=white" />
+    <img alt="Redis" src="https://img.shields.io/badge/Redis-7.0-DC382D?style=flat-square&amp;logo=redis&amp;logoColor=white" />
+    <img alt="RabbitMQ" src="https://img.shields.io/badge/RabbitMQ-3.x-FF6600?style=flat-square&amp;logo=rabbitmq&amp;logoColor=white" />
+    <img alt="MinIO" src="https://img.shields.io/badge/MinIO-S3%20API-C72E49?style=flat-square" />
+    <img alt="Docker" src="https://img.shields.io/badge/Docker-Swarm-2496ED?style=flat-square&amp;logo=docker&amp;logoColor=white" />
+    <img alt="License" src="https://img.shields.io/badge/License-MIT-2EA44F?style=flat-square" />
+  </p>
 </div>
 
 <p align="center">
